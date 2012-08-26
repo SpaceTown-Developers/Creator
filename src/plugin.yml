@@ -1,0 +1,13 @@
+name: Creator
+main: com.rusketh.creator.creatorPlugin
+authors: [Rusketh]
+website: Rusketh.com
+version: 0.1
+description: Used to build and create.
+softdepend: [ vault ]
+commands:
+  creator:
+    description: Used to build and create.
+    usage: |
+        /<command> <help>
+    aliases: [cr]
