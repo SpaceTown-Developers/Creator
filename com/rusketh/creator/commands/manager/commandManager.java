@@ -10,65 +10,64 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import com.rusketh.creator.creatorPlugin;
-import com.rusketh.creator.commands.manager.commandAnote;
 
 public class commandManager {
 	
-	public commandManager(creatorPlugin plugin) {
+	public commandManager( creatorPlugin plugin ) {
 		this.plugin = plugin;
 		
-		commands = new HashMap<String, command>();
-		leastCommands = new ArrayList<command>();
+		commands = new HashMap< String, command >( );
+		leastCommands = new ArrayList< command >( );
 	}
 	
-/*========================================================================================================*/
+	/*========================================================================================================*/
 	
-	public void registerCommands(Object register) {
-		for (Method method : register.getClass().getMethods()) {
-			commandAnote anote = method.getAnnotation(commandAnote.class);
+	public void registerCommands( Object register ) {
+		for ( Method method : register.getClass( ).getMethods( ) ) {
+			commandAnote anote = method.getAnnotation( commandAnote.class );
 			
-			if (anote != null) {
+			if ( anote != null ) {
 				
-				if (anote.names().length == 0) {
-					plugin.logger.info("Creator has found an unnamed command");
+				if ( anote.names( ).length == 0 ) {
+					plugin.logger.info( "Creator has found an unnamed command" );
 					continue;
 				}
 				
-				command command = new command(this.plugin, anote, register, method);
+				command command = new command( this.plugin, anote, register, method );
 				
-				leastCommands.add(command);
+				leastCommands.add( command );
 				
-				for (String name : anote.names()) {
-					commands.put(name, command);
+				for ( String name : anote.names( ) ) {
+					commands.put( name, command );
 				}
 			}
 		}
 	}
 	
-/*========================================================================================================*/
+	/*========================================================================================================*/
 	
-	public ArrayList<command> getCommands() {
+	public ArrayList< command > getCommands( ) {
 		return leastCommands;
 	}
 	
-	public command getCommand(String name) {
-		return commands.get(name);
+	public command getCommand( String name ) {
+		return commands.get( name );
 	}
 	
-/*========================================================================================================*/
-
-	public boolean onCommand(CommandSender sender, String commandName, String[] perams) {
+	/*========================================================================================================*/
+	
+	public boolean onCommand( CommandSender sender, String commandName, String[] perams ) {
 		boolean sucess = false;
 		
-		if (commandName.equalsIgnoreCase("creator") || commandName.equalsIgnoreCase("cr")) {
-			if (perams.length > 0) {
-				command command = commands.get(perams[0]);
+		if ( commandName.equalsIgnoreCase( "creator" ) || commandName.equalsIgnoreCase( "cr" ) ) {
+			if ( perams.length > 0 ) {
+				command command = commands.get( perams[0] );
 				
-				if (command != null) {
+				if ( command != null ) {
 					try {
-						sucess = command.execute(plugin, sender, perams);
-					} catch (CommandException e) {
-						throw new CommandException(new StringBuilder(ChatColor.RED.toString()).append(e.getMessage()).toString());
+						sucess = command.execute( plugin, sender, perams );
+					} catch ( CommandException e ) {
+						throw new CommandException( new StringBuilder( ChatColor.RED.toString( ) ).append( e.getMessage( ) ).toString( ) );
 					}
 				}
 			}
@@ -76,12 +75,11 @@ public class commandManager {
 		
 		return sucess;
 	}
-
-/*========================================================================================================*/
-
-	creatorPlugin plugin;
 	
-	private HashMap<String, command> commands;
-	private ArrayList<command> leastCommands;
+	/*========================================================================================================*/
+	
+	creatorPlugin						plugin;
+	
+	private HashMap< String, command >	commands;
+	private ArrayList< command >		leastCommands;
 }
- 

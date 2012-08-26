@@ -3,10 +3,10 @@ package com.rusketh.creator.tasks;
 import com.rusketh.creator.creatorPlugin;
 
 public class taskManager {
-
-	public taskManager(creatorPlugin plugin) {
+	
+	public taskManager( creatorPlugin plugin ) {
 		this.plugin = plugin;
 	}
 	
-	creatorPlugin plugin;
+	creatorPlugin	plugin;
 }
