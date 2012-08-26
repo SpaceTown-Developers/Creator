@@ -32,6 +32,8 @@ public class creatorPlugin extends JavaPlugin {
 			return;
 		}
 		
+		setupEconomy();
+		
 		commandManager = new commandManager(this);
 		taskManager = new taskManager(this);
 		
@@ -47,7 +49,7 @@ public class creatorPlugin extends JavaPlugin {
 			
 			if (!configFile.exists()) {
 				config.set("enabled", true);
-				config.set("usevault", true);
+				config.set("usevault", false);
 				config.set("blockrate", 500);
 				config.set("maxblocks", -1);
 				config.set("maxradius", -1);
@@ -58,7 +60,7 @@ public class creatorPlugin extends JavaPlugin {
 			}
 			
 			Enabled = config.getBoolean("enabled", true);
-			Vault = config.getBoolean("usevault", true);
+			Vault = config.getBoolean("usevault", false);
 			BlockRate = config.getInt("blockrate", 500);
 			MaxBlocks = config.getInt("maxblocks", -1);
 			MaxRadius = config.getInt("maxradius", -1);
@@ -91,26 +93,32 @@ public class creatorPlugin extends JavaPlugin {
 	
 /*========================================================================================================*/
 	
-	@SuppressWarnings("unused")
-	private boolean setupEconomy() {
-		if (Vault) {
+	private void setupEconomy() {
+		if (Vault && getServer().getPluginManager().getPlugin("Vault") == null) {
+			logger.info("[Creator] Vault not found.");
+			
+			Vault = false;
+			
+		} else if (Vault) {
 			RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-	        if (economyProvider != null) {
+	        
+			if (economyProvider != null) {
 	            economy = economyProvider.getProvider();
 	        }
 
 	        Vault = (economy != null);
 	        
 	        if (!Vault) {
-	        	logger.info("Creator could not load Vault please check your vault plugin.");
+	        	logger.info("[Creator] No Economy plugin found.");
 	        	
 	        } else if (!economy.isEnabled()) {
-	        	logger.info("Creator has detected that vault is dissabled.");
+	        	logger.info("[Creator] Economy plugin is disabled.");
+	        	
 	        	Vault = false;
+	        } else {
+	        	logger.info("[Creator] Vault Economy enabled.");
 	        }
 		}
-		
-		return Vault;
 	}
 	
 	public Economy getEconomy() {

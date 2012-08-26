@@ -35,7 +35,6 @@ public class command {
 			
 			settings.set("enabled", true);
 			
-			//-1 will inform the creator that the values are not used.
 			if (anote.usePrice() != -1) {
 				settings.set("price", anote.usePrice());
 			}
