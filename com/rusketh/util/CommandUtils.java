@@ -1,4 +1,4 @@
-package com.oskar.util;
+package com.rusketh.util;
 
 import java.util.ArrayList;
 import java.util.List;
