@@ -32,6 +32,7 @@ public class helpCommands {
 			} else {
 				throw new CommandException("That command does not exist.");
 			}
+			
 		} else {
 			for (command helpWith : plugin.getCommandManager().getCommands()) {
 				

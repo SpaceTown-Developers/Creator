@@ -4,7 +4,7 @@ authors: [Rusketh]
 website: Rusketh.com
 version: 0.1
 description: Used to build and create.
-softdepend: [ vault ]
+softdepend: [ Vault ]
 commands:
   creator:
     description: Used to build and create.

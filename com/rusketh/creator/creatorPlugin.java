@@ -138,6 +138,7 @@ public class creatorPlugin extends JavaPlugin {
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] perams) {
+		logger.info("[Creator] Debug: " + command.getName());
 		return commandManager.onCommand(sender, command.getName(), perams);
 	}
 
