@@ -38,5 +38,7 @@ public @interface commandAnote
 	int usePrice() default 0;
 	
 	/* Price per block! */
-	int blockPrice() default 0;
+	int blockPrice() default -1;
+	
+	//-1 will inform the creator that the values are not used.
 }

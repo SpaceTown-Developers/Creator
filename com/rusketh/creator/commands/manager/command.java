@@ -32,6 +32,17 @@ public class command {
 		
 		if (settings == null) {
 			settings = plugin.getCommandNode().createSection(this.name);
+			
+			settings.set("enabled", true);
+			
+			//-1 will inform the creator that the values are not used.
+			if (anote.usePrice() != -1) {
+				settings.set("price", anote.usePrice());
+			}
+			
+			if (anote.blockPrice() != -1) {
+				settings.set("blockprice", anote.blockPrice());
+			}
 		}
 		
 		this.enabled = settings.getBoolean("enabled", true);

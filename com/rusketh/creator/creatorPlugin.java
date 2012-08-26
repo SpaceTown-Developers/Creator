@@ -45,7 +45,15 @@ public class creatorPlugin extends JavaPlugin {
 			configFile = new File(getDataFolder(), "config.yml");
 			config = this.getConfig();
 			
-			if (configFile.exists()) {
+			if (!configFile.exists()) {
+				config.set("enabled", true);
+				config.set("usevault", true);
+				config.set("blockrate", 500);
+				config.set("maxblocks", -1);
+				config.set("maxradius", -1);
+				
+			} else {
+				
 				config.load(configFile);
 			}
 			
@@ -54,6 +62,7 @@ public class creatorPlugin extends JavaPlugin {
 			BlockRate = config.getInt("blockrate", 500);
 			MaxBlocks = config.getInt("maxblocks", -1);
 			MaxRadius = config.getInt("maxradius", -1);
+			
 			commandSettings = config.getConfigurationSection("commands");
 			
 			if (commandSettings == null) {
