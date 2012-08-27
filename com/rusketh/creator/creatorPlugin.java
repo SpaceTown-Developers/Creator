@@ -44,9 +44,10 @@ public class creatorPlugin extends JavaPlugin {
 		
 		setupEconomy( );
 		
-		commandManager = new commandManager( this );
 		taskManager = new taskManager( this );
+		taskManager.reloadSessions( );
 		
+		commandManager = new commandManager( this );
 		registerCommands( );
 	}
 	
@@ -149,7 +150,6 @@ public class creatorPlugin extends JavaPlugin {
 	}
 	
 	public boolean onCommand( CommandSender sender, Command command, String commandLabel, String[] perams ) {
-		logger.info( "[Creator] Debug: " + command.getName( ) );
 		return commandManager.onCommand( sender, command.getName( ), perams );
 	}
 	
