@@ -30,6 +30,9 @@ public @interface commandAnote {
 	/* Can console use this command! */
 	boolean console( ) default true;
 	
+	/* All the legal flags!  */
+	String[] flags( ) default { };
+	
 	/* All the permissions needed to use this!  */
 	String[] perms( ) default { };
 	
@@ -38,4 +41,6 @@ public @interface commandAnote {
 	
 	/* Price per block! */
 	int blockPrice( ) default -1;
+	
+	
 }

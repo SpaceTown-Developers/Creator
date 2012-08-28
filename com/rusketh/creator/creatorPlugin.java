@@ -10,11 +10,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.rusketh.creator.commands.helpCommands;
 import com.rusketh.creator.commands.manager.commandManager;
+import com.rusketh.creator.listeners.PlayerListener;
 import com.rusketh.creator.tasks.taskManager;
 
 public class creatorPlugin extends JavaPlugin {
@@ -49,6 +51,8 @@ public class creatorPlugin extends JavaPlugin {
 		
 		commandManager = new commandManager( this );
 		registerCommands( );
+		
+		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 	}
 	
 	/*========================================================================================================*/
@@ -80,12 +84,16 @@ public class creatorPlugin extends JavaPlugin {
 			if ( !YamlConfig.contains( "blockrate" ) ) YamlConfig.set( "blockrate", 500 );
 			if ( !YamlConfig.contains( "maxblocks" ) ) YamlConfig.set( "maxblocks", -1 );
 			if ( !YamlConfig.contains( "maxradius" ) ) YamlConfig.set( "maxradius", -1 );
+			if ( !YamlConfig.contains( "commands.custom.enable" ) ) YamlConfig.set( "commands.custom.enable", true );
+			if ( !YamlConfig.contains( "commands.custom.prefix" ) ) YamlConfig.set( "commands.custom.prefix", "!" );
 			
 			Enabled = YamlConfig.getBoolean( "enabled" );
 			Vault = YamlConfig.getBoolean( "usevault" );
 			BlockRate = YamlConfig.getInt( "blockrate" );
 			MaxBlocks = YamlConfig.getInt( "maxblocks" );
 			MaxRadius = YamlConfig.getInt( "maxradius" );
+			cmdUse = YamlConfig.getBoolean( "commands.custom.enable" );
+			cmdPrefix = YamlConfig.getString( "commands.custom.prefix" ).toLowerCase( );
 			
 		} catch ( Exception e ) {
 			getLogger( ).severe( "[Creator] Unable to load configuration!" );
@@ -177,4 +185,6 @@ public class creatorPlugin extends JavaPlugin {
 	public int					MaxBlocks;
 	public int					MaxRadius;
 	
+	public boolean				cmdUse;
+	public String				cmdPrefix;
 }

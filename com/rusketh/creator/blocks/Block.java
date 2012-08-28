@@ -235,6 +235,7 @@ public enum Block {
 	}
 	
 	/*========================================================================================================*/
+	/*========================================================================================================*/
 	
 	private boolean shouldPlaceLast = false;
 	
@@ -371,5 +372,40 @@ public enum Block {
     
     /*========================================================================================================*/
     
+	private boolean isRedstoneBlock = false;
     
+	static {
+		POWERED_RAIL.isRedstoneBlock = true;
+		DETECTOR_RAIL.isRedstoneBlock = true;
+		PISTON_STICKY_BASE.isRedstoneBlock = true;
+		PISTON_BASE.isRedstoneBlock = true;
+		LEVER.isRedstoneBlock = true;
+		STONE_PRESSURE_PLATE.isRedstoneBlock = true;
+		WOODEN_PRESSURE_PLATE.isRedstoneBlock = true;
+		REDSTONE_TORCH_OFF.isRedstoneBlock = true;
+		REDSTONE_TORCH_ON.isRedstoneBlock = true;
+		STONE_BUTTON.isRedstoneBlock = true;
+		REDSTONE_WIRE.isRedstoneBlock = true;
+		WOODEN_DOOR.isRedstoneBlock = true;
+		IRON_DOOR.isRedstoneBlock = true;
+		TNT.isRedstoneBlock = true;
+		DISPENSER.isRedstoneBlock = true;
+		NOTE_BLOCK.isRedstoneBlock = true;
+		REDSTONE_REPEATER_OFF.isRedstoneBlock = true;
+		REDSTONE_REPEATER_ON.isRedstoneBlock = true;
+		TRIPWIRE_HOOK.isRedstoneBlock = true;
+	}
+	
+	public boolean isRedstoneBlock() {
+    	return this.isRedstoneBlock;
+    }
+	
+	 /*========================================================================================================*/
+	 /*========================================================================================================*/
+	
+	//private int dropItem = this.id;
+	//private int dropAmount = 1;
+	//private int dropChance = 0;
+	//TODO: Block drop and blockbag data =D
+	
 }

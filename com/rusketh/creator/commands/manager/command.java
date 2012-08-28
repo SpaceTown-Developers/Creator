@@ -2,6 +2,8 @@ package com.rusketh.creator.commands.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
@@ -28,6 +30,10 @@ public class command {
 		this.console = anote.console( );
 		this.perms = anote.perms( );
 		
+		this.flags = new HashSet< String >( );
+		for ( String flag : anote.flags( ) )
+			this.flags.add( flag );
+		
 		FileConfiguration settings = plugin.getConfig( );
 		
 		if ( settings.getConfigurationSection( "commands." + this.name ) == null ) {
@@ -49,16 +55,32 @@ public class command {
 	
 	/*========================================================================================================*/
 	
+	public boolean validFlag( String flag ) {
+		return this.flags.contains( flag );
+	}
+	
+	/*========================================================================================================*/
+	
 	public ConfigurationSection getConfig( ) {
 		return plugin.getConfig( ).getConfigurationSection( "commands." + this.name );
 	}
 	
 	/*========================================================================================================*/
 	
-	public boolean execute( creatorPlugin plugin, CommandSender sender, String[] perams ) {
+	public boolean execute( creatorPlugin plugin, CommandSender sender, String[] perameters ) {
 		if ( !this.enabled ) { throw new CommandException( "This command has been disabled." ); }
 		
-		int size = perams.length - 1;
+		int size = perameters.length - 1;
+		
+		String[] args = new String[size];
+		
+		for ( int i = 0; i <= size - 1; i++ ) {
+			args[i] = perameters[i + 1];
+		}
+		
+		Perameters perams = new Perameters( sender, this, args );
+		
+		size = perams.perams( ) - 1;
 		
 		// Note: Going to use string builders here, Java is shit at combining strings with out them!
 		if ( size < this.least && this.least != -1 ) {
@@ -88,20 +110,14 @@ public class command {
 		
 		// Note: All checks have been passed =D
 		
-		String[] perameters = new String[size];
-		
-		for ( int i = 0; i <= size - 1; i++ ) {
-			perameters[i] = perams[i + 1];
-		}
-		
-		return invoke( sender, perameters );
+		return invoke( perams );
 	}
 	
 	/*========================================================================================================*/
 	
-	public boolean invoke( CommandSender sender, String[] perameters ) {
+	public boolean invoke( Perameters perams ) {
 		try {
-			return (Boolean) this.method.invoke( this.baseClass, this, sender, perameters );
+			return (Boolean) this.method.invoke( this.baseClass, this, perams );
 		} catch ( InvocationTargetException e ) {
 			
 			plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
@@ -172,6 +188,7 @@ public class command {
 	private boolean			console;
 	private boolean			enabled;
 	
+	private Set< String >	flags;
 	private String[]		perms;
 	
 }

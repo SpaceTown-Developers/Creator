@@ -3,9 +3,10 @@ package com.rusketh.util;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class CommandUtils {
 	
-	public static List< String > getArgumentsList( String[] args ) {
+	public List< String > getArgumentsList( String[] args ) {
 		StringBuilder sb = new StringBuilder( );
 		
 		for ( String s : args )
@@ -14,7 +15,9 @@ public class CommandUtils {
 		return getArgumentsList( sb.toString( ) );
 	}
 	
-	public static List< String > getArgumentsList( String string ) {
+	/*========================================================================================================*/
+	
+	public List< String > getArgumentsList( String string ) {
 		boolean flag = false;
 		List< String > data = new ArrayList< String >( );
 		StringBuilder sb = new StringBuilder( );
