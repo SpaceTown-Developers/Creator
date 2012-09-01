@@ -86,11 +86,13 @@ public class BanManager {
 		mysqlManager mysql = plugin.mysqlManager( );
 		
 		try {
-			ResultSet checkTable = mysql.query( "SHOW TABLES LIKE 'creator_bans'" ).executeQuery( );
+			ResultSet checkTable = mysql.query( "SHOW TABLES LIKE `creator_bans`" ).executeQuery( );
 			if (!checkTable.next( )) {
 				
-				mysql.query("CREATE TABLE `creator_bans` ( `ip` text, `user` text, `banner` text, `reason_banned` longtext, `time_banned` int(11) DEFAULT NULL, `unban` int(11) DEFAULT NULL)" ).execute( );
-			
+				PreparedStatement q = mysql.query("CREATE TABLE `creator_bans` ( `ip` text, `user` text, `banner` text, `reason_banned` longtext, `time_banned` int(11) DEFAULT NULL, `unban` int(11) DEFAULT NULL)" );
+				q.execute( );
+				q.close( );
+				
 				loadFromFile();
 				
 				for (String name : YamlBans.getKeys( true )) {
@@ -99,15 +101,15 @@ public class BanManager {
 					
 					PreparedStatement query = mysql.query("INSERT INTO `creator_bans` (ip, user, banner, time_banned, reason_banned, unban) VALUES (?, ?, ?, ?, ?, ?)");
 					
-					query.setString( 2, name );
-					query.setString( 1, banData.getString( "ip", "" ) );
-					query.setString( 3, banData.getString( "banner", "" ) );
-					query.setInt( 4, banData.getInt( "timebanned", 0 ) );
-					query.setString( 5, banData.getString( "reason", "" ) );
-					query.setInt( 6, banData.getInt( "unban", 0 ) );
+					query.setString( 1, name );
+					query.setString( 0, banData.getString( "ip", "" ) );
+					query.setString( 2, banData.getString( "banner", "" ) );
+					query.setInt( 3, banData.getInt( "timebanned", 0 ) );
+					query.setString( 4, banData.getString( "reason", "" ) );
+					query.setInt( 5, banData.getInt( "unban", 0 ) );
 					
 					query.execute( );
-					
+					query.close( );
 				}
 			}
 		
@@ -130,7 +132,7 @@ public class BanManager {
 	
 	public void addBan(String name, String ip, String banner, long unban, String reason) {
 		if (useMysql) {
-			//TODO: This!
+			mysqlAddBan(name, ip, banner, unban, reason);
 		} else if (name != null) {
 			ConfigurationSection banData = YamlBans.getConfigurationSection(name);
 			
@@ -147,6 +149,58 @@ public class BanManager {
 		}
 	}
 	
+	private void mysqlAddBan(String name, String ip, String banner, long unban, String reason) {
+		if (reason == null) reason = "";
+		
+		try {
+			mysqlManager mysql = plugin.mysqlManager( );
+			
+			ResultSet q = mysqlGetBan(name);
+			
+			PreparedStatement query;
+			
+			if ( q != null || q.next( )) {
+				query = mysql.query("UPDATE `creator_bans` SET ip = ?, banner = ?, reason_banned = ?, time_banned = ?, unban = ? WHERE name = ?");
+			} else {
+				query = mysql.query("INSERT INTO `creator_bans` (ip, banner, reason_banned, time_banned, unban, name) VALUES (?, ?, ?, ?, ?, ?");
+			}
+			
+			query.setString( 0, ip );
+			query.setString( 1, banner );
+			query.setString( 2, reason );
+			query.setString( 5, name );
+			
+			query.setInt( 3, (int) System.currentTimeMillis( ) );
+			query.setInt( 4, (int) unban );
+			
+			query.executeQuery( );
+			query.close( );
+			
+		} catch (SQLException e) {
+			//TODO: This =P
+		}
+	}
+	
+	/*========================================================================================================*/
+	
+	private ResultSet mysqlGetBan(String name) {
+		mysqlManager mysql = plugin.mysqlManager( );
+		
+		try {
+			PreparedStatement q = mysql.query("SELECT * from `creator_bans` WHERE name = ?");
+			q.setString(0, name);
+			ResultSet result = q.executeQuery( );
+			q.close();
+			
+			return result;
+			
+		} catch (SQLException e) {
+			//TODO: This =P
+		}
+		
+		return null;
+	}
+	
 	/*========================================================================================================*/
 	
 	public long toDate(String time, boolean future) {
@@ -158,13 +212,14 @@ public class BanManager {
 		StringBuilder buffer = new StringBuilder();
 		
 		for (int i = 0; i < time.length( ); i++){
+			char c = time.charAt( i );
 			String v = time.substring( i, i );
 			
 			if (v.matches("([0-9]")) {
 				buffer.append(v);
 				
-			} else if (v.matches("([yjdhms]") || (future && v == "w") ) {
-				if (buffer.length( ) == 0 || used.contains( v )) throw new CommandException("Invalid time format (e.g: 2d1h4m).");
+			} else if (v.matches("([yjdhms]") || (future && c == 'w') ) {
+				if (buffer.length( ) == 0 || used.contains( c )) throw new CommandException("Invalid time format (e.g: 2d1h4m).");
 				
 				try {
 					int count = Integer.parseInt( buffer.toString() );
@@ -185,6 +240,8 @@ public class BanManager {
 						if (future) { cal.add( count, Calendar.DAY_OF_YEAR );
 						} else { cal.add( count, Calendar.DAY_OF_MONTH ); }
 					}
+					
+					used.add( c );
 				} catch (NumberFormatException e) {
 					throw new CommandException("Invalid time format (e.g: 2d1h4m).");
 				}
@@ -242,7 +299,7 @@ public class BanManager {
 		if (reason != null ) {
 			target.kickPlayer( new StringBuilder("Banned: " ).append( reason ).toString( ));
 		} else {
-			target.kickPlayer("You have been banned from the server.");
+			target.kickPlayer("You have been banned from tis server.");
 		}
 		
 		return true;
