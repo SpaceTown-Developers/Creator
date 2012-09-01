@@ -56,19 +56,17 @@ public class commandManager {
 	
 	/*========================================================================================================*/
 	
-	public boolean onCommand( CommandSender sender, String commandName, String[] perams ) {
+	public boolean run( CommandSender sender, String[] args ) throws CommandException {
 		boolean sucess = false;
 		
-		if ( commandName.equalsIgnoreCase( "creator" ) || commandName.equalsIgnoreCase( "cr" ) ) {
-			if ( perams.length > 0 ) {
-				command command = commands.get( perams[0] );
-				
-				if ( command != null ) {
-					try {
-						sucess = command.execute( plugin, sender, perams );
-					} catch ( CommandException e ) {
-						throw new CommandException( new StringBuilder( ChatColor.RED.toString( ) ).append( e.getMessage( ) ).toString( ) );
-					}
+		if ( args.length > 0 ) {
+			command command = commands.get( args[0] );
+			
+			if ( command != null ) {
+				try {
+					sucess = command.execute( plugin, sender, args );
+				} catch ( CommandException e ) {
+					throw new CommandException( new StringBuilder( ChatColor.RED.toString( ) ).append( e.getMessage( ) ).toString( ) );
 				}
 			}
 		}

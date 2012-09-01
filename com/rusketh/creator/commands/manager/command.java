@@ -2,9 +2,8 @@ package com.rusketh.creator.commands.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -30,9 +29,18 @@ public class command {
 		this.console = anote.console( );
 		this.perms = anote.perms( );
 		
-		this.flags = new HashSet< String >( );
-		for ( String flag : anote.flags( ) )
-			this.flags.add( flag );
+		this.flags = new HashMap< Character, Boolean >( );
+
+		for ( String flag : anote.flags( ) ) {
+			if (flag.length( ) == 1) {
+				this.flags.put( flag.charAt( 0 ) , false);
+			} else if (flag.length( ) == 2 && flag.charAt( 1 ) == '*') {
+				this.flags.put( flag.charAt( 0 ) , true);
+			} else {
+				plugin.logger.warning( new StringBuilder("[Creator] invalid flag '").append( flag ).append("' for command ").append(this.name).toString() );
+			}
+		}
+		
 		
 		FileConfiguration settings = plugin.getConfig( );
 		
@@ -55,32 +63,18 @@ public class command {
 	
 	/*========================================================================================================*/
 	
-	public boolean validFlag( String flag ) {
-		return this.flags.contains( flag );
-	}
-	
-	/*========================================================================================================*/
-	
 	public ConfigurationSection getConfig( ) {
 		return plugin.getConfig( ).getConfigurationSection( "commands." + this.name );
 	}
 	
 	/*========================================================================================================*/
 	
-	public boolean execute( creatorPlugin plugin, CommandSender sender, String[] perameters ) {
+	public boolean execute( creatorPlugin plugin, CommandSender sender, String[] args ) {
 		if ( !this.enabled ) { throw new CommandException( "This command has been disabled." ); }
 		
-		int size = perameters.length - 1;
+		CommandInput input = new CommandInput(args, flags);
 		
-		String[] args = new String[size];
-		
-		for ( int i = 0; i <= size - 1; i++ ) {
-			args[i] = perameters[i + 1];
-		}
-		
-		Perameters perams = new Perameters( sender, this, args );
-		
-		size = perams.perams( ) - 1;
+		int size = input.size();
 		
 		// Note: Going to use string builders here, Java is shit at combining strings with out them!
 		if ( size < this.least && this.least != -1 ) {
@@ -110,14 +104,14 @@ public class command {
 		
 		// Note: All checks have been passed =D
 		
-		return invoke( perams );
+		return invoke( sender, input );
 	}
 	
 	/*========================================================================================================*/
 	
-	public boolean invoke( Perameters perams ) {
+	public boolean invoke( CommandSender sender, CommandInput input ) {
 		try {
-			return (Boolean) this.method.invoke( this.baseClass, this, perams );
+			return (Boolean) this.method.invoke( this.baseClass, this, sender, input );
 		} catch ( InvocationTargetException e ) {
 			
 			plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
@@ -188,7 +182,7 @@ public class command {
 	private boolean			console;
 	private boolean			enabled;
 	
-	private Set< String >	flags;
+	private Map< Character, Boolean >	flags;
 	private String[]		perms;
 	
 }

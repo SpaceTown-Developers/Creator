@@ -10,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -158,7 +157,11 @@ public class creatorPlugin extends JavaPlugin {
 	}
 	
 	public boolean onCommand( CommandSender sender, Command command, String commandLabel, String[] perams ) {
-		return commandManager.onCommand( sender, command.getName( ), perams );
+		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) {
+			return commandManager.run( sender, perams );
+		}
+		
+		return false;
 	}
 	
 	/*========================================================================================================*/
