@@ -111,7 +111,7 @@ public class BanExtension implements Listener {
 		mysqlManager mysql = plugin.mysqlManager( );
 		
 		try {
-			ResultSet checkTable = mysql.query( "SHOW TABLES LIKE `creator_bans`" ).executeQuery( );
+			ResultSet checkTable = mysql.query( "SHOW TABLES LIKE 'creator_bans'" ).executeQuery( );
 			if (!checkTable.next( )) {
 				
 				PreparedStatement q = mysql.query("CREATE TABLE `creator_bans` ( `ip` text, `user` text, `banner` text, `reason_banned` longtext, `time_banned` int(11) DEFAULT NULL, `unban` int(11) DEFAULT NULL)" );

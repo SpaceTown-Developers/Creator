@@ -1,10 +1,6 @@
 package com.rusketh.util;
 
-import java.util.Random;
-
 public class MathUtil {
-	
-	private static Random	random	= new Random( );
 	
 	public static double random( double min, double max ) {
 		if ( min > max ) {
@@ -12,7 +8,7 @@ public class MathUtil {
 			min = max;
 			max = tmp;
 		}
-		double rand = random.nextDouble( );
+		double rand = Math.random( );
 		double part = min - max;
 		return min + Math.floor( rand * part );
 	}

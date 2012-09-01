@@ -42,6 +42,8 @@ public class CommandInput {
 		flags = new HashSet<Character>();
 		flagValues = new HashMap<Character, String>();
 		
+		if ( args.length == 1 ) return;
+		
 		boolean foundFlag = false;
 		
 		for (int i = 1; i <= args.length; i++) {
