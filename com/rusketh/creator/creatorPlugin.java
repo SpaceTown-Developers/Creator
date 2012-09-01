@@ -1,3 +1,21 @@
+/*
+ * Creator - Bukkit Plugin
+ * Copyright (C) 2012 Rusketh <www.Rusketh.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.rusketh.creator;
 
 import java.io.File;
@@ -13,14 +31,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.rusketh.creator.commands.helpCommands;
+import com.rusketh.creator.Extensions.BanExtension;
+import com.rusketh.creator.Extensions.HelpExtension;
 import com.rusketh.creator.commands.manager.commandManager;
-import com.rusketh.creator.listeners.PlayerListener;
 import com.rusketh.creator.tasks.TaskManager;
 
 public class creatorPlugin extends JavaPlugin {
 	
 	/*========================================================================================================*/
+	
+	/**
+	 * Called when Creator is enabled.
+	 * @author Rusketh
+	 */
 	
 	public void onEnable( ) {
 		logger = getServer( ).getLogger( );
@@ -47,27 +70,41 @@ public class creatorPlugin extends JavaPlugin {
 		mysqlManager = new mysqlManager( this );
 		taskManager = new TaskManager( this );
 		commandManager = new commandManager( this );
-
-		registerCommands( );
 		
-		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+		registerExtensions( );
 	}
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * Called when Creator is disabled.
+	 * @author Rusketh
+	 */
+	
 	public void onDisable( ) {
 		if ( !Enabled ) return;
 		
-		taskManager.closeSessions();
+		taskManager.closeSessions( );
 		mysqlManager.disconnect( );
 	}
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * Gets the plugins main configuration file.
+	 * @return {@link FileConfiguration}
+	 * @author Rusketh
+	 */
+	
 	@Override
 	public FileConfiguration getConfig( ) {
 		return YamlConfig;
 	}
+	
+	/**
+	 * Saves the plugins main configuration file.
+	 * @author Rusketh
+	 */
 	
 	@Override
 	public void saveConfig( ) {
@@ -78,6 +115,12 @@ public class creatorPlugin extends JavaPlugin {
 			Enabled = false;
 		}
 	}
+	
+	/**
+	 * Reloads the plugins main configuration file.
+	 * Creates default keys and values and loads.
+	 * @author Rusketh
+	 */
 	
 	@Override
 	public void reloadConfig( ) {
@@ -108,6 +151,12 @@ public class creatorPlugin extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Used to save then reloads the configuration file.
+	 * Calls {@link creatorPlugin.reloadConfig}
+	 * @author Rusketh
+	 */
+	
 	protected void refreshConfig( ) {
 		try {
 			YamlConfig.save( configFile );
@@ -119,6 +168,11 @@ public class creatorPlugin extends JavaPlugin {
 	}
 	
 	/*========================================================================================================*/
+	
+	/**
+	 * Gets and sets up the Vault Economy plugin.
+	 * @author Rusketh
+	 */
 	
 	private void setupEconomy( ) {
 		if ( Vault && getServer( ).getPluginManager( ).getPlugin( "Vault" ) == null ) {
@@ -149,38 +203,51 @@ public class creatorPlugin extends JavaPlugin {
 	}
 	
 	/**
-	 * Gets the Economy API from a vault economy plugin.
-	 * 
-     * @return {@link Economy}
-     * 
-     * @author Rusketh
-     */
+	 * Gets the Economy API.
+	 * @return {@link Economy}
+	 * @author Rusketh
+	 */
+	
 	public Economy getEconomy( ) {
 		return economy;
 	}
 	
 	/*========================================================================================================*/
 	
-	private void registerCommands( ) {
-		commandManager.registerCommands( new helpCommands( this ) );
+	/**
+	 * Loads the Creator Extensions.
+	 * 
+	 * @author Rusketh
+	 */
+	
+	private void registerExtensions( ) {
+		new HelpExtension( this );
+		new BanExtension( this );
 		
 		saveConfig( );
 	}
 	
+	/*========================================================================================================*/
+	
 	/**
 	 * Gets the Command Manager.
-	 * 
-     * @return {@link CommandManager}
-     * 
-     * @author Rusketh
-     */
+	 * The command manager registers and handels all the commands.
+	 * @return {@link CommandManager}
+	 * @author Rusketh
+	 */
+	
 	public commandManager getCommandManager( ) {
 		return commandManager;
 	}
 	
-	public boolean onCommand( CommandSender sender, Command command, String commandLabel, String[] perams ) {
+	/**
+	 * Called by Bukkit when the /Creator command is called.
+	 * @author Rusketh
+	 */
+	
+	public boolean onCommand( CommandSender sender, Command command, String commandLabel, String[] args ) {
 		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) {
-			return commandManager.run( sender, perams );
+			return commandManager.run( sender, args );
 		}
 		
 		return false;
@@ -188,6 +255,12 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * Gets the mysql Manager.
+	 * The mysql manager handels the mains mysql connection.
+	 * @return {@link mysqlManager}
+	 * @author Rusketh
+	 */
 	public mysqlManager mysqlManager( ) {
 		return mysqlManager;
 	}
@@ -196,11 +269,10 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Gets the Task Manager.
-	 * 
-     * @return {@link TaskManager}
-     * 
-     * @author Rusketh
-     */
+	 * The task manager handels all player build tasks.
+	 * @return {@link TaskManager}
+	 * @author Rusketh
+	 */
 	
 	public TaskManager getTaskManager( ) {
 		return taskManager;
@@ -213,7 +285,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	private commandManager		commandManager;
 	private TaskManager			taskManager;
-	private mysqlManager 		mysqlManager;
+	private mysqlManager		mysqlManager;
 	
 	private File				configFile;
 	private YamlConfiguration	YamlConfig;

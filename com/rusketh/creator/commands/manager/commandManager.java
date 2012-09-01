@@ -1,3 +1,21 @@
+/*
+ * Creator - Bukkit Plugin
+ * Copyright (C) 2012 Rusketh <www.Rusketh.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.rusketh.creator.commands.manager;
 
 import java.lang.reflect.Method;
@@ -8,16 +26,22 @@ import net.minecraft.server.CommandException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.rusketh.creator.creatorPlugin;
 
-public class commandManager {
+public class commandManager implements Listener {
 	
 	public commandManager( creatorPlugin plugin ) {
 		this.plugin = plugin;
 		
 		commands = new HashMap< String, command >( );
 		leastCommands = new ArrayList< command >( );
+		
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 	
 	/*========================================================================================================*/
@@ -72,6 +96,20 @@ public class commandManager {
 		}
 		
 		return sucess;
+	}
+	
+	/*========================================================================================================*/
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void PlayerChat(AsyncPlayerChatEvent event) {
+		if (plugin.cmdUse && event.getMessage( ).toLowerCase( ).startsWith( plugin.cmdPrefix )) {
+			try {
+				boolean result = run( event.getPlayer( ), event.getMessage( ).substring( plugin.cmdPrefix.length( ) ).split( " " ) );
+				if (result) event.setCancelled( true );
+			} catch (CommandException e) {
+				event.getPlayer().sendMessage( e.getMessage( ) );
+			}
+		}
 	}
 	
 	/*========================================================================================================*/

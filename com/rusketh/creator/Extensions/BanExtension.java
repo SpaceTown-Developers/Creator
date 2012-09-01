@@ -1,4 +1,22 @@
-package com.rusketh.creator;
+/*
+ * Creator - Bukkit Plugin
+ * Copyright (C) 2012 Rusketh <www.Rusketh.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.rusketh.creator.Extensions;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +32,20 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerLoginEvent;
 
+import com.rusketh.creator.creatorPlugin;
+import com.rusketh.creator.mysqlManager;
 import com.rusketh.creator.commands.manager.CommandInput;
 import com.rusketh.creator.commands.manager.commandAnote;
 
 
-public class BanManager {
+public class BanExtension implements Listener {
 	
-	public BanManager(creatorPlugin plugin) {
+	public BanExtension(creatorPlugin plugin) {
 		this.plugin = plugin;
 		
 		loadConfig();
@@ -31,6 +55,7 @@ public class BanManager {
 		loadBans();
 		
 		plugin.getCommandManager( ).registerCommands( this );
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 	
 	/*========================================================================================================*/
@@ -104,9 +129,9 @@ public class BanManager {
 					query.setString( 1, name );
 					query.setString( 0, banData.getString( "ip", "" ) );
 					query.setString( 2, banData.getString( "banner", "" ) );
-					query.setInt( 3, banData.getInt( "timebanned", 0 ) );
+					query.setLong( 3, banData.getLong( "timebanned", 0 ) );
 					query.setString( 4, banData.getString( "reason", "" ) );
-					query.setInt( 5, banData.getInt( "unban", 0 ) );
+					query.setLong( 5, banData.getLong( "unban", 0 ) );
 					
 					query.execute( );
 					query.close( );
@@ -170,8 +195,8 @@ public class BanManager {
 			query.setString( 2, reason );
 			query.setString( 5, name );
 			
-			query.setInt( 3, (int) System.currentTimeMillis( ) );
-			query.setInt( 4, (int) unban );
+			query.setLong( 3, System.currentTimeMillis( ) );
+			query.setLong( 4, unban );
 			
 			query.executeQuery( );
 			query.close( );
@@ -299,10 +324,61 @@ public class BanManager {
 		if (reason != null ) {
 			target.kickPlayer( new StringBuilder("Banned: " ).append( reason ).toString( ));
 		} else {
-			target.kickPlayer("You have been banned from tis server.");
+			target.kickPlayer("You have been banned from this server.");
 		}
 		
 		return true;
+	}
+	
+	/*========================================================================================================*/
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+    public void playerLogin(PlayerLoginEvent event) {
+		if (!enabled) return;
+		
+		if (useMysql) {
+			mysqlEvent(event);
+			return;
+		} else {
+			ConfigurationSection banData = YamlBans.getConfigurationSection(event.getPlayer( ).getName( ));
+			
+			if (banData == null) return;
+			
+			long unban = banData.getLong( "unban" , 0);
+			
+			if (unban == 0) {
+				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "permanently Banned!" );
+			} else if ( unban > System.currentTimeMillis( ) ) {
+				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned!" ); //TODO: Tell then for how long.
+			} else {
+				//TODO: Remove Ban
+			}
+		}
+	}
+	
+	/*========================================================================================================*/
+	
+	public void mysqlEvent(PlayerLoginEvent event) {
+		
+		try {
+			
+			ResultSet q = mysqlGetBan(event.getPlayer( ).getName( ));
+		
+			if (q == null || !q.next()) return;
+			
+			long unban = q.getLong( 0);
+			
+			if (unban == 0) {
+				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "permanently Banned!" );
+			} else if ( unban > System.currentTimeMillis( ) ) {
+				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned!" ); //TODO: Tell then for how long.
+			} else {
+				//TODO: Remove Ban
+			}
+			
+		} catch (SQLException e) {
+			//TODO: This =P
+		}
 	}
 	
 	/*========================================================================================================*/
