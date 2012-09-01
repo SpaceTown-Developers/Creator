@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.rusketh.creator.tasks.TaskManager;
-
 import java.sql.Connection;
 
 

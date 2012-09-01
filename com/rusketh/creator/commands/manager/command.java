@@ -88,7 +88,10 @@ public class command {
 	/*========================================================================================================*/
 	
 	public boolean execute( creatorPlugin plugin, CommandSender sender, String[] args ) {
-		if ( !this.enabled ) { throw new CommandException( "This command has been disabled." ); }
+		if ( !this.enabled ) {
+			sender.sendMessage( "This command has been disabled." );
+			return false;
+		}
 		
 		CommandInput input = new CommandInput(args, flags);
 		
@@ -96,33 +99,45 @@ public class command {
 		
 		// Note: Going to use string builders here, Java is shit at combining strings with out them!
 		if ( size < this.least && this.least != -1 ) {
-			throw new CommandException( new StringBuilder( "Not enogh perameters. [" ).append( size ).append( "/" ).append( this.least ).append( "]\n" ).append( this.example ).toString( ) );
-		} else if ( size > this.most && this.most != -1 ) { throw new CommandException( new StringBuilder( "Too meany perameters. [" ).append( size ).append( "/" ).append( this.most ).append( "]\n" ).append( this.example ).toString( ) ); }
+			sender.sendMessage( new StringBuilder( "Not enogh perameters. [" ).append( size ).append( "/" ).append( this.least ).append( "]\n" ).append( this.example ).toString( ) );
+			return true;
+		} else if ( size > this.most && this.most != -1 ) {
+			sender.sendMessage( new StringBuilder( "Too meany perameters. [" ).append( size ).append( "/" ).append( this.most ).append( "]\n" ).append( this.example ).toString( ) );
+			return true;
+		}
 		
 		boolean isPlayer = ( sender instanceof Player );
 		
 		if ( isPlayer && !this.player ) {
-			throw new CommandException( "This command can not be called by players." );
+			sender.sendMessage( "This command can not be called by players." );
+			return true;
 		} else if ( !isPlayer && !this.console ) { throw new CommandException( "This command can not be called from console." ); }
 		
 		if ( isPlayer ) { // Note: Check permissions?
 			Player player = (Player) sender;
 			
 			if ( !hasPermission( player ) ) { // Note: Player is not allowed.
-				throw new CommandException( "Sorry but you do not have permission to do that." );
+				sender.sendMessage( "Sorry but you do not have permission to do that." );
+				return true;
 			}
 			
 			// Note: Check vault is enabled and that player could be charged for this.
 			if ( plugin.Vault && !player.hasPermission( "creator.commands.free" ) && !player.hasPermission( new StringBuilder( "creator.commands." ).append( this.name ).append( ".free" ).toString( ) ) ) {
 				
 				// Note: Check vault prices.
-				if ( this.usePrice > 0 && plugin.getEconomy( ).getBalance( player.getName( ) ) < this.usePrice ) { throw new CommandException( "Sorry but you can not afford to do that." ); }
+				if ( this.usePrice > 0 && plugin.getEconomy( ).getBalance( player.getName( ) ) < this.usePrice ) {
+					sender.sendMessage( "Sorry but you can not afford to do that." );
+					return true;
+				}
 			}
 		}
 		
-		// Note: All checks have been passed =D
-		
-		return invoke( sender, input );
+		try {
+			return invoke( sender, input );
+		} catch (CommandException e) {
+			sender.sendMessage(e.getMessage( ));
+			return true;
+		}
 	}
 	
 	/*========================================================================================================*/

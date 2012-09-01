@@ -184,7 +184,7 @@ public class BanExtension implements Listener {
 			
 			PreparedStatement query;
 			
-			if ( q != null || q.next( )) {
+			if ( q.next( )) {
 				query = mysql.query("UPDATE `creator_bans` SET ip = ?, banner = ?, reason_banned = ?, time_banned = ?, unban = ? WHERE name = ?");
 			} else {
 				query = mysql.query("INSERT INTO `creator_bans` (ip, banner, reason_banned, time_banned, unban, name) VALUES (?, ?, ?, ?, ?, ?");

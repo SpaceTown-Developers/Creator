@@ -261,6 +261,7 @@ public class creatorPlugin extends JavaPlugin {
 	 * @return {@link mysqlManager}
 	 * @author Rusketh
 	 */
+	
 	public mysqlManager mysqlManager( ) {
 		return mysqlManager;
 	}
@@ -269,7 +270,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Gets the Task Manager.
-	 * The task manager handels all player build tasks.
+	 * The task manager handles all player build tasks.
 	 * @return {@link TaskManager}
 	 * @author Rusketh
 	 */

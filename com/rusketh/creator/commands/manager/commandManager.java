@@ -24,7 +24,6 @@ import java.util.HashMap;
 
 import net.minecraft.server.CommandException;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -81,21 +80,15 @@ public class commandManager implements Listener {
 	/*========================================================================================================*/
 	
 	public boolean run( CommandSender sender, String[] args ) throws CommandException {
-		boolean sucess = false;
-		
 		if ( args.length > 0 ) {
 			command command = commands.get( args[0] );
 			
 			if ( command != null ) {
-				try {
-					sucess = command.execute( plugin, sender, args );
-				} catch ( CommandException e ) {
-					throw new CommandException( new StringBuilder( ChatColor.RED.toString( ) ).append( e.getMessage( ) ).toString( ) );
-				}
+				return command.execute( plugin, sender, args );
 			}
 		}
 		
-		return sucess;
+		return false;
 	}
 	
 	/*========================================================================================================*/
@@ -103,12 +96,8 @@ public class commandManager implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void PlayerChat(AsyncPlayerChatEvent event) {
 		if (plugin.cmdUse && event.getMessage( ).toLowerCase( ).startsWith( plugin.cmdPrefix )) {
-			try {
-				boolean result = run( event.getPlayer( ), event.getMessage( ).substring( plugin.cmdPrefix.length( ) ).split( " " ) );
-				if (result) event.setCancelled( true );
-			} catch (CommandException e) {
-				event.getPlayer().sendMessage( e.getMessage( ) );
-			}
+			boolean result = run( event.getPlayer( ), event.getMessage( ).substring( plugin.cmdPrefix.length( ) ).split( " " ) );
+			if (result) event.setCancelled( true );
 		}
 	}
 	
