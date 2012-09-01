@@ -84,7 +84,7 @@ public class CommandInput {
 					break;
 					
 				default:
-					if (foundFlag) throw new CommandException("Miss placed flag in command arguments.");
+					if (foundFlag) throw new CommandException("Missplaced flag in command arguments.");
 					
 					phasedArgs.add(arg);
 			}

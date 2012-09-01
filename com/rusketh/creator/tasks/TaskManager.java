@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 
 import com.rusketh.creator.creatorPlugin;
 
-public class taskManager {
+public class TaskManager {
 	
-	public taskManager( creatorPlugin plugin ) {
+	public TaskManager( creatorPlugin plugin ) {
 		this.plugin = plugin;
 		
 		sessions = new HashMap<String, taskSession>( );
@@ -16,7 +16,7 @@ public class taskManager {
 		reloadSessions( );
 	}
 	
-	/*========================================================================================================*/
+	
 	
 	public void reloadSessions( ) {
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
@@ -29,6 +29,10 @@ public class taskManager {
 			
 			sessions.put( player.getName(), newSession );
 		}
+	}
+	
+	public void closeSessions() {
+		
 	}
 	
 	creatorPlugin					plugin;

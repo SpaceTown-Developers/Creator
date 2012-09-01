@@ -16,7 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.rusketh.creator.commands.helpCommands;
 import com.rusketh.creator.commands.manager.commandManager;
 import com.rusketh.creator.listeners.PlayerListener;
-import com.rusketh.creator.tasks.taskManager;
+import com.rusketh.creator.tasks.TaskManager;
 
 public class creatorPlugin extends JavaPlugin {
 	
@@ -38,20 +38,28 @@ public class creatorPlugin extends JavaPlugin {
 		reloadConfig( );
 		
 		if ( !Enabled ) {
-			logger.info( "Creator has been disabled." );
-			
+			logger.info( "[Creator] disabled by config." );
 			return;
 		}
 		
 		setupEconomy( );
 		
-		taskManager = new taskManager( this );
-		taskManager.reloadSessions( );
-		
+		mysqlManager = new mysqlManager( this );
+		taskManager = new TaskManager( this );
 		commandManager = new commandManager( this );
+
 		registerCommands( );
 		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+	}
+	
+	/*========================================================================================================*/
+	
+	public void onDisable( ) {
+		if ( !Enabled ) return;
+		
+		taskManager.closeSessions();
+		mysqlManager.disconnect( );
 	}
 	
 	/*========================================================================================================*/
@@ -140,18 +148,32 @@ public class creatorPlugin extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Gets the Economy API from a vault economy plugin.
+	 * 
+     * @return {@link Economy}
+     * 
+     * @author Rusketh
+     */
 	public Economy getEconomy( ) {
 		return economy;
 	}
 	
 	/*========================================================================================================*/
 	
-	public void registerCommands( ) {
+	private void registerCommands( ) {
 		commandManager.registerCommands( new helpCommands( this ) );
 		
 		saveConfig( );
 	}
 	
+	/**
+	 * Gets the Command Manager.
+	 * 
+     * @return {@link CommandManager}
+     * 
+     * @author Rusketh
+     */
 	public commandManager getCommandManager( ) {
 		return commandManager;
 	}
@@ -166,7 +188,21 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/*========================================================================================================*/
 	
-	public taskManager getTaskManager( ) {
+	public mysqlManager mysqlManager( ) {
+		return mysqlManager;
+	}
+	
+	/*========================================================================================================*/
+	
+	/**
+	 * Gets the Task Manager.
+	 * 
+     * @return {@link TaskManager}
+     * 
+     * @author Rusketh
+     */
+	
+	public TaskManager getTaskManager( ) {
 		return taskManager;
 	}
 	
@@ -176,7 +212,8 @@ public class creatorPlugin extends JavaPlugin {
 	private static Economy		economy;
 	
 	private commandManager		commandManager;
-	private taskManager			taskManager;
+	private TaskManager			taskManager;
+	private mysqlManager 		mysqlManager;
 	
 	private File				configFile;
 	private YamlConfiguration	YamlConfig;
