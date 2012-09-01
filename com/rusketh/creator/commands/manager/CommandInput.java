@@ -113,6 +113,16 @@ public class CommandInput {
 	
 	/*========================================================================================================*/
 	
+	public void setCommand(command command) {
+		calledCommand = command;
+	}
+	
+	public command getComamnd() {
+		return calledCommand;
+	}
+	
+	/*========================================================================================================*/
+	
 	public int size() {
 		return phasedArgs.size( );
 	}
@@ -181,6 +191,7 @@ public class CommandInput {
 	/*========================================================================================================*/
 	
 	private String command;
+	private command calledCommand;
 	
 	private String[] origonalArgs;
 	private ArrayList<String> phasedArgs;

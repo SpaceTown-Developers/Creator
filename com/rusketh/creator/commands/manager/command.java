@@ -132,6 +132,8 @@ public class command {
 			}
 		}
 		
+		input.setCommand(this);
+		
 		try {
 			return invoke( sender, input );
 		} catch (CommandException e) {
@@ -144,7 +146,7 @@ public class command {
 	
 	public boolean invoke( CommandSender sender, CommandInput input ) {
 		try {
-			return (Boolean) this.method.invoke( this.baseClass, this, sender, input );
+			return (Boolean) this.method.invoke( this.baseClass, sender, input );
 		} catch ( InvocationTargetException e ) {
 			
 			plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
