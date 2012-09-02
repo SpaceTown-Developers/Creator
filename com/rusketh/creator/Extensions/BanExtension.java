@@ -225,9 +225,9 @@ public class BanExtension implements Listener {
 	
 	/*========================================================================================================*/
 	
-	public static final Pattern	pattern	= Pattern.compile( "([0-9]+)([yjdhmsw])" );
+	public final Pattern	pattern	= Pattern.compile( "([0-9]+)([yjdhmsw])" );
 	
-	public static long toDate( String time, boolean future ) throws CommandException {
+	public long toDate( String time, boolean future ) throws CommandException {
 		Calendar cal = new GregorianCalendar( );
 		cal.setTimeInMillis( 0 );
 		time = time.toLowerCase( );
@@ -240,38 +240,35 @@ public class BanExtension implements Listener {
 			
 			switch ( c ) {
 				case 's':
-					cal.add( count, Calendar.SECOND );
+					cal.add( Calendar.SECOND, count );
 					break;
 				case 'm':
-					cal.add( count, Calendar.MINUTE );
+					cal.add( Calendar.MINUTE, count );
 					break;
 				case 'h':
-					cal.add( count, Calendar.HOUR_OF_DAY );
+					cal.add( Calendar.HOUR_OF_DAY, count );
 					break;
 				case 'd':
 					if ( future )
-						cal.add( count, Calendar.DAY_OF_YEAR );
+						cal.add( Calendar.DAY_OF_YEAR, count );
 					else
-						cal.add( count, Calendar.DAY_OF_MONTH );
+						cal.add( Calendar.DAY_OF_MONTH, count );
 					break;
 				case 'w':
-					if ( future ) cal.add( count, Calendar.WEEK_OF_YEAR );
+					if ( future ) cal.add( Calendar.WEEK_OF_YEAR, count );
 					break;
 				case 'j':
-					cal.add( count, Calendar.MONTH );
+					cal.add( Calendar.MONTH, count );
 					break;
 				case 'y':
-					cal.add( count, Calendar.YEAR );
+					cal.add( Calendar.YEAR, count );
 					break;
 				default:
 					throw new CommandException( "Invalid time format (e.g: 2d1h4m)." );
 			}
-			
 		}
 		
-		if (future) {
-			return (cal.getTimeInMillis( ) + System.currentTimeMillis( )) / 1000;
-		}
+		if ( future ) return ( System.currentTimeMillis( ) / 1000 ) + cal.getTimeInMillis( ) / 1000;
 		
 		return cal.getTimeInMillis( ) / 1000;
 	}
@@ -346,7 +343,7 @@ public class BanExtension implements Listener {
 			
 			if ( unban == 0 ) {
 				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "permanently Banned!" );
-			} else if ( unban > (System.currentTimeMillis( ) / 1000) ) {
+			} else if ( unban > ( System.currentTimeMillis( ) / 1000 ) ) {
 				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned!" ); // TODO: Tell then for how long.
 			} else {
 				// TODO: Remove Ban
@@ -363,11 +360,15 @@ public class BanExtension implements Listener {
 		if ( banData == null ) return;
 		
 		long unban = banData.getUnban( );
+		long bantime = banData.getTimeBanned( );
+		long curtime = ( System.currentTimeMillis( ) / 1000 );
 		
 		if ( unban == 0 ) {
 			event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "permanently Banned!" );
-		} else if ( unban > (System.currentTimeMillis( ) / 1000) ) {
+		} else if ( unban > curtime ) {
 			event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned!" ); // TODO: Tell then for how long.
+		} else if ( unban < bantime && unban + bantime > curtime ) {
+			event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned2!" ); // TODO: Tell then for how long.
 		} else {
 			// TODO: Remove Ban
 		}

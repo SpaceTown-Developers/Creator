@@ -23,6 +23,9 @@ import java.sql.SQLException;
 
 public class MySQLBan {
 	
+	private String	name, ip, banner, reason;
+	private long	timeBanned, unban;
+	
 	public MySQLBan( String name, String ip, String banner, String reason, long timeBanned, long unban ) {
 		this.name = name;
 		this.ip = ip;
@@ -34,69 +37,59 @@ public class MySQLBan {
 	
 	public MySQLBan( ResultSet result ) {
 		try {
-			this.name = result.getString( "name" );
+			this.name = result.getString( "user" );
 			this.ip = result.getString( "ip" );
 			this.banner = result.getString( "banner" );
 			this.reason = result.getString( "reason_banned" );
 			this.timeBanned = result.getLong( "time_banned" );
-			this.unban = result.getLong( "unban");
+			this.unban = result.getLong( "unban" );
 			
 			result.close( );
 		} catch ( SQLException e ) {
 			// TODO: This...
+			e.printStackTrace( );
 		}
 	}
-
-	/**
-	 * @return the name of the banned user.
-	 */
 	
+	/**
+	 * @return the name of the banned player.
+	 */
 	public String getName( ) {
-		return name;
+		return this.name;
 	}
 	
 	/**
 	 * @return the users ip from when they where banned.
 	 */
-	
 	public String getIp( ) {
-		return ip;
+		return this.ip;
 	}
 	
 	/**
-	 * @return the name of the user who issued the ban.
+	 * @return the name of the name who issued the ban.
 	 */
-	
 	public String getBanner( ) {
-		return banner;
+		return this.banner;
 	}
 	
 	/**
 	 * @return the reason banned.
 	 */
-	
 	public String getReason( ) {
-		return reason;
+		return this.reason;
 	}
 	
 	/**
 	 * @return the time & date banned.
 	 */
-	
 	public long getTimeBanned( ) {
-		return timeBanned;
+		return this.timeBanned;
 	}
 	
 	/**
 	 * @return the time & date of unban.
 	 */
-	
 	public long getUnban( ) {
-		return unban;
+		return this.unban;
 	}
-	
-	private String	name, ip, banner, reason;
-	private long	timeBanned;
-	private long	unban;
-	
 }
