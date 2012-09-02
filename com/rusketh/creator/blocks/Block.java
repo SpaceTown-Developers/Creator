@@ -2,7 +2,7 @@
  * Creator - Bukkit Plugin
  * 
  * This file is based on WorldEdit by Sk89q and other contributers.
- * Used in accordance with GNU guidelines, all credits to origonal authors.
+ * Used in accordance with GNU guidelines, all credits to original authors.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

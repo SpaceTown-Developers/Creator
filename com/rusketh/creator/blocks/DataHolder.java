@@ -1,6 +1,6 @@
 /*
  * Creator - Bukkit Plugin
- * Copyright (C) 2012 Rusketh <www.Rusketh.com>
+ * Copyright (C) 2012 Rusketh & Oskar94 <www.Rusketh.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

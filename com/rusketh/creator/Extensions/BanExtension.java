@@ -1,6 +1,6 @@
 /*
  * Creator - Bukkit Plugin
- * Copyright (C) 2012 Rusketh <www.Rusketh.com>
+ * Copyright (C) 2012 Rusketh & Oskar94 <www.Rusketh.com>
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -41,7 +43,6 @@ import com.rusketh.creator.creatorPlugin;
 import com.rusketh.creator.mysqlManager;
 import com.rusketh.creator.commands.manager.CommandInput;
 import com.rusketh.creator.commands.manager.commandAnote;
-import com.rusketh.util.CommandUtils;
 import com.rusketh.util.MySQLBan;
 
 public class BanExtension implements Listener {
@@ -115,7 +116,7 @@ public class BanExtension implements Listener {
 			ResultSet checkTable = mysql.query( "SHOW TABLES LIKE 'creator_bans'" ).executeQuery( );
 			if ( !checkTable.next( ) ) {
 				
-				PreparedStatement q = mysql.query( "CREATE TABLE `creator_bans` ( `ip` text, `user` text, `banner` text, `reason_banned` longtext, `time_banned` text DEFAULT NULL, `unban` text DEFAULT NULL)" );
+				PreparedStatement q = mysql.query( "CREATE TABLE `creator_bans` ( `ip` text, `user` text, `banner` text, `reason_banned` longtext, `time_banned` bigint DEFAULT NULL, `unban` bigint DEFAULT NULL)" );
 				q.execute( );
 				q.close( );
 				
@@ -130,8 +131,8 @@ public class BanExtension implements Listener {
 					query.setString( 2, name );
 					query.setString( 3, banData.getString( "banner", "" ) );
 					query.setString( 4, banData.getString( "reason", "" ) );
-					query.setString( 5, String.valueOf( banData.getLong( "timebanned", 0 ) ) );
-					query.setString( 6, String.valueOf( banData.getLong( "unban", 0 ) ) );
+					query.setLong( 5, banData.getLong( "timebanned", 0 ) );
+					query.setLong( 6, banData.getLong( "unban", 0 ) );
 					
 					query.execute( );
 					query.close( );
@@ -162,7 +163,7 @@ public class BanExtension implements Listener {
 			YamlBans.set( name + ".ip", ip );
 			YamlBans.set( name + ".banner", banner );
 			YamlBans.set( name + ".unban", unban );
-			YamlBans.set( name + ".timebanned", System.currentTimeMillis( ) );
+			YamlBans.set( name + ".timebanned", System.currentTimeMillis( ) / 1000 );
 			
 			if ( reason != null ) YamlBans.set( name + ".reason", reason );
 		}
@@ -172,15 +173,12 @@ public class BanExtension implements Listener {
 		if ( reason == null ) reason = "";
 		
 		try {
+			MySQLBan banData = mysqlGetBan( name );
+			
 			mysqlManager mysql = plugin.mysqlManager( );
-			
-			MySQLBan q = mysqlGetBan( name );
-			
 			PreparedStatement query;
 			
-			// System.out.println( q.getName( ) );
-			
-			if ( q == null || q.getName( ).equals( null ) || q.getName( ).isEmpty( ) ) {
+			if ( banData == null ) {
 				query = mysql.query( "INSERT INTO `creator_bans` (ip, banner, reason_banned, time_banned, unban, user) VALUES (?, ?, ?, ?, ?, ?)" );
 			} else {
 				query = mysql.query( "UPDATE `creator_bans` SET ip = ?, banner = ?, reason_banned = ?, time_banned = ?, unban = ? WHERE user = ?" );
@@ -189,16 +187,16 @@ public class BanExtension implements Listener {
 			query.setString( 1, ip );
 			query.setString( 2, banner );
 			query.setString( 3, reason );
-			query.setString( 4, String.valueOf( System.currentTimeMillis( ) ) );
-			query.setString( 5, String.valueOf( unban ) );
+			query.setLong( 4, System.currentTimeMillis( ) / 1000 );
+			query.setLong( 5, unban );
 			query.setString( 6, name );
 			
 			query.execute( );
 			query.close( );
 			
 		} catch ( SQLException e ) {
-			// TODO: This =P
-			e.printStackTrace( ); // Temporary for debugging.
+			// TODO: This...
+			e.printStackTrace( );
 		}
 	}
 	
@@ -208,39 +206,74 @@ public class BanExtension implements Listener {
 		mysqlManager mysql = plugin.mysqlManager( );
 		
 		try {
-			PreparedStatement q = mysql.query( "SELECT * from `creator_bans` WHERE user = ?" );
-			q.setString( 1, name );
-			ResultSet result = q.executeQuery( );
+			PreparedStatement query = mysql.query( "SELECT * from `creator_bans` WHERE user = ?" );
+			query.setString( 1, name );
+			
+			ResultSet result = query.executeQuery( );
 			
 			if ( !result.next( ) ) return null;
 			
-			String ip = result.getString( "ip" );
-			String banner = result.getString( "banner" );
-			String reason = result.getString( "reason_banned" );
-			
-			Calendar time = new GregorianCalendar( );
-			time.setTimeInMillis( Long.parseLong( result.getString( "time_banned" ) ) );
-			
-			Calendar unban = new GregorianCalendar( );
-			unban.setTimeInMillis( Long.parseLong( result.getString( "unban" ) ) );
-			
-			// System.out.println( name );
-			// System.out.println( result.getString( "ip" ) );
-			// System.out.println( result.getString( "banner" ) );
-			// System.out.println( result.getString( "reason_banned" ) );
-			// System.out.println( result.getString( "time_banned" ) );
-			// System.out.println( result.getString( "unban" ) );
-			
-			q.close( );
-			
-			return new MySQLBan( name, ip, banner, reason, time, unban );
+			return new MySQLBan( result );
 			
 		} catch ( SQLException e ) {
-			// TODO: This =P
-			e.printStackTrace( ); // Temporary for debugging.
+			// TODO: This...
+			e.printStackTrace( );
 		}
 		
 		return null;
+	}
+	
+	/*========================================================================================================*/
+	
+	public static final Pattern	pattern	= Pattern.compile( "([0-9]+)([yjdhmsw])" );
+	
+	public static long toDate( String time, boolean future ) throws CommandException {
+		Calendar cal = new GregorianCalendar( );
+		cal.setTimeInMillis( 0 );
+		time = time.toLowerCase( );
+		
+		Matcher m = pattern.matcher( time );
+		
+		while ( m.find( ) ) {
+			int count = Integer.parseInt( m.group( 1 ) );
+			char c = m.group( 2 ).charAt( 0 );
+			
+			switch ( c ) {
+				case 's':
+					cal.add( count, Calendar.SECOND );
+					break;
+				case 'm':
+					cal.add( count, Calendar.MINUTE );
+					break;
+				case 'h':
+					cal.add( count, Calendar.HOUR_OF_DAY );
+					break;
+				case 'd':
+					if ( future )
+						cal.add( count, Calendar.DAY_OF_YEAR );
+					else
+						cal.add( count, Calendar.DAY_OF_MONTH );
+					break;
+				case 'w':
+					if ( future ) cal.add( count, Calendar.WEEK_OF_YEAR );
+					break;
+				case 'j':
+					cal.add( count, Calendar.MONTH );
+					break;
+				case 'y':
+					cal.add( count, Calendar.YEAR );
+					break;
+				default:
+					throw new CommandException( "Invalid time format (e.g: 2d1h4m)." );
+			}
+			
+		}
+		
+		if (future) {
+			return (cal.getTimeInMillis( ) + System.currentTimeMillis( )) / 1000;
+		}
+		
+		return cal.getTimeInMillis( ) / 1000;
 	}
 	
 	/*========================================================================================================*/
@@ -269,7 +302,7 @@ public class BanExtension implements Listener {
 			reason = input.arg( 1 );
 			
 		} else {
-			unban = CommandUtils.toDate( input.arg( 1 ), input.flag( 't' ) );
+			unban = toDate( input.arg( 1 ), input.flag( 't' ) );
 			
 			if ( input.size( ) > 2 ) reason = input.arg( 2 );
 			
@@ -313,7 +346,7 @@ public class BanExtension implements Listener {
 			
 			if ( unban == 0 ) {
 				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "permanently Banned!" );
-			} else if ( unban > System.currentTimeMillis( ) ) {
+			} else if ( unban > (System.currentTimeMillis( ) / 1000) ) {
 				event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned!" ); // TODO: Tell then for how long.
 			} else {
 				// TODO: Remove Ban
@@ -325,19 +358,18 @@ public class BanExtension implements Listener {
 	
 	public void mysqlEvent( PlayerLoginEvent event ) {
 		
-		MySQLBan q = mysqlGetBan( event.getPlayer( ).getName( ) );
+		MySQLBan banData = mysqlGetBan( event.getPlayer( ).getName( ) );
 		
-		if ( q == null || q.getName( ).equals( null ) || q.getName( ).isEmpty( ) ) return;
+		if ( banData == null ) return;
 		
-		long unban = q.getUnban( ).getTimeInMillis( );
+		long unban = banData.getUnban( );
 		
 		if ( unban == 0 ) {
 			event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "permanently Banned!" );
-		} else if ( unban > System.currentTimeMillis( ) ) {
+		} else if ( unban > (System.currentTimeMillis( ) / 1000) ) {
 			event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned!" ); // TODO: Tell then for how long.
 		} else {
 			// TODO: Remove Ban
-			System.out.println( "No longer banned :D" );
 		}
 	}
 	

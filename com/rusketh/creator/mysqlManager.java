@@ -1,6 +1,6 @@
 /*
  * Creator - Bukkit Plugin
- * Copyright (C) 2012 Rusketh <www.Rusketh.com>
+ * Copyright (C) 2012 Rusketh & Oskar94 <www.Rusketh.com>
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ public class mysqlManager {
 	}
 	
 	/**
-	 * Restablished the connection to the database.
+	 * Reestablish the connection to the database.
 	 * 
 	 * @author Rusketh
 	 */
