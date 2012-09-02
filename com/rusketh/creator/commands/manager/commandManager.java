@@ -1,17 +1,17 @@
 /*
  * Creator - Bukkit Plugin
  * Copyright (C) 2012 Rusketh <www.Rusketh.com>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -40,7 +40,7 @@ public class commandManager implements Listener {
 		commands = new HashMap< String, command >( );
 		leastCommands = new ArrayList< command >( );
 		
-		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		plugin.getServer( ).getPluginManager( ).registerEvents( this, plugin );
 	}
 	
 	/*========================================================================================================*/
@@ -83,9 +83,7 @@ public class commandManager implements Listener {
 		if ( args.length > 0 ) {
 			command command = commands.get( args[0] );
 			
-			if ( command != null ) {
-				return command.execute( plugin, sender, args );
-			}
+			if ( command != null ) { return command.execute( plugin, sender, args ); }
 		}
 		
 		return false;
@@ -93,11 +91,11 @@ public class commandManager implements Listener {
 	
 	/*========================================================================================================*/
 	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void PlayerChat(AsyncPlayerChatEvent event) {
-		if (plugin.cmdUse && event.getMessage( ).toLowerCase( ).startsWith( plugin.cmdPrefix )) {
+	@EventHandler( priority = EventPriority.NORMAL )
+	public void PlayerChat( AsyncPlayerChatEvent event ) {
+		if ( plugin.cmdUse && event.getMessage( ).toLowerCase( ).startsWith( plugin.cmdPrefix ) ) {
 			boolean result = run( event.getPlayer( ), event.getMessage( ).substring( plugin.cmdPrefix.length( ) ).split( " " ) );
-			if (result) event.setCancelled( true );
+			if ( result ) event.setCancelled( true );
 		}
 	}
 	

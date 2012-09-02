@@ -1,17 +1,17 @@
 /*
  * Creator - Bukkit Plugin
  * Copyright (C) 2012 Rusketh <www.Rusketh.com>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -48,17 +48,16 @@ public class command {
 		this.perms = anote.perms( );
 		
 		this.flags = new HashMap< Character, Boolean >( );
-
+		
 		for ( String flag : anote.flags( ) ) {
-			if (flag.length( ) == 1) {
-				this.flags.put( flag.charAt( 0 ) , false);
-			} else if (flag.length( ) == 2 && flag.charAt( 1 ) == '*') {
-				this.flags.put( flag.charAt( 0 ) , true);
+			if ( flag.length( ) == 1 ) {
+				this.flags.put( flag.charAt( 0 ), false );
+			} else if ( flag.length( ) == 2 && flag.charAt( 1 ) == '*' ) {
+				this.flags.put( flag.charAt( 0 ), true );
 			} else {
-				plugin.logger.warning( new StringBuilder("[Creator] invalid flag '").append( flag ).append("' for command ").append(this.name).toString() );
+				plugin.logger.warning( new StringBuilder( "[Creator] invalid flag '" ).append( flag ).append( "' for command " ).append( this.name ).toString( ) );
 			}
 		}
-		
 		
 		FileConfiguration settings = plugin.getConfig( );
 		
@@ -93,9 +92,9 @@ public class command {
 			return false;
 		}
 		
-		CommandInput input = new CommandInput(args, flags);
+		CommandInput input = new CommandInput( args, flags );
 		
-		int size = input.size();
+		int size = input.size( );
 		
 		// Note: Going to use string builders here, Java is shit at combining strings with out them!
 		if ( size < this.least && this.least != -1 ) {
@@ -132,12 +131,12 @@ public class command {
 			}
 		}
 		
-		input.setCommand(this);
+		input.setCommand( this );
 		
 		try {
 			return invoke( sender, input );
-		} catch (CommandException e) {
-			sender.sendMessage(e.getMessage( ));
+		} catch ( CommandException e ) {
+			sender.sendMessage( e.getMessage( ) );
 			return true;
 		}
 	}
@@ -200,24 +199,24 @@ public class command {
 	
 	/*========================================================================================================*/
 	
-	private creatorPlugin	plugin;
-	private Object			baseClass;
-	private Method			method;
+	private creatorPlugin				plugin;
+	private Object						baseClass;
+	private Method						method;
 	
-	private String			name;
-	private String			example;
-	private String			desc;
+	private String						name;
+	private String						example;
+	private String						desc;
 	
-	private int				least;
-	private int				most;
-	public int				usePrice;
-	public int				blockPrice;
+	private int							least;
+	private int							most;
+	public int							usePrice;
+	public int							blockPrice;
 	
-	private boolean			player;
-	private boolean			console;
-	private boolean			enabled;
+	private boolean						player;
+	private boolean						console;
+	private boolean						enabled;
 	
 	private Map< Character, Boolean >	flags;
-	private String[]		perms;
+	private String[]					perms;
 	
 }

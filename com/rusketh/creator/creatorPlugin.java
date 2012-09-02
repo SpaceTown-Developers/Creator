@@ -1,17 +1,17 @@
 /*
  * Creator - Bukkit Plugin
  * Copyright (C) 2012 Rusketh <www.Rusketh.com>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -42,6 +42,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Called when Creator is enabled.
+	 * 
 	 * @author Rusketh
 	 */
 	
@@ -78,6 +79,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Called when Creator is disabled.
+	 * 
 	 * @author Rusketh
 	 */
 	
@@ -92,6 +94,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Gets the plugins main configuration file.
+	 * 
 	 * @return {@link FileConfiguration}
 	 * @author Rusketh
 	 */
@@ -103,6 +106,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Saves the plugins main configuration file.
+	 * 
 	 * @author Rusketh
 	 */
 	
@@ -119,6 +123,7 @@ public class creatorPlugin extends JavaPlugin {
 	/**
 	 * Reloads the plugins main configuration file.
 	 * Creates default keys and values and loads.
+	 * 
 	 * @author Rusketh
 	 */
 	
@@ -154,6 +159,7 @@ public class creatorPlugin extends JavaPlugin {
 	/**
 	 * Used to save then reloads the configuration file.
 	 * Calls {@link creatorPlugin.reloadConfig}
+	 * 
 	 * @author Rusketh
 	 */
 	
@@ -171,6 +177,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Gets and sets up the Vault Economy plugin.
+	 * 
 	 * @author Rusketh
 	 */
 	
@@ -204,6 +211,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Gets the Economy API.
+	 * 
 	 * @return {@link Economy}
 	 * @author Rusketh
 	 */
@@ -232,6 +240,7 @@ public class creatorPlugin extends JavaPlugin {
 	/**
 	 * Gets the Command Manager.
 	 * The command manager registers and handels all the commands.
+	 * 
 	 * @return {@link CommandManager}
 	 * @author Rusketh
 	 */
@@ -242,13 +251,12 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Called by Bukkit when the /Creator command is called.
+	 * 
 	 * @author Rusketh
 	 */
 	
 	public boolean onCommand( CommandSender sender, Command command, String commandLabel, String[] args ) {
-		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) {
-			return commandManager.run( sender, args );
-		}
+		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) { return commandManager.run( sender, args ); }
 		
 		return false;
 	}
@@ -258,6 +266,7 @@ public class creatorPlugin extends JavaPlugin {
 	/**
 	 * Gets the mysql Manager.
 	 * The mysql manager handels the mains mysql connection.
+	 * 
 	 * @return {@link mysqlManager}
 	 * @author Rusketh
 	 */
@@ -271,6 +280,7 @@ public class creatorPlugin extends JavaPlugin {
 	/**
 	 * Gets the Task Manager.
 	 * The task manager handles all player build tasks.
+	 * 
 	 * @return {@link TaskManager}
 	 * @author Rusketh
 	 */
