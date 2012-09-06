@@ -30,11 +30,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import com.rusketh.creator.creatorPlugin;
+import com.rusketh.creator.CreatorPlugin;
 
-public class commandManager implements Listener {
+public class CommandManager implements Listener {
 	
-	public commandManager( creatorPlugin plugin ) {
+	public CommandManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
 		commands = new HashMap< String, Command >( );
@@ -101,7 +101,7 @@ public class commandManager implements Listener {
 	
 	/*========================================================================================================*/
 	
-	creatorPlugin						plugin;
+	CreatorPlugin						plugin;
 	
 	private HashMap< String, Command >	commands;
 	private ArrayList< Command >		leastCommands;

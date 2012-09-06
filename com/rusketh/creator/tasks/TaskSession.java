@@ -20,10 +20,10 @@ package com.rusketh.creator.tasks;
 
 import org.bukkit.entity.Player;
 
-import com.rusketh.creator.creatorPlugin;
+import com.rusketh.creator.CreatorPlugin;
 
-public class taskSession {
+public class TaskSession {
 	
-	public taskSession( creatorPlugin plugin, Player player ) {}
+	public TaskSession( CreatorPlugin plugin, Player player ) {}
 	
 }

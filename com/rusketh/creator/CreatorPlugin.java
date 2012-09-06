@@ -32,10 +32,10 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.rusketh.creator.Extensions.ExtensionManager;
-import com.rusketh.creator.commands.commandManager;
+import com.rusketh.creator.commands.CommandManager;
 import com.rusketh.creator.tasks.TaskManager;
 
-public class creatorPlugin extends JavaPlugin {
+public class CreatorPlugin extends JavaPlugin {
 	
 	/*========================================================================================================*/
 	
@@ -67,9 +67,9 @@ public class creatorPlugin extends JavaPlugin {
 		
 		setupEconomy( );
 		
-		mysqlManager = new mysqlManager( this );
+		mysqlManager = new MysqlManager( this );
 		taskManager = new TaskManager( this );
-		commandManager = new commandManager( this );
+		commandManager = new CommandManager( this );
 		extensionManager = new ExtensionManager(this);
 	}
 	
@@ -156,7 +156,7 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Used to save then reloads the configuration file.
-	 * Calls {@link creatorPlugin.reloadConfig}
+	 * Calls {@link CreatorPlugin.reloadConfig}
 	 * 
 	 * @author Rusketh
 	 */
@@ -228,7 +228,7 @@ public class creatorPlugin extends JavaPlugin {
 	 * @author Rusketh
 	 */
 	
-	public commandManager getCommandManager( ) {
+	public CommandManager getCommandManager( ) {
 		return commandManager;
 	}
 	
@@ -250,11 +250,11 @@ public class creatorPlugin extends JavaPlugin {
 	 * Gets the mysql Manager.
 	 * The mysql manager handels the mains mysql connection.
 	 * 
-	 * @return {@link mysqlManager}
+	 * @return {@link MysqlManager}
 	 * @author Rusketh
 	 */
 	
-	public mysqlManager mysqlManager( ) {
+	public MysqlManager getMysqlManager( ) {
 		return mysqlManager;
 	}
 	
@@ -282,7 +282,7 @@ public class creatorPlugin extends JavaPlugin {
 	 * @author Rusketh
 	 */
 	
-	public ExtensionManager getExtensionManagerr( ) {
+	public ExtensionManager getExtensionManager( ) {
 		return extensionManager;
 	}
 	
@@ -291,9 +291,9 @@ public class creatorPlugin extends JavaPlugin {
 	public Logger				logger;
 	private static Economy		economy;
 	
-	private commandManager		commandManager;
+	private CommandManager		commandManager;
 	private TaskManager			taskManager;
-	private mysqlManager		mysqlManager;
+	private MysqlManager		mysqlManager;
 	private ExtensionManager    extensionManager;
 	
 	private File				configFile;

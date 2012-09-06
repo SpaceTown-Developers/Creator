@@ -22,22 +22,22 @@ import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 
-import com.rusketh.creator.creatorPlugin;
+import com.rusketh.creator.CreatorPlugin;
 
 public class TaskManager {
 	
-	public TaskManager( creatorPlugin plugin ) {
+	public TaskManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
-		sessions = new HashMap< String, taskSession >( );
+		sessions = new HashMap< String, TaskSession >( );
 		
 		reloadSessions( );
 	}
 	
 	public void reloadSessions( ) {
 		for ( Player player : plugin.getServer( ).getOnlinePlayers( ) ) {
-			taskSession oldSession = sessions.get( player.getName( ) );
-			taskSession newSession = new taskSession( plugin, player );
+			TaskSession oldSession = sessions.get( player.getName( ) );
+			TaskSession newSession = new TaskSession( plugin, player );
 			
 			if ( oldSession != null ) {
 				// oldSession.stop();
@@ -51,6 +51,6 @@ public class TaskManager {
 		
 	}
 	
-	creatorPlugin					plugin;
-	HashMap< String, taskSession >	sessions;
+	CreatorPlugin					plugin;
+	HashMap< String, TaskSession >	sessions;
 }

@@ -18,23 +18,22 @@
 
 package com.rusketh.creator;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.sql.Connection;
-
-public class mysqlManager {
+public class MysqlManager {
 	
 	/**
-	 * mysql Manager handles the main mysql connection.
+	 * MySql Manager handles the main mysql connection.
 	 * 
 	 * @author Rusketh
 	 */
 	
-	public mysqlManager( creatorPlugin plugin ) {
+	public MysqlManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
 		loadConfig( );
@@ -180,7 +179,7 @@ public class mysqlManager {
 	
 	/*========================================================================================================*/
 	
-	private creatorPlugin	plugin;
+	private CreatorPlugin	plugin;
 	private Connection		connection;
 	
 	private boolean			enabled;

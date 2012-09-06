@@ -30,11 +30,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.rusketh.creator.creatorPlugin;
+import com.rusketh.creator.CreatorPlugin;
 
 public class Command {
 	
-	public Command( creatorPlugin plugin, CreateCommand anote, Object baseClass, Method method ) {
+	public Command( CreatorPlugin plugin, CreateCommand anote, Object baseClass, Method method ) {
 		this.plugin = plugin;
 		this.baseClass = baseClass;
 		this.method = method;
@@ -87,7 +87,7 @@ public class Command {
 	
 	/*========================================================================================================*/
 	
-	public boolean execute( creatorPlugin plugin, CommandSender sender, String[] args ) {
+	public boolean execute( CreatorPlugin plugin, CommandSender sender, String[] args ) {
 		if ( !this.enabled ) {
 			sender.sendMessage( "This command has been disabled." );
 			return false;
@@ -200,7 +200,7 @@ public class Command {
 	
 	/*========================================================================================================*/
 	
-	private creatorPlugin				plugin;
+	private CreatorPlugin				plugin;
 	private Object						baseClass;
 	private Method						method;
 	

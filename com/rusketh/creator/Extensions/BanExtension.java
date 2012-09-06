@@ -38,7 +38,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import com.rusketh.creator.mysqlManager;
+import com.rusketh.creator.MysqlManager;
 import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
 import com.rusketh.util.MySQLBan;
@@ -71,7 +71,7 @@ public class BanExtension extends Extension {
 	/*========================================================================================================*/
 	
 	private void loadBans( ) {
-		if ( plugin.mysqlManager( ).isEnabled( ) && useMysql ) {
+		if ( plugin.getMysqlManager( ).isEnabled( ) && useMysql ) {
 			setUpDB( );
 			return;
 		}
@@ -105,7 +105,7 @@ public class BanExtension extends Extension {
 	/*========================================================================================================*/
 	
 	private void setUpDB( ) {
-		mysqlManager mysql = plugin.mysqlManager( );
+		MysqlManager mysql = plugin.getMysqlManager( );
 		
 		try {
 			ResultSet checkTable = mysql.query( "SHOW TABLES LIKE 'creator_bans'" ).executeQuery( );
@@ -170,7 +170,7 @@ public class BanExtension extends Extension {
 		try {
 			MySQLBan banData = mysqlGetBan( name );
 			
-			mysqlManager mysql = plugin.mysqlManager( );
+			MysqlManager mysql = plugin.getMysqlManager( );
 			PreparedStatement query;
 			
 			if ( banData == null ) {
@@ -198,7 +198,7 @@ public class BanExtension extends Extension {
 	/*========================================================================================================*/
 	
 	private MySQLBan mysqlGetBan( String name ) {
-		mysqlManager mysql = plugin.mysqlManager( );
+		MysqlManager mysql = plugin.getMysqlManager( );
 		
 		try {
 			PreparedStatement query = mysql.query( "SELECT * from `creator_bans` WHERE user = ?" );

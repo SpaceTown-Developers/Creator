@@ -22,12 +22,12 @@ import java.util.HashMap;
 
 import org.bukkit.event.Listener;
 
-import com.rusketh.creator.creatorPlugin;
+import com.rusketh.creator.CreatorPlugin;
 
 
 public class ExtensionManager {
 	
-	public ExtensionManager( creatorPlugin plugin ) {
+	public ExtensionManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		this.extensions = new HashMap<String, Extension>();
 		
@@ -57,7 +57,7 @@ public class ExtensionManager {
 	
 	/*========================================================================================================*/
 	
-	private creatorPlugin				plugin;
+	private CreatorPlugin				plugin;
 	private HashMap<String, Extension> 	extensions;
 	
 }
@@ -71,7 +71,7 @@ public class ExtensionManager {
 
 abstract class Extension implements Listener {
 	
-	protected boolean setUp( creatorPlugin plugin ) {
+	protected boolean setUp( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
 		enabled = enable();
@@ -85,7 +85,7 @@ abstract class Extension implements Listener {
 	
 	/*========================================================================================================*/
 	
-	protected creatorPlugin getCreator() {
+	protected CreatorPlugin getCreator() {
 		return plugin;
 	}
 	
@@ -107,6 +107,6 @@ abstract class Extension implements Listener {
 	
 	/*========================================================================================================*/
 	
-	protected creatorPlugin		plugin;
+	protected CreatorPlugin		plugin;
 	protected boolean			enabled;
 }
