@@ -28,6 +28,11 @@ public class DataHolder {
 		add( id, name );
 	}
 	
+	public DataHolder( int id, String name, String... ailas ) {
+		names = new HashMap< Integer, ArrayList< String >>( );
+		add( id, name, ailas );
+	}
+	
 	/*========================================================================================================*/
 	
 	public DataHolder add( int id, String name ) {
@@ -39,6 +44,21 @@ public class DataHolder {
 		}
 		
 		list.add( name );
+		
+		return this;
+	}
+	
+	public DataHolder add( int id, String name, String... ailas ) {
+		ArrayList< String > list = names.get( id );
+		
+		if ( list == null ) {
+			list = new ArrayList< String >( );
+			names.put( id, list );
+		}
+		
+		for (String a : ailas) {
+			list.add( a );
+		}
 		
 		return this;
 	}

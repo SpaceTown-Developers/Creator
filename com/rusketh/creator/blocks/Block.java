@@ -24,6 +24,10 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
+
 public enum Block {
 	
 	AIR( BlockID.AIR, "Air", "air" ),
@@ -212,13 +216,16 @@ public enum Block {
 	 
 	/*========================================================================================================*/
 	
-	private DataHolder					dataValues		= null;
+	private DataHolder							dataValues		= null;
 	
 	static final DataHolder						woodData		= new DataHolder( 0, "Oak" ).add( 1, "Pine" ).add( 1, "Spruce" ).add( 2, "Birch" ).add( 3, "Jungle" );
 	static final DataHolder						slabData		= new DataHolder( 0, "Stone" ).add( 1, "Sandstone" ).add( 2, "Wooden" ).add( 2, "Wood" ).add( 3, "Cobblestone" ).add( 3, "Cobble" ).add( 4, "Brick" ).add( 4, "StoneBrick" );
 	static final DataHolder						sandstoneData	= new DataHolder( 0, "Normal" ).add( 1, "Chiseled" ).add( 2, "Smooth" );
 	static final DataHolder						stoneData		= new DataHolder( 0, "Normal" ).add( 1, "Mossy" ).add( 2, "Cracked" ).add( 3, "Chiseled" );
 	static final DataHolder						woolData		= new DataHolder( 0, "White" ).add( 1, "Orange" ).add( 2, "Magenta" ).add( 3, "LightBlue" ).add( 4, "Yellow" ).add( 5, "Lime" ).add( 6, "Pink" ).add( 7, "Gray" ).add( 8, "LightGray" ).add( 9, "Cyan" ).add( 10, "Purple" ).add( 11, "Blue" ).add( 12, "Brown" ).add( 13, "Green" ).add( 14, "Red" ).add( 15, "Black" );
+	static final DataHolder						coalData		= new DataHolder( 0, "Coal" ).add( 1, "Charcoal" );
+	static final DataHolder						dyeData			= new DataHolder( 0, "Ink Sac", "black" ).add( 1, "Rose Red",  "red" ).add( 2, "Cactus Green", "green" ).add( 3, "Cocoa Beans", "brown" ).add( 4, "Lapis Lazuli", "blue" ).add( 5, "Purple Dye", "purple" ).add( 6, "Cyan Dye", "cyan" ).add( 7, "Light Gray Dye", "lightgray" ).add( 8, "Light Dye", "gray" ).add( 9, "Pink Dye", "pink" ).add( 10, "Lime Dye", "lime" ).add( 11, "Dandelion Yellow", "yellow" ).add( 12, "Light Blue Dye", "lightblue" ).add( 13, "Magenta Dye", "magenta" ).add( 14, "Orange Dye", "orange" ).add( 15, "Bone Meal", "white" );
+	static final DataHolder						mobData			= new DataHolder( EntityType.CREEPER.getTypeId( ), "Creeper").add( EntityType.SKELETON.getTypeId( ), "Skeleton").add( EntityType.SPIDER.getTypeId( ), "Spider").add( EntityType.ZOMBIE.getTypeId( ), "Zombie").add( EntityType.SLIME.getTypeId( ), "Slime").add( EntityType.GHAST.getTypeId( ), "Ghast").add( EntityType.PIG_ZOMBIE.getTypeId( ), "Zombie Pigman", "pigman").add( EntityType.ENDERMAN.getTypeId( ), "Endman").add( EntityType.CAVE_SPIDER.getTypeId( ), "Cave Spider", "cavespider").add( EntityType.SILVERFISH.getTypeId( ), "Silverfish").add( EntityType.BLAZE.getTypeId( ), "Blaze").add( EntityType.MAGMA_CUBE.getTypeId( ), "Magma Cube", "magamacube").add( EntityType.GHAST.getTypeId( ), "Giant").add( EntityType.ENDER_DRAGON.getTypeId( ), "Ender Dragon", "enderdragon", "dragon").add( EntityType.PIG.getTypeId( ), "Pig").add( EntityType.SHEEP.getTypeId( ), "Sheep").add( EntityType.COW.getTypeId( ), "Cow").add( EntityType.CHICKEN.getTypeId( ), "Chicken").add( EntityType.SQUID.getTypeId( ), "Squid").add( EntityType.WOLF.getTypeId( ), "Wolf").add( EntityType.MUSHROOM_COW.getTypeId( ), "Mooshroom").add( EntityType.OCELOT.getTypeId( ), "Ocelot").add( EntityType.SNOWMAN.getTypeId( ), "Snow Golem", "snowgolem", "snowman").add( EntityType.IRON_GOLEM.getTypeId( ), "Iron Golem", "irongolem", "golem").add( EntityType.VILLAGER.getTypeId( ), "Villager");
 	
 	static {
 		WOOD.dataValues = woodData;
@@ -416,12 +423,261 @@ public enum Block {
     	return this.isRedstoneBlock;
     }
 	
-	 /*========================================================================================================*/
-	 /*========================================================================================================*/
+	/*========================================================================================================*/
 	
-	//private int dropItem = this.id;
-	//private int dropAmount = 1;
-	//private int dropChance = 0;
-	//TODO: Block drop and blockbag data =D
+	private boolean canTransferRedstone = false;
+    
+	static {
+		REDSTONE_TORCH_OFF.canTransferRedstone = true;
+		REDSTONE_TORCH_ON.canTransferRedstone = true;
+		REDSTONE_WIRE.canTransferRedstone = true;
+		REDSTONE_REPEATER_OFF.canTransferRedstone = true;
+		REDSTONE_REPEATER_ON.canTransferRedstone = true;
+	}
+	
+	public boolean canTransferRedstone() {
+    	return this.canTransferRedstone;
+    }
+	
+	/*========================================================================================================*/
+	
+	private boolean isRedstoneSource = false;
+    
+	static {
+		DETECTOR_RAIL.isRedstoneSource = true;
+		REDSTONE_TORCH_OFF.isRedstoneSource = true;
+		REDSTONE_TORCH_ON.isRedstoneSource = true;
+		LEVER.isRedstoneSource = true;
+		STONE_PRESSURE_PLATE.isRedstoneSource = true;
+		WOODEN_PRESSURE_PLATE.isRedstoneSource = true;
+		STONE_BUTTON.isRedstoneSource = true;
+		TRIPWIRE_HOOK.isRedstoneSource = true;
+	}
+	
+	public boolean isRedstoneSource() {
+    	return this.isRedstoneSource;
+    }
+	
+/*========================================================================================================*/
+	
+	private boolean isRailBlock = false;
+    
+	static {
+		POWERED_RAIL.isRailBlock = true;
+        DETECTOR_RAIL.isRailBlock = true;
+        MINECART_TRACKS.isRailBlock = true;
+	}
+	
+	public boolean isRailBlock() {
+    	return this.isRailBlock;
+    }
+	
+	/*========================================================================================================*/
+	
+	private boolean isNaturalTerrainBlock = false;
+    
+	static {
+		STONE.isNaturalTerrainBlock = true;
+		GRASS.isNaturalTerrainBlock = true;
+		DIRT.isNaturalTerrainBlock = true;
+		BEDROCK.isNaturalTerrainBlock = true;
+		SAND.isNaturalTerrainBlock = true;
+		GRAVEL.isNaturalTerrainBlock = true;
+		CLAY.isNaturalTerrainBlock = true;
+		MYCELIUM.isNaturalTerrainBlock = true;
+
+		// hell
+		NETHERRACK.isNaturalTerrainBlock = true;
+		SOUL_SAND.isNaturalTerrainBlock = true;
+		GLOWSTONE.isNaturalTerrainBlock = true;
+
+		// ores
+		COAL_ORE.isNaturalTerrainBlock = true;
+		IRON_ORE.isNaturalTerrainBlock = true;
+		GOLD_ORE.isNaturalTerrainBlock = true;
+		LAPIS_LAZULI_ORE.isNaturalTerrainBlock = true;
+		DIAMOND_ORE.isNaturalTerrainBlock = true;
+		REDSTONE_ORE.isNaturalTerrainBlock = true;
+		GLOWING_REDSTONE_ORE.isNaturalTerrainBlock = true;
+		EMERALD_ORE.isNaturalTerrainBlock = true;
+	}
+	
+	public boolean isNaturalTerrainBlock() {
+    	return this.isNaturalTerrainBlock;
+    }
+	
+	/*========================================================================================================*/
+	
+	private boolean emitsLight = false;
+    
+	static {
+		LAVA.emitsLight = true;
+		STATIONARY_LAVA.emitsLight = true;
+		BROWN_MUSHROOM.emitsLight = true;
+		RED_MUSHROOM.emitsLight = true;
+		TORCH.emitsLight = true;
+		FIRE.emitsLight = true;
+		BURNING_FURNACE.emitsLight = true;
+		GLOWING_REDSTONE_ORE.emitsLight = true;
+		REDSTONE_TORCH_ON.emitsLight = true;
+		GLOWSTONE.emitsLight = true;
+		PORTAL.emitsLight = true;
+		JACK_O_LANTERN.emitsLight = true;
+		REDSTONE_REPEATER_ON.emitsLight = true;
+		LOCKED_CHEST.emitsLight = true;
+		BROWN_MUSHROOM_CAP.emitsLight = true;
+		RED_MUSHROOM_CAP.emitsLight = true;
+		END_PORTAL.emitsLight = true;
+		REDSTONE_LAMP_ON.emitsLight = true;
+		ENDER_CHEST.emitsLight = true;
+	}
+	
+	public boolean emitsLight() {
+    	return this.emitsLight;
+    }
+	
+	/*========================================================================================================*/
+	
+	private boolean isTranslucent = false;
+    
+	static {
+		AIR.isTranslucent = true;
+		SAPLING.isTranslucent = true;
+		WATER.isTranslucent = true;
+		STATIONARY_WATER.isTranslucent = true;
+		LEAVES.isTranslucent = true;
+		GLASS.isTranslucent = true;
+		BED.isTranslucent = true;
+		POWERED_RAIL.isTranslucent = true;
+		DETECTOR_RAIL.isTranslucent = true;
+		WEB.isTranslucent = true;
+		LONG_GRASS.isTranslucent = true;
+		DEAD_BUSH.isTranslucent = true;
+		PISTON_EXTENSION.isTranslucent = true;
+		YELLOW_FLOWER.isTranslucent = true;
+		RED_FLOWER.isTranslucent = true;
+		BROWN_MUSHROOM.isTranslucent = true;
+		RED_MUSHROOM.isTranslucent = true;
+		TORCH.isTranslucent = true;
+		FIRE.isTranslucent = true;
+		MOB_SPAWNER.isTranslucent = true;
+		WOODEN_STAIRS.isTranslucent = true;
+		CHEST.isTranslucent = true;
+		REDSTONE_WIRE.isTranslucent = true;
+		CROPS.isTranslucent = true;
+		SIGN_POST.isTranslucent = true;
+		WOODEN_DOOR.isTranslucent = true;
+		LADDER.isTranslucent = true;
+		MINECART_TRACKS.isTranslucent = true;
+		COBBLESTONE_STAIRS.isTranslucent = true;
+		WALL_SIGN.isTranslucent = true;
+		LEVER.isTranslucent = true;
+		STONE_PRESSURE_PLATE.isTranslucent = true;
+		IRON_DOOR.isTranslucent = true;
+		WOODEN_PRESSURE_PLATE.isTranslucent = true;
+		REDSTONE_TORCH_OFF.isTranslucent = true;
+		REDSTONE_TORCH_ON.isTranslucent = true;
+		STONE_BUTTON.isTranslucent = true;
+		SNOW.isTranslucent = true;
+		ICE.isTranslucent = true;
+		CACTUS.isTranslucent = true;
+		REED.isTranslucent = true;
+		FENCE.isTranslucent = true;
+		PORTAL.isTranslucent = true;
+		CAKE_BLOCK.isTranslucent = true;
+		REDSTONE_REPEATER_OFF.isTranslucent = true;
+		REDSTONE_REPEATER_ON.isTranslucent = true;
+		TRAP_DOOR.isTranslucent = true;
+		IRON_BARS.isTranslucent = true;
+		GLASS_PANE.isTranslucent = true;
+		PUMPKIN_STEM.isTranslucent = true;
+		MELON_STEM.isTranslucent = true;
+		VINE.isTranslucent = true;
+		FENCE_GATE.isTranslucent = true;
+		BRICK_STAIRS.isTranslucent = true;
+		STONE_BRICK_STAIRS.isTranslucent = true;
+		LILY_PAD.isTranslucent = true;
+		NETHER_BRICK_FENCE.isTranslucent = true;
+		NETHER_BRICK_STAIRS.isTranslucent = true;
+		NETHER_WART.isTranslucent = true;
+		ENCHANTMENT_TABLE.isTranslucent = true;
+		BREWING_STAND.isTranslucent = true;
+		CAULDRON.isTranslucent = true;
+		WOODEN_STEP.isTranslucent = true;
+		COCOA_PLANT.isTranslucent = true;
+		SANDSTONE_STAIRS.isTranslucent = true;
+		ENDER_CHEST.isTranslucent = true;
+		TRIPWIRE_HOOK.isTranslucent = true;
+		TRIPWIRE.isTranslucent = true;
+		SPRUCE_WOOD_STAIRS.isTranslucent = true;
+		BIRCH_WOOD_STAIRS.isTranslucent = true;
+		JUNGLE_WOOD_STAIRS.isTranslucent = true;
+	}
+	
+	public boolean isTranslucent() {
+    	return this.isTranslucent;
+    }
+	
+	/*========================================================================================================*/
+	
+	private ItemStack dropStack;
+	private boolean noDrop = false;
+	
+	static {
+		STONE.dropStack = new ItemStack(BlockID.COBBLESTONE);
+		GRASS.dropStack = new ItemStack(BlockID.DIRT);
+		COAL_ORE.dropStack = new ItemStack(ItemID.COAL);
+		WEB.dropStack = new ItemStack(ItemID.STRING);
+		REDSTONE_WIRE.dropStack = new ItemStack(ItemID.REDSTONE_DUST);
+		DIAMOND_ORE.dropStack = new ItemStack(ItemID.DIAMOND);
+		CROPS.dropStack = new ItemStack(ItemID.SEEDS);
+		SOIL.dropStack = new ItemStack(BlockID.DIRT);
+		BURNING_FURNACE.dropStack = new ItemStack(BlockID.FURNACE);
+		SIGN_POST.dropStack = new ItemStack(ItemID.SIGN);
+		WALL_SIGN.dropStack = new ItemStack(ItemID.SIGN);
+		GLOWING_REDSTONE_ORE.dropStack = new ItemStack(ItemID.REDSTONE_DUST, 4);
+		REDSTONE_ORE.dropStack = new ItemStack(ItemID.REDSTONE_DUST, 4);
+		REDSTONE_TORCH_OFF.dropStack = new ItemStack(BlockID.REDSTONE_TORCH_ON);
+		REED.dropStack = new ItemStack(ItemID.SUGAR_CANE_ITEM);
+		CAKE.dropStack = new ItemStack(ItemID.CAKE_ITEM);
+		REDSTONE_REPEATER_OFF.dropStack = new ItemStack(ItemID.REDSTONE_REPEATER);
+		REDSTONE_REPEATER_ON.dropStack = new ItemStack(ItemID.REDSTONE_REPEATER);
+		PUMPKIN_STEM.dropStack = new ItemStack(ItemID.PUMPKIN_SEEDS);
+		MELON_STEM.dropStack = new ItemStack(ItemID.MELON_SEEDS);
+		MYCELIUM.dropStack = new ItemStack(BlockID.DIRT);
+		NETHER_WART.dropStack = new ItemStack(ItemID.NETHER_WART_SEED);
+		BREWING_STAND.dropStack = new ItemStack(ItemID.BREWING_STAND);
+		CAULDRON.dropStack = new ItemStack(ItemID.CAULDRON);
+		REDSTONE_LAMP_ON.dropStack = new ItemStack(BlockID.REDSTONE_LAMP_OFF);
+		COCOA_PLANT.dropStack = new ItemStack(ItemID.INK_SACK, 3, (short) 0, (byte) 3);
+		EMERALD_ORE.dropStack = new ItemStack(ItemID.EMERALD);
+		TRIPWIRE.dropStack = new ItemStack(ItemID.STRING);
+		LAPIS_LAZULI_ORE.dropStack = new ItemStack(ItemID.INK_SACK, 4, (short) 0, (byte) 4);
+		BED.dropStack = new ItemStack(ItemID.BED_ITEM);
+		LONG_GRASS.dropStack = new ItemStack(ItemID.SEEDS);
+		DOUBLE_STEP.dropStack = new ItemStack( BlockID.STEP, 2 );
+		
+		AIR.noDrop = true;
+		BEDROCK.noDrop = true;
+		SILVERFISH_BLOCK.noDrop = true;
+		VINE.noDrop = true;
+		END_PORTAL.noDrop = true;
+		END_PORTAL_FRAME.noDrop = true;
+	}
+	
+	public ItemStack getDropedItems(int data) {
+		if (noDrop) return null;
+		
+		if (dropStack != null) {
+			ItemStack stack = dropStack.clone( );
+			
+			if ( data != 0 && stack.getData( ).getData( ) == 0 ) stack.setData( new MaterialData((byte) data) );
+
+			return stack;
+		}
+		
+		return new ItemStack(id, 1, (short) 0, (byte) data);
+	}
+	
 	
 }
