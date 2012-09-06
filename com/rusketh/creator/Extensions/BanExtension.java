@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,13 +40,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import com.rusketh.creator.MysqlManager;
+import com.rusketh.creator.ban.MySqlBan;
 import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
-import com.rusketh.util.MySQLBan;
 
 public class BanExtension extends Extension {
 	
-	public boolean enable() {
+	public boolean enable( ) {
 		loadConfig( );
 		
 		if ( !enabled ) return false;
@@ -164,11 +165,34 @@ public class BanExtension extends Extension {
 		}
 	}
 	
+	private boolean addOfflineBan( OfflinePlayer ply, CommandSender sender, CommandInput input ) {
+		long unban;
+		String reason = null;
+		
+		if ( input.flag( 'p' ) ) { // Permanent ban!
+			if ( !( sender instanceof Player ) || ( (Player) sender ).hasPermission( "creator.ban.perm" ) ) throw new CommandException( "Your not allowed to ban players permanently." );
+			
+			unban = 0;
+			reason = input.arg( 1 );
+			
+		} else {
+			unban = toDate( input.arg( 1 ), input.flag( 't' ) );
+			
+			if ( input.size( ) > 2 ) reason = input.arg( 2 );
+			
+			if ( unban == 0 ) throw new CommandException( "Ban lengh to short." );
+		}
+		
+		addBan( "", ply.getName( ), sender.getName( ), unban, reason );
+		
+		return true;
+	}
+	
 	private void mysqlAddBan( String name, String ip, String banner, long unban, String reason ) {
 		if ( reason == null ) reason = "";
 		
 		try {
-			MySQLBan banData = mysqlGetBan( name );
+			MySqlBan banData = mysqlGetBan( name );
 			
 			MysqlManager mysql = plugin.getMysqlManager( );
 			PreparedStatement query;
@@ -197,7 +221,7 @@ public class BanExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-	private MySQLBan mysqlGetBan( String name ) {
+	private MySqlBan mysqlGetBan( String name ) {
 		MysqlManager mysql = plugin.getMysqlManager( );
 		
 		try {
@@ -205,11 +229,12 @@ public class BanExtension extends Extension {
 			query.setString( 1, name );
 			
 			ResultSet result = query.executeQuery( );
-			
 			if ( !result.next( ) ) return null;
 			
-			return new MySQLBan( result );
+			MySqlBan ban = new MySqlBan( result );
 			
+			result.close( );
+			return ban;
 		} catch ( SQLException e ) {
 			// TODO: This...
 			e.printStackTrace( );
@@ -226,8 +251,8 @@ public class BanExtension extends Extension {
 		Calendar cal = new GregorianCalendar( );
 		time = time.toLowerCase( );
 		
-		if (future) {
-			cal.setTimeInMillis( System.currentTimeMillis() );
+		if ( future ) {
+			cal.setTimeInMillis( System.currentTimeMillis( ) );
 		} else {
 			cal.setTimeInMillis( 0 );
 		}
@@ -268,7 +293,7 @@ public class BanExtension extends Extension {
 			}
 		}
 		
-		if (!future) return (cal.getTimeInMillis( ) + System.currentTimeMillis() ) / 1000;
+		if ( !future ) return ( cal.getTimeInMillis( ) + System.currentTimeMillis( ) ) / 1000;
 		
 		return cal.getTimeInMillis( ) / 1000;
 	}
@@ -282,7 +307,17 @@ public class BanExtension extends Extension {
 		Player target;
 		
 		if ( input.hasFlag( 'e' ) ) {
-			target = plugin.getServer( ).getPlayerExact( input.arg( 0 ) );
+			OfflinePlayer ply = plugin.getServer( ).getOfflinePlayer( input.arg( 0 ) );
+			
+			if ( ply.isOnline( ) )
+				target = ply.getPlayer( );
+			else {
+				if ( ply.getFirstPlayed( ) == 0 ) {
+					// TODO: Add message about banning a player that haven't played on the server
+				}
+				
+				return addOfflineBan( ply, sender, input );
+			}
 		} else {
 			target = plugin.getServer( ).getPlayer( input.arg( 0 ) );
 		}
@@ -355,7 +390,7 @@ public class BanExtension extends Extension {
 	
 	public void mysqlEvent( PlayerLoginEvent event ) {
 		
-		MySQLBan banData = mysqlGetBan( event.getPlayer( ).getName( ) );
+		MySqlBan banData = mysqlGetBan( event.getPlayer( ).getName( ) );
 		
 		if ( banData == null ) return;
 		

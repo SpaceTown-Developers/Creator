@@ -16,53 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.util;
+package com.rusketh.creator.ban;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MySQLBan {
+public abstract class Ban {
 	
-	private String	name, ip, banner, reason;
+	private String	banner, reason;
 	private long	timeBanned, unban;
 	
-	public MySQLBan( String name, String ip, String banner, String reason, long timeBanned, long unban ) {
-		this.name = name;
-		this.ip = ip;
+	protected Ban( String banner, String reason, long timeBanned, long unban ) {
 		this.banner = banner;
 		this.reason = reason;
 		this.timeBanned = timeBanned;
 		this.unban = unban;
 	}
 	
-	public MySQLBan( ResultSet result ) {
-		try {
-			this.name = result.getString( "user" );
-			this.ip = result.getString( "ip" );
-			this.banner = result.getString( "banner" );
-			this.reason = result.getString( "reason_banned" );
-			this.timeBanned = result.getLong( "time_banned" );
-			this.unban = result.getLong( "unban" );
-			
-			result.close( );
-		} catch ( SQLException e ) {
-			// TODO: This...
-			e.printStackTrace( );
-		}
-	}
-	
-	/**
-	 * @return the name of the banned player.
-	 */
-	public String getName( ) {
-		return this.name;
-	}
-	
-	/**
-	 * @return the users ip from when they where banned.
-	 */
-	public String getIp( ) {
-		return this.ip;
+	protected Ban( ResultSet result ) throws SQLException {
+		this.banner = result.getString( "banner" );
+		this.reason = result.getString( "reason_banned" );
+		this.timeBanned = result.getLong( "time_banned" );
+		this.unban = result.getLong( "unban" );
 	}
 	
 	/**
@@ -92,4 +67,5 @@ public class MySQLBan {
 	public long getUnban( ) {
 		return this.unban;
 	}
+	
 }

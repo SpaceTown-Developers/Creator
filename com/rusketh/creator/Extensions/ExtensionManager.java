@@ -24,20 +24,19 @@ import org.bukkit.event.Listener;
 
 import com.rusketh.creator.CreatorPlugin;
 
-
 public class ExtensionManager {
 	
 	public ExtensionManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
-		this.extensions = new HashMap<String, Extension>();
+		this.extensions = new HashMap< String, Extension >( );
 		
-		registerExtensions();
+		registerExtensions( );
 	}
 	
 	/*========================================================================================================*/
 	
-	public void registerExtension(String name, Extension extension) {
-		if (extension.setUp( plugin )) {
+	public void registerExtension( String name, Extension extension ) {
+		if ( extension.setUp( plugin ) ) {
 			extensions.put( name, extension );
 		}
 	}
@@ -46,24 +45,21 @@ public class ExtensionManager {
 		Extensions Registered Here.
 	==========================================================================================================*/
 	
-	private void registerExtensions() {
-		registerExtension("help", new HelpExtension() );
-		registerExtension("ban", new BanExtension() );
+	private void registerExtensions( ) {
+		registerExtension( "help", new HelpExtension( ) );
+		registerExtension( "ban", new BanExtension( ) );
 	}
 	
-	public Extension getExtension(String name) {
+	public Extension getExtension( String name ) {
 		return extensions.get( name );
 	}
 	
 	/*========================================================================================================*/
 	
-	private CreatorPlugin				plugin;
-	private HashMap<String, Extension> 	extensions;
+	private CreatorPlugin					plugin;
+	private HashMap< String, Extension >	extensions;
 	
 }
-
-
-
 
 /*==============================================================================================================
 	Base Extension
@@ -74,7 +70,7 @@ abstract class Extension implements Listener {
 	protected boolean setUp( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
-		enabled = enable();
+		enabled = enable( );
 		if ( !enabled ) return false;
 		
 		plugin.getCommandManager( ).registerCommands( this );
@@ -85,28 +81,28 @@ abstract class Extension implements Listener {
 	
 	/*========================================================================================================*/
 	
-	protected CreatorPlugin getCreator() {
+	protected CreatorPlugin getCreator( ) {
 		return plugin;
 	}
 	
 	/*========================================================================================================*/
 	
-	protected void setEnabled(boolean enabled) {
+	protected void setEnabled( boolean enabled ) {
 		this.enabled = enabled;
 	}
 	
-	protected boolean isEnabled() {
+	protected boolean isEnabled( ) {
 		return this.enabled;
 	}
 	
 	/*========================================================================================================*/
 	
-	public boolean enable() {
+	public boolean enable( ) {
 		return true;
 	}
 	
 	/*========================================================================================================*/
 	
-	protected CreatorPlugin		plugin;
-	protected boolean			enabled;
+	protected CreatorPlugin	plugin;
+	protected boolean		enabled;
 }

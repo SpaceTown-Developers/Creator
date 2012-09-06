@@ -70,7 +70,7 @@ public class CreatorPlugin extends JavaPlugin {
 		mysqlManager = new MysqlManager( this );
 		taskManager = new TaskManager( this );
 		commandManager = new CommandManager( this );
-		extensionManager = new ExtensionManager(this);
+		extensionManager = new ExtensionManager( this );
 	}
 	
 	/*========================================================================================================*/
@@ -294,7 +294,7 @@ public class CreatorPlugin extends JavaPlugin {
 	private CommandManager		commandManager;
 	private TaskManager			taskManager;
 	private MysqlManager		mysqlManager;
-	private ExtensionManager    extensionManager;
+	private ExtensionManager	extensionManager;
 	
 	private File				configFile;
 	private YamlConfiguration	YamlConfig;
