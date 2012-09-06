@@ -16,12 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.commands.manager;
+package com.rusketh.creator.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -31,9 +32,9 @@ import org.bukkit.entity.Player;
 
 import com.rusketh.creator.creatorPlugin;
 
-public class command {
+public class Command {
 	
-	public command( creatorPlugin plugin, commandAnote anote, Object baseClass, Method method ) {
+	public Command( creatorPlugin plugin, CreateCommand anote, Object baseClass, Method method ) {
 		this.plugin = plugin;
 		this.baseClass = baseClass;
 		this.method = method;

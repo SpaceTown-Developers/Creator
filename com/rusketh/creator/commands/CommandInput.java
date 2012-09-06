@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.commands.manager;
+package com.rusketh.creator.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,11 +113,11 @@ public class CommandInput {
 	
 	/*========================================================================================================*/
 	
-	public void setCommand( command command ) {
+	public void setCommand( Command command ) {
 		calledCommand = command;
 	}
 	
-	public command getComamnd( ) {
+	public Command getComamnd( ) {
 		return calledCommand;
 	}
 	
@@ -191,7 +191,7 @@ public class CommandInput {
 	/*========================================================================================================*/
 	
 	private String						command;
-	private command						calledCommand;
+	private Command						calledCommand;
 	
 	private String[]					origonalArgs;
 	private ArrayList< String >			phasedArgs;

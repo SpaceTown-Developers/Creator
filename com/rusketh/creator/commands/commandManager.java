@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.commands.manager;
+package com.rusketh.creator.commands;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class commandManager implements Listener {
 	public commandManager( creatorPlugin plugin ) {
 		this.plugin = plugin;
 		
-		commands = new HashMap< String, command >( );
-		leastCommands = new ArrayList< command >( );
+		commands = new HashMap< String, Command >( );
+		leastCommands = new ArrayList< Command >( );
 		
 		plugin.getServer( ).getPluginManager( ).registerEvents( this, plugin );
 	}
@@ -47,7 +47,7 @@ public class commandManager implements Listener {
 	
 	public void registerCommands( Object register ) {
 		for ( Method method : register.getClass( ).getMethods( ) ) {
-			commandAnote anote = method.getAnnotation( commandAnote.class );
+			CreateCommand anote = method.getAnnotation( CreateCommand.class );
 			
 			if ( anote != null ) {
 				
@@ -56,7 +56,7 @@ public class commandManager implements Listener {
 					continue;
 				}
 				
-				command command = new command( this.plugin, anote, register, method );
+				Command command = new Command( this.plugin, anote, register, method );
 				
 				leastCommands.add( command );
 				
@@ -69,11 +69,11 @@ public class commandManager implements Listener {
 	
 	/*========================================================================================================*/
 	
-	public ArrayList< command > getCommands( ) {
+	public ArrayList< Command > getCommands( ) {
 		return leastCommands;
 	}
 	
-	public command getCommand( String name ) {
+	public Command getCommand( String name ) {
 		return commands.get( name );
 	}
 	
@@ -81,7 +81,7 @@ public class commandManager implements Listener {
 	
 	public boolean run( CommandSender sender, String[] args ) throws CommandException {
 		if ( args.length > 0 ) {
-			command command = commands.get( args[0] );
+			Command command = commands.get( args[0] );
 			
 			if ( command != null ) { return command.execute( plugin, sender, args ); }
 		}
@@ -103,6 +103,6 @@ public class commandManager implements Listener {
 	
 	creatorPlugin						plugin;
 	
-	private HashMap< String, command >	commands;
-	private ArrayList< command >		leastCommands;
+	private HashMap< String, Command >	commands;
+	private ArrayList< Command >		leastCommands;
 }

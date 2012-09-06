@@ -16,13 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.commands.manager;
+package com.rusketh.creator.commands;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention( RetentionPolicy.RUNTIME )
-public @interface commandAnote {
+public @interface CreateCommand {
 	
 	/* All the possible names of the command!  */
 	String[] names( );

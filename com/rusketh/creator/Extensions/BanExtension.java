@@ -36,28 +36,23 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import com.rusketh.creator.creatorPlugin;
 import com.rusketh.creator.mysqlManager;
-import com.rusketh.creator.commands.manager.CommandInput;
-import com.rusketh.creator.commands.manager.commandAnote;
+import com.rusketh.creator.commands.CommandInput;
+import com.rusketh.creator.commands.CreateCommand;
 import com.rusketh.util.MySQLBan;
 
-public class BanExtension implements Listener {
+public class BanExtension extends Extension {
 	
-	public BanExtension( creatorPlugin plugin ) {
-		this.plugin = plugin;
-		
+	public boolean enable() {
 		loadConfig( );
 		
-		if ( !enabled ) return;
+		if ( !enabled ) return false;
 		
 		loadBans( );
 		
-		plugin.getCommandManager( ).registerCommands( this );
-		plugin.getServer( ).getPluginManager( ).registerEvents( this, plugin );
+		return true;
 	}
 	
 	/*========================================================================================================*/
@@ -229,8 +224,13 @@ public class BanExtension implements Listener {
 	
 	public long toDate( String time, boolean future ) throws CommandException {
 		Calendar cal = new GregorianCalendar( );
-		cal.setTimeInMillis( 0 );
 		time = time.toLowerCase( );
+		
+		if (future) {
+			cal.setTimeInMillis( System.currentTimeMillis() );
+		} else {
+			cal.setTimeInMillis( 0 );
+		}
 		
 		Matcher m = pattern.matcher( time );
 		
@@ -240,42 +240,42 @@ public class BanExtension implements Listener {
 			
 			switch ( c ) {
 				case 's':
-					cal.add( Calendar.SECOND, count );
+					cal.set( Calendar.SECOND, count );
 					break;
 				case 'm':
-					cal.add( Calendar.MINUTE, count );
+					cal.set( Calendar.MINUTE, count );
 					break;
 				case 'h':
-					cal.add( Calendar.HOUR_OF_DAY, count );
+					cal.set( Calendar.HOUR_OF_DAY, count );
 					break;
 				case 'd':
 					if ( future )
-						cal.add( Calendar.DAY_OF_YEAR, count );
+						cal.set( Calendar.DAY_OF_YEAR, count );
 					else
-						cal.add( Calendar.DAY_OF_MONTH, count );
+						cal.set( Calendar.DAY_OF_MONTH, count );
 					break;
 				case 'w':
-					if ( future ) cal.add( Calendar.WEEK_OF_YEAR, count );
+					if ( future ) cal.set( Calendar.WEEK_OF_YEAR, count );
 					break;
 				case 'j':
-					cal.add( Calendar.MONTH, count );
+					cal.set( Calendar.MONTH, count );
 					break;
 				case 'y':
-					cal.add( Calendar.YEAR, count );
+					cal.set( Calendar.YEAR, count );
 					break;
 				default:
 					throw new CommandException( "Invalid time format (e.g: 2d1h4m)." );
 			}
 		}
 		
-		if ( future ) return ( System.currentTimeMillis( ) / 1000 ) + cal.getTimeInMillis( ) / 1000;
+		if (!future) return (cal.getTimeInMillis( ) + System.currentTimeMillis() ) / 1000;
 		
 		return cal.getTimeInMillis( ) / 1000;
 	}
 	
 	/*========================================================================================================*/
 	
-	@commandAnote( names = { "ban" }, example = "ban <player> <time> [reason -t]|| ban <player> [reason] -p", desc = "Get help with a command.", least = 1, most = 3, console = true, flags = { "p", "t", "e", "s" } )
+	@CreateCommand( names = { "ban" }, example = "ban <player> <time> [reason -t]|| ban <player> [reason] -p", desc = "Get help with a command.", least = 1, most = 3, console = true, flags = { "p", "t", "e", "s" } )
 	public boolean BanCommand( CommandSender sender, CommandInput input ) {
 		if ( !enabled ) return false;
 		
@@ -375,8 +375,6 @@ public class BanExtension implements Listener {
 	}
 	
 	/*========================================================================================================*/
-	
-	private creatorPlugin		plugin;
 	
 	private File				bansFile;
 	private YamlConfiguration	YamlBans;

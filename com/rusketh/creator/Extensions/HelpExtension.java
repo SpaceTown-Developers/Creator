@@ -22,26 +22,17 @@ import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.rusketh.creator.creatorPlugin;
-import com.rusketh.creator.commands.manager.CommandInput;
-import com.rusketh.creator.commands.manager.command;
-import com.rusketh.creator.commands.manager.commandAnote;
+import com.rusketh.creator.commands.Command;
+import com.rusketh.creator.commands.CommandInput;
+import com.rusketh.creator.commands.CreateCommand;
 
-public class HelpExtension {
+public class HelpExtension extends Extension {
 	
-	public HelpExtension( creatorPlugin plugin ) {
-		this.plugin = plugin;
-		
-		plugin.getCommandManager( ).registerCommands( this );
-	}
-	
-	/*========================================================================================================*/
-	
-	@commandAnote( names = { "help" }, example = "/cr help [cmd]", desc = "Get help with a command.", least = 0, most = 1, console = true )
+	@CreateCommand( names = { "help" }, example = "/cr help [cmd]", desc = "Get help with a command.", least = 0, most = 1, console = true )
 	public boolean helpCommand( CommandSender sender, CommandInput input ) {
 		
 		if ( input.size( ) == 1 ) {
-			command helpWith = plugin.getCommandManager( ).getCommand( input.arg( 0 ) );
+			Command helpWith = plugin.getCommandManager( ).getCommand( input.arg( 0 ) );
 			
 			if ( helpWith != null ) {
 				sender.sendMessage( helpWith.getHelp( ) );
@@ -50,7 +41,7 @@ public class HelpExtension {
 			}
 			
 		} else {
-			for ( command helpWith : plugin.getCommandManager( ).getCommands( ) ) {
+			for ( Command helpWith : plugin.getCommandManager( ).getCommands( ) ) {
 				if ( !( sender instanceof Player ) || helpWith.hasPermission( (Player) sender ) ) {
 					sender.sendMessage( helpWith.getHelp( ) );
 				}
@@ -59,9 +50,5 @@ public class HelpExtension {
 		
 		return true;
 	}
-	
-	/*========================================================================================================*/
-	
-	private creatorPlugin	plugin;
 	
 }

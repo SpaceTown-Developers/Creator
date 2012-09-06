@@ -31,9 +31,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.rusketh.creator.Extensions.BanExtension;
-import com.rusketh.creator.Extensions.HelpExtension;
-import com.rusketh.creator.commands.manager.commandManager;
+import com.rusketh.creator.Extensions.ExtensionManager;
+import com.rusketh.creator.commands.commandManager;
 import com.rusketh.creator.tasks.TaskManager;
 
 public class creatorPlugin extends JavaPlugin {
@@ -71,8 +70,7 @@ public class creatorPlugin extends JavaPlugin {
 		mysqlManager = new mysqlManager( this );
 		taskManager = new TaskManager( this );
 		commandManager = new commandManager( this );
-		
-		registerExtensions( );
+		extensionManager = new ExtensionManager(this);
 	}
 	
 	/*========================================================================================================*/
@@ -223,21 +221,6 @@ public class creatorPlugin extends JavaPlugin {
 	/*========================================================================================================*/
 	
 	/**
-	 * Loads the Creator Extensions.
-	 * 
-	 * @author Rusketh
-	 */
-	
-	private void registerExtensions( ) {
-		new HelpExtension( this );
-		new BanExtension( this );
-		
-		saveConfig( );
-	}
-	
-	/*========================================================================================================*/
-	
-	/**
 	 * Gets the Command Manager.
 	 * The command manager registers and handels all the commands.
 	 * 
@@ -291,12 +274,27 @@ public class creatorPlugin extends JavaPlugin {
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * Gets the Task Manager.
+	 * The task manager handles all player build tasks.
+	 * 
+	 * @return {@link TaskManager}
+	 * @author Rusketh
+	 */
+	
+	public ExtensionManager getExtensionManagerr( ) {
+		return extensionManager;
+	}
+	
+	/*========================================================================================================*/
+	
 	public Logger				logger;
 	private static Economy		economy;
 	
 	private commandManager		commandManager;
 	private TaskManager			taskManager;
 	private mysqlManager		mysqlManager;
+	private ExtensionManager    extensionManager;
 	
 	private File				configFile;
 	private YamlConfiguration	YamlConfig;
