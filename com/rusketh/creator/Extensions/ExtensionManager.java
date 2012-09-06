@@ -48,6 +48,7 @@ public class ExtensionManager {
 	private void registerExtensions( ) {
 		registerExtension( "help", new HelpExtension( ) );
 		registerExtension( "ban", new BanExtension( ) );
+		registerExtension( "item", new ItemExtension() );
 	}
 	
 	public Extension getExtension( String name ) {
