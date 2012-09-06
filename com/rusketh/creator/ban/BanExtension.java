@@ -477,7 +477,7 @@ public class BanExtension extends Extension {
 		} else if ( unban > curtime ) {
 			event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned!" ); // TODO: Tell then for how long.
 		} else if ( unban < bantime && unban + bantime > curtime ) {
-			event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned2!" ); // TODO: Tell then for how long.
+			// event.disallow( PlayerLoginEvent.Result.KICK_BANNED, "Banned2!" ); // TODO: Tell then for how long.
 		} else {
 			// TODO: Remove Ban
 		}
