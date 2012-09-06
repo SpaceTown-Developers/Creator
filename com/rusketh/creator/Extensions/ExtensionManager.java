@@ -20,9 +20,8 @@ package com.rusketh.creator.Extensions;
 
 import java.util.HashMap;
 
-import org.bukkit.event.Listener;
-
 import com.rusketh.creator.CreatorPlugin;
+import com.rusketh.creator.ban.BanExtension;
 
 public class ExtensionManager {
 	
@@ -48,7 +47,7 @@ public class ExtensionManager {
 	private void registerExtensions( ) {
 		registerExtension( "help", new HelpExtension( ) );
 		registerExtension( "ban", new BanExtension( ) );
-		registerExtension( "item", new ItemExtension() );
+		registerExtension( "item", new ItemExtension( ) );
 	}
 	
 	public Extension getExtension( String name ) {
@@ -60,50 +59,4 @@ public class ExtensionManager {
 	private CreatorPlugin					plugin;
 	private HashMap< String, Extension >	extensions;
 	
-}
-
-/*==============================================================================================================
-	Base Extension
-==============================================================================================================*/
-
-abstract class Extension implements Listener {
-	
-	protected boolean setUp( CreatorPlugin plugin ) {
-		this.plugin = plugin;
-		
-		enabled = enable( );
-		if ( !enabled ) return false;
-		
-		plugin.getCommandManager( ).registerCommands( this );
-		plugin.getServer( ).getPluginManager( ).registerEvents( this, plugin );
-		
-		return true;
-	}
-	
-	/*========================================================================================================*/
-	
-	protected CreatorPlugin getCreator( ) {
-		return plugin;
-	}
-	
-	/*========================================================================================================*/
-	
-	protected void setEnabled( boolean enabled ) {
-		this.enabled = enabled;
-	}
-	
-	protected boolean isEnabled( ) {
-		return this.enabled;
-	}
-	
-	/*========================================================================================================*/
-	
-	public boolean enable( ) {
-		return true;
-	}
-	
-	/*========================================================================================================*/
-	
-	protected CreatorPlugin	plugin;
-	protected boolean		enabled;
 }

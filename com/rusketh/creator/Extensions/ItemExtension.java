@@ -89,7 +89,15 @@ public class ItemExtension extends Extension {
 	/*========================================================================================================*/
 	
 	@SuppressWarnings( "deprecation" )
-	@CreateCommand( names = { "i", "item", "give" }, example = "i <id>[:<data> <amount> -p:<player>]", desc = "Easily obtain an item.", least = 1, most = 2, console = false, flags = { "p*" }, perms = { "creator.item" } )
+	@CreateCommand(
+			names = { "i", "item", "give" },
+			example = "i <id>[:<data> <amount> -p:<player>]",
+			desc = "Easily obtain an item.",
+			least = 1,
+			most = 2,
+			console = false,
+			flags = { "p*" },
+			perms = { "creator.item" } )
 	public boolean ItemCommand( CommandSender sender, CommandInput input ) {
 		
 		ItemStack itemStack = stringToItemStack( input.arg( 0 ) );
@@ -118,7 +126,15 @@ public class ItemExtension extends Extension {
 	/*========================================================================================================*/
 	
 	@SuppressWarnings( "deprecation" )
-	@CreateCommand( names = { "clear" }, example = "clear [-a|-s -p:<player>]", desc = "Easily clear your inventory.", least = 0, most = 0, console = false, flags = { "p*", "a", "s" }, perms = { "creator.clear" } )
+	@CreateCommand(
+			names = { "clear" },
+			example = "clear [-a|-s -p:<player>]",
+			desc = "Easily clear your inventory.",
+			least = 0,
+			most = 0,
+			console = false,
+			flags = { "p*", "a", "s" },
+			perms = { "creator.clear" } )
 	public boolean ClearCommand( CommandSender sender, CommandInput input ) {
 		
 		Player player = (Player) sender;

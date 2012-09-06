@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.Extensions;
+package com.rusketh.creator.ban;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import com.rusketh.creator.MysqlManager;
-import com.rusketh.creator.ban.MySqlBan;
+import com.rusketh.creator.Extensions.Extension;
 import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
 
@@ -300,7 +300,14 @@ public class BanExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-	@CreateCommand( names = { "ban" }, example = "ban <player> <time> [reason -t]|| ban <player> [reason] -p", desc = "Get help with a command.", least = 1, most = 3, console = true, flags = { "p", "t", "e", "s" } )
+	@CreateCommand(
+			names = { "ban" },
+			example = "ban <player> <time> [reason -t]|| ban <player> [reason] -p",
+			desc = "Get help with a command.",
+			least = 1,
+			most = 3,
+			console = true,
+			flags = { "p", "t", "e", "s" } )
 	public boolean BanCommand( CommandSender sender, CommandInput input ) {
 		if ( !enabled ) return false;
 		
@@ -342,6 +349,73 @@ public class BanExtension extends Extension {
 		}
 		
 		addBan( target, sender, unban, reason );
+		
+		if ( !input.hasFlag( 's' ) ) {
+			plugin.getServer( ).broadcastMessage( new StringBuilder( target.getDisplayName( ) ).append( " has been baned!" ).toString( ) );
+			
+			if ( reason != null ) {
+				plugin.getServer( ).broadcastMessage( new StringBuilder( "Reason: " ).append( reason ).toString( ) );
+			}
+		}
+		
+		if ( reason != null ) {
+			target.kickPlayer( new StringBuilder( "Banned: " ).append( reason ).toString( ) );
+		} else {
+			target.kickPlayer( "You have been banned from this server." );
+		}
+		
+		return true;
+	}
+	
+	@CreateCommand(
+			names = { "ipban" },
+			example = "ipban <player> <time> [reason -t]|| ipban <player> [reason] -p",
+			desc = "Get help with a command.",
+			least = 1,
+			most = 3,
+			console = true,
+			flags = { "p", "t", "e", "s" } )
+	public boolean IpBanCommand( CommandSender sender, CommandInput input ) {
+		if ( !enabled ) return false;
+		
+		Player target;
+		
+		if ( input.hasFlag( 'e' ) ) {
+			OfflinePlayer ply = plugin.getServer( ).getOfflinePlayer( input.arg( 0 ) );
+			
+			if ( ply.isOnline( ) )
+				target = ply.getPlayer( );
+			else {
+				if ( ply.getFirstPlayed( ) == 0 ) {
+					// TODO: Add message about banning a player that haven't played on the server
+				}
+				
+				return true; // addOfflineBan( ply, sender, input );
+			}
+		} else {
+			target = plugin.getServer( ).getPlayer( input.arg( 0 ) );
+		}
+		
+		if ( target == null ) throw new CommandException( "Player not found." );
+		
+		long unban;
+		String reason = null;
+		
+		if ( input.flag( 'p' ) ) { // Permanent ban!
+			if ( !( sender instanceof Player ) || ( (Player) sender ).hasPermission( "creator.ipban.perm" ) ) throw new CommandException( "Your not allowed to ban players permanently." );
+			
+			unban = 0;
+			reason = input.arg( 1 );
+			
+		} else {
+			unban = toDate( input.arg( 1 ), input.flag( 't' ) );
+			
+			if ( input.size( ) > 2 ) reason = input.arg( 2 );
+			
+			if ( unban == 0 ) throw new CommandException( "Ban lengh to short." );
+		}
+		
+		// addBan( target, sender, unban, reason );
 		
 		if ( !input.hasFlag( 's' ) ) {
 			plugin.getServer( ).broadcastMessage( new StringBuilder( target.getDisplayName( ) ).append( " has been baned!" ).toString( ) );

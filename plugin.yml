@@ -1,8 +1,8 @@
 name: Creator
-main: com.rusketh.creator.creatorPlugin
-authors: [Rusketh]
+main: com.rusketh.creator.CreatorPlugin
+authors: [Rusketh, Oskar]
 website: Rusketh.com
-version: 0.1
+version: 0.2
 description: Used to build and create.
 softdepend: [ Vault ]
 commands:

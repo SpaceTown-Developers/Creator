@@ -52,9 +52,10 @@ public class CreatorPlugin extends JavaPlugin {
 		configFile = new File( getDataFolder( ), "config.yml" );
 		if ( !configFile.exists( ) ) {
 			try {
+				configFile.getParentFile( ).mkdirs( );
 				configFile.createNewFile( );
 			} catch ( IOException e ) {
-				getLogger( ).severe( "[Creator] Unable to create new configuration!" );
+				getLogger( ).severe( "Unable to create new configuration!" );
 			}
 		}
 		
@@ -149,7 +150,7 @@ public class CreatorPlugin extends JavaPlugin {
 			cmdPrefix = YamlConfig.getString( "commands.custom.prefix" ).toLowerCase( );
 			
 		} catch ( Exception e ) {
-			getLogger( ).severe( "[Creator] Unable to load configuration!" );
+			getLogger( ).severe( "Unable to load configuration!" );
 			Enabled = false;
 		}
 	}
