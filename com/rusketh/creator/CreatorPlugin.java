@@ -24,8 +24,10 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -37,6 +39,16 @@ import com.rusketh.creator.tasks.TaskManager;
 
 public class CreatorPlugin extends JavaPlugin {
 	
+	private ConsoleCommandSender	sender;
+	
+	public void logMessage( String string ) {
+		sender.sendMessage( "[Creator] " + ChatColor.GREEN + string );
+	}
+	
+	public void errorMessage( String string ) {
+		sender.sendMessage( "[Creator] " + ChatColor.RED + string );
+	}
+	
 	/*========================================================================================================*/
 	
 	/**
@@ -47,7 +59,8 @@ public class CreatorPlugin extends JavaPlugin {
 	
 	public void onEnable( ) {
 		logger = getServer( ).getLogger( );
-		logger.info( "Loading Creator" );
+		sender = getServer( ).getConsoleSender( );
+		getLogger( ).info( "Loading" );
 		
 		configFile = new File( getDataFolder( ), "config.yml" );
 		if ( !configFile.exists( ) ) {
@@ -62,7 +75,7 @@ public class CreatorPlugin extends JavaPlugin {
 		reloadConfig( );
 		
 		if ( !Enabled ) {
-			logger.info( "[Creator] disabled by config." );
+			getLogger( ).info( "Disabled by config." );
 			return;
 		}
 		
@@ -72,6 +85,8 @@ public class CreatorPlugin extends JavaPlugin {
 		taskManager = new TaskManager( this );
 		commandManager = new CommandManager( this );
 		extensionManager = new ExtensionManager( this );
+		
+		getLogger( ).info( "Loaded" );
 	}
 	
 	/*========================================================================================================*/
@@ -114,7 +129,7 @@ public class CreatorPlugin extends JavaPlugin {
 		try {
 			YamlConfig.save( configFile );
 		} catch ( Exception e ) {
-			logger.info( "[Creator] Failed to save config" );
+			getLogger( ).info( "Failed to save config" );
 			Enabled = false;
 		}
 	}
@@ -140,6 +155,7 @@ public class CreatorPlugin extends JavaPlugin {
 			if ( !YamlConfig.contains( "maxradius" ) ) YamlConfig.set( "maxradius", -1 );
 			if ( !YamlConfig.contains( "commands.custom.enable" ) ) YamlConfig.set( "commands.custom.enable", true );
 			if ( !YamlConfig.contains( "commands.custom.prefix" ) ) YamlConfig.set( "commands.custom.prefix", "!" );
+			saveConfig( );
 			
 			Enabled = YamlConfig.getBoolean( "enabled" );
 			Vault = YamlConfig.getBoolean( "usevault" );
@@ -167,7 +183,7 @@ public class CreatorPlugin extends JavaPlugin {
 			YamlConfig.save( configFile );
 			reloadConfig( );
 		} catch ( IOException e ) {
-			getLogger( ).warning( "[Creator] Failed to write changed config.yml: " + e.getMessage( ) );
+			getLogger( ).warning( "Failed to write changed config.yml: " + e.getMessage( ) );
 			Enabled = false;
 		}
 	}
@@ -182,7 +198,7 @@ public class CreatorPlugin extends JavaPlugin {
 	
 	private void setupEconomy( ) {
 		if ( Vault && getServer( ).getPluginManager( ).getPlugin( "Vault" ) == null ) {
-			logger.info( "[Creator] Vault not found." );
+			getLogger( ).info( "Vault not found." );
 			
 			Vault = false;
 			
@@ -196,14 +212,14 @@ public class CreatorPlugin extends JavaPlugin {
 			Vault = ( economy != null );
 			
 			if ( !Vault ) {
-				logger.info( "[Creator] No Economy plugin found." );
+				getLogger( ).info( "No Economy plugin found." );
 				
 			} else if ( !economy.isEnabled( ) ) {
-				logger.info( "[Creator] Economy plugin is disabled." );
+				getLogger( ).info( "Economy plugin is disabled." );
 				
 				Vault = false;
 			} else {
-				logger.info( "[Creator] Vault Economy enabled." );
+				getLogger( ).info( "Vault Economy enabled." );
 			}
 		}
 	}
