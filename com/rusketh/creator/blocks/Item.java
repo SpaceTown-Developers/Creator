@@ -387,7 +387,7 @@ public enum Item {
 		COAL.dataValues = Block.coalData;
 		INK_SACK.dataValues = Block.dyeData;
 		SPAWN_EGG.dataValues = Block.mobData;
-		// POTION.dataValues = ; -- This would take for ever TODO.
+		POTION.dataValues = Block.potionData;
 		// GLASS_BOTTLE.dataValues = ; -- ^^
 	}
 	

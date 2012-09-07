@@ -33,10 +33,10 @@ public class ItemStack {
 		this.item = Item.get( id );
 	}
 	
-	public ItemStack( int id, byte data, int ammount ) {
+	public ItemStack( int id, byte data, int amount ) {
 		this.id = id;
 		this.data = data;
-		this.ammount = ammount;
+		this.amount = amount;
 		
 		this.item = Item.get( id );
 	}
@@ -75,18 +75,18 @@ public class ItemStack {
 	
 	/*========================================================================================================*/
 	
-	public void setAmmount( int ammount ) {
-		this.ammount = ammount;
+	public void setAmount( int amount ) {
+		this.amount = amount;
 	}
 	
-	public int getAmmount( ) {
-		return this.ammount;
+	public int getAmount( ) {
+		return this.amount;
 	}
 	
 	/*========================================================================================================*/
 	
 	public org.bukkit.inventory.ItemStack toItemStack( ) {
-		return new org.bukkit.inventory.ItemStack( id, ammount, durability, data );
+		return new org.bukkit.inventory.ItemStack( id, amount, durability, data );
 	}
 	
 	/*========================================================================================================*/
@@ -107,7 +107,7 @@ public class ItemStack {
 	/*========================================================================================================*/
 	
 	public ItemStack clone( ) {
-		ItemStack itemStack = new ItemStack( id, data, ammount );
+		ItemStack itemStack = new ItemStack( id, data, amount );
 		itemStack.setDurability( durability );
 		return itemStack;
 	}
@@ -117,7 +117,7 @@ public class ItemStack {
 	private int		id			= 0;
 	private byte	data		= 0;
 	private short	durability	= 0;
-	private int		ammount		= 1;
+	private int		amount		= 1;
 	
 	private Item	item;
 }

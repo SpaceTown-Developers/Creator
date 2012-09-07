@@ -20,6 +20,7 @@
 
 package com.rusketh.creator.Extensions;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -39,7 +40,7 @@ public class ItemExtension extends Extension {
 		
 		Item item;
 		
-		if ( split[0].matches( "([0-9].)" ) ) {
+		if (StringUtils.isNumeric(split[0])) { 
 			int id = Integer.parseInt( split[0] );
 			item = Item.get( id );
 		} else {
@@ -54,7 +55,7 @@ public class ItemExtension extends Extension {
 		
 		int data;
 		
-		if ( split[1].matches( "([0-9].)" ) ) {
+		if ( StringUtils.isNumeric(split[1]) ) {
 			data = Integer.parseInt( split[1] );
 		} else {
 			data = item.getDataValue( split[1] );
@@ -96,8 +97,8 @@ public class ItemExtension extends Extension {
 			least = 1,
 			most = 2,
 			console = false,
-			flags = { "p*" },
-			perms = { "creator.item" } )
+			flags = { "p*", "d" },
+			perms = { "creator.item.give" } )
 	public boolean ItemCommand( CommandSender sender, CommandInput input ) {
 		
 		ItemStack itemStack = stringToItemStack( input.arg( 0 ) );
@@ -106,20 +107,36 @@ public class ItemExtension extends Extension {
 		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getID( ) ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
 		
 		if ( input.hasFlag( 'p' ) ) {
-			if ( !player.hasPermission( "creator.item.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
+			if ( !player.hasPermission( "creator.item.give.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
 			
 			player = plugin.getServer( ).getPlayer( input.flagString( 'p' ) );
 			if ( player == null ) throw new CommandException( "Player was not found." );
 		}
 		
+		int amount = 1;
+		
 		if ( input.size( ) == 2 ) {
-			itemStack.setAmmount( input.argInt( 1 ) );
+			amount = input.argInt( 1 );
+			
+			if (itemStack.getAmount( ) < 1) {
+				throw new CommandException("Invalid item amount!");
+			} else if (itemStack.getItem( ).shouldNotStack( )) {
+				amount = 1;
+			} else if (itemStack.getAmount( ) < 64) {
+				amount = 64;
+			}
 		}
 		
-		player.getInventory( ).addItem( itemStack.toItemStack( ) );
-		player.updateInventory( ); // Not actually deprecated is just a work around.
+		itemStack.setAmount( amount );
 		
-		player.sendMessage( new StringBuilder( "Giving you " ).append( itemStack.getAmmount( ) ).append( " '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
+		if ( input.hasFlag( 'd' ) ) {
+			player.getWorld().dropItemNaturally(player.getLocation(), itemStack.toItemStack( ));
+		} else {
+			player.getInventory( ).addItem( itemStack.toItemStack( ) );
+			player.updateInventory( ); // Not actually deprecated is just a work around.
+		}
+		
+		player.sendMessage( new StringBuilder( "Giving you " ).append( amount ).append( " '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
 		return true;
 	}
 	
@@ -134,12 +151,12 @@ public class ItemExtension extends Extension {
 			most = 0,
 			console = false,
 			flags = { "p*", "a", "s" },
-			perms = { "creator.clear" } )
+			perms = { "creator.item.clear" } )
 	public boolean ClearCommand( CommandSender sender, CommandInput input ) {
 		
 		Player player = (Player) sender;
 		if ( input.hasFlag( 'p' ) ) {
-			if ( !player.hasPermission( "creator.clear.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
+			if ( !player.hasPermission( "creator.item.clear.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
 			
 			player = plugin.getServer( ).getPlayer( input.flagString( 'p' ) );
 			if ( player == null ) throw new CommandException( "Player was not found." );
@@ -166,4 +183,36 @@ public class ItemExtension extends Extension {
 		
 		return true;
 	}
+	
+	/*========================================================================================================*/
+	
+	@SuppressWarnings( "deprecation" )
+	@CreateCommand(
+			names = { "more" },
+			example = "more",
+			desc = "Easily refil item.",
+			least = 0,
+			most = 0,
+			console = false,
+			flags = { },
+			perms = { "creator.item.more" } )
+	public boolean MoreCommand( CommandSender sender, CommandInput input ) {
+		
+		Player player = (Player) sender;
+		org.bukkit.inventory.ItemStack stack = player.getInventory( ).getItemInHand( );
+		
+		if (stack == null) {
+			throw new CommandException( "Your hand is empty." );
+		} else if ( Item.get( stack.getTypeId( ) ).shouldNotStack( ) ) {
+			throw new CommandException( "Your current item can not stack." );
+		}
+		
+		stack.setAmount( 64 );
+		player.updateInventory( ); // Not actually deprecated is just a work around.
+		
+		player.sendMessage( "Your hand just refilled." );
+		
+		return true;
+	}
 }
+
