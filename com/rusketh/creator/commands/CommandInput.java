@@ -138,7 +138,7 @@ public class CommandInput {
 		try {
 			return Integer.parseInt( value );
 		} catch ( NumberFormatException e ) {
-			throw new CommandException( new StringBuilder( "Improper value for argument '" ).append( i ).append( "' (Number exspected)." ).toString( ) );
+			throw new CommandException( new StringBuilder( "Improper value for argument '" ).append( i + 1 ).append( "' (Number exspected)." ).toString( ) );
 		}
 	}
 	

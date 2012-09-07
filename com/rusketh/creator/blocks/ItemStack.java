@@ -1,16 +1,36 @@
+/*
+ * Creator - Bukkit Plugin
+ * Copyright (C) 2012 Rusketh & Oskar94 <www.Rusketh.com>
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.rusketh.creator.blocks;
 
 public class ItemStack {
 	
 	public ItemStack( int id ) {
 		this.id = id;
+		
+		this.item = Item.get( id );
 	}
 	
 	public ItemStack( int id, byte data ) {
 		this.id = id;
 		this.data = data;
 		
-		item = Item.get( id );
+		this.item = Item.get( id );
 	}
 	
 	public ItemStack( int id, byte data, int ammount ) {
@@ -18,7 +38,7 @@ public class ItemStack {
 		this.data = data;
 		this.ammount = ammount;
 		
-		item = Item.get( id );
+		this.item = Item.get( id );
 	}
 	
 	/*========================================================================================================*/
@@ -26,7 +46,7 @@ public class ItemStack {
 	public void setID( int id ) {
 		this.id = id;
 		
-		item = Item.get( id );
+		this.item = Item.get( id );
 	}
 	
 	public int getID( ) {
@@ -72,11 +92,16 @@ public class ItemStack {
 	/*========================================================================================================*/
 	
 	public Item getItem( ) {
-		return item;
+		
+		return this.item;
 	}
 	
 	public String getName( ) {
-		return item.getName( );
+		return this.item.getName( );
+	}
+	
+	public String niceName() {
+		return item.niceName( data );
 	}
 	
 	/*========================================================================================================*/

@@ -332,6 +332,7 @@ public enum Item {
 	static {
 		for ( Item item : EnumSet.allOf( Item.class ) ) {
 			ids.put( item.id, item );
+			
 			for ( String key : item.lookupKeys ) {
 				lookup.put( key, item );
 			}
@@ -403,6 +404,13 @@ public enum Item {
 	public String nameDataValue( int value ) {
 		if ( this.dataValues == null ) return null;
 		return this.dataValues.name( value );
+	}
+	
+	/*========================================================================================================*/
+	
+	public String niceName(int damage) {
+		if ( this.dataValues == null ) return this.name;
+		return this.dataValues.niceName( damage, this.name );
 	}
 	
 	/*========================================================================================================*/

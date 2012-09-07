@@ -224,14 +224,14 @@ public enum Block {
 	
 	private DataHolder		dataValues		= null;
 	
-	static final DataHolder	woodData		= new DataHolder( 0, "Oak" ).add( 1, "Pine" ).add( 1, "Spruce" ).add( 2, "Birch" ).add( 3, "Jungle" );
-	static final DataHolder	slabData		= new DataHolder( 0, "Stone" ).add( 1, "Sandstone" ).add( 2, "Wooden" ).add( 2, "Wood" ).add( 3, "Cobblestone" ).add( 3, "Cobble" ).add( 4, "Brick" ).add( 4, "StoneBrick" );
-	static final DataHolder	sandstoneData	= new DataHolder( 0, "Normal" ).add( 1, "Chiseled" ).add( 2, "Smooth" );
-	static final DataHolder	stoneData		= new DataHolder( 0, "Normal" ).add( 1, "Mossy" ).add( 2, "Cracked" ).add( 3, "Chiseled" );
-	static final DataHolder	woolData		= new DataHolder( 0, "White" ).add( 1, "Orange" ).add( 2, "Magenta" ).add( 3, "LightBlue" ).add( 4, "Yellow" ).add( 5, "Lime" ).add( 6, "Pink" ).add( 7, "Gray" ).add( 8, "LightGray" ).add( 9, "Cyan" ).add( 10, "Purple" ).add( 11, "Blue" ).add( 12, "Brown" ).add( 13, "Green" ).add( 14, "Red" ).add( 15, "Black" );
-	static final DataHolder	coalData		= new DataHolder( 0, "Coal" ).add( 1, "Charcoal" );
-	static final DataHolder	dyeData			= new DataHolder( 0, "Ink Sac", "black" ).add( 1, "Rose Red", "red" ).add( 2, "Cactus Green", "green" ).add( 3, "Cocoa Beans", "brown" ).add( 4, "Lapis Lazuli", "blue" ).add( 5, "Purple Dye", "purple" ).add( 6, "Cyan Dye", "cyan" ).add( 7, "Light Gray Dye", "lightgray" ).add( 8, "Light Dye", "gray" ).add( 9, "Pink Dye", "pink" ).add( 10, "Lime Dye", "lime" ).add( 11, "Dandelion Yellow", "yellow" ).add( 12, "Light Blue Dye", "lightblue" ).add( 13, "Magenta Dye", "magenta" ).add( 14, "Orange Dye", "orange" ).add( 15, "Bone Meal", "white" );
-	static final DataHolder	mobData			= new DataHolder( EntityType.CREEPER.getTypeId( ), "Creeper" ).add( EntityType.SKELETON.getTypeId( ), "Skeleton" ).add( EntityType.SPIDER.getTypeId( ), "Spider" ).add( EntityType.ZOMBIE.getTypeId( ), "Zombie" ).add( EntityType.SLIME.getTypeId( ), "Slime" ).add( EntityType.GHAST.getTypeId( ), "Ghast" ).add( EntityType.PIG_ZOMBIE.getTypeId( ), "Zombie Pigman", "pigman" ).add( EntityType.ENDERMAN.getTypeId( ), "Endman" ).add( EntityType.CAVE_SPIDER.getTypeId( ), "Cave Spider", "cavespider" ).add( EntityType.SILVERFISH.getTypeId( ), "Silverfish" ).add( EntityType.BLAZE.getTypeId( ), "Blaze" ).add( EntityType.MAGMA_CUBE.getTypeId( ), "Magma Cube", "magamacube" ).add( EntityType.GHAST.getTypeId( ), "Giant" ).add( EntityType.ENDER_DRAGON.getTypeId( ), "Ender Dragon", "enderdragon", "dragon" ).add( EntityType.PIG.getTypeId( ), "Pig" ).add( EntityType.SHEEP.getTypeId( ), "Sheep" ).add( EntityType.COW.getTypeId( ), "Cow" ).add( EntityType.CHICKEN.getTypeId( ), "Chicken" ).add( EntityType.SQUID.getTypeId( ), "Squid" ).add( EntityType.WOLF.getTypeId( ), "Wolf" ).add( EntityType.MUSHROOM_COW.getTypeId( ), "Mooshroom" ).add( EntityType.OCELOT.getTypeId( ), "Ocelot" ).add( EntityType.SNOWMAN.getTypeId( ), "Snow Golem", "snowgolem", "snowman" ).add( EntityType.IRON_GOLEM.getTypeId( ), "Iron Golem", "irongolem", "golem" ).add( EntityType.VILLAGER.getTypeId( ), "Villager" );
+	static final DataHolder	woodData		= new DataHolder( 0, "Oak" ).add( 1, "Pine" ).add( 1, "Spruce" ).add( 2, "Birch" ).add( 3, "Jungle" ).prefixName( );
+	static final DataHolder	slabData		= new DataHolder( 0, "Stone" ).add( 1, "Sandstone" ).add( 2, "Wooden" ).add( 2, "Wood" ).add( 3, "Cobblestone" ).add( 3, "Cobble" ).add( 4, "Brick" ).add( 4, "StoneBrick" ).prefixName( );
+	static final DataHolder	sandstoneData	= new DataHolder( 0, "Normal" ).add( 1, "Chiseled" ).add( 2, "Smooth" ).prefixName( );
+	static final DataHolder	stoneData		= new DataHolder( 0, "Normal" ).add( 1, "Mossy" ).add( 2, "Cracked" ).add( 3, "Chiseled" ).prefixName( );
+	static final DataHolder	woolData		= new DataHolder( 0, "White" ).add( 1, "Orange" ).add( 2, "Magenta" ).add( 3, "LightBlue" ).add( 4, "Yellow" ).add( 5, "Lime" ).add( 6, "Pink" ).add( 7, "Gray" ).add( 8, "LightGray" ).add( 9, "Cyan" ).add( 10, "Purple" ).add( 11, "Blue" ).add( 12, "Brown" ).add( 13, "Green" ).add( 14, "Red" ).add( 15, "Black" ).prefixName( );
+	static final DataHolder	coalData		= new DataHolder( 0, "Normal" ).add( 1, "Charcoal" ).dataName( );
+	static final DataHolder	dyeData			= new DataHolder( 0, "Ink Sac", "black", "blackdye" ).add( 1, "Rose Red", "red", "reddye" ).add( 2, "Cactus Green", "green", "greendye" ).add( 3, "Cocoa Beans", "brown", "browndye" ).add( 4, "Lapis Lazuli", "blue", "bluedye" ).add( 5, "Purple Dye", "purple", "purpledye" ).add( 6, "Cyan Dye", "cyan", "cyandye" ).add( 7, "Light Gray Dye", "lightgray", "lightgraydye" ).add( 8, "Light Dye", "gray", "graydye" ).add( 9, "Pink Dye", "pink", "pinkdye" ).add( 10, "Lime Dye", "lime", "limedye" ).add( 11, "Dandelion Yellow", "yellow", "yellowdye" ).add( 12, "Light Blue Dye", "lightblue", "lightbluedye" ).add( 13, "Magenta Dye", "magenta", "magentadye" ).add( 14, "Orange Dye", "orange", "orangedye" ).add( 15, "Bone Meal", "bonemeal", "white", "whitedye" ).dataName( );
+	static final DataHolder	mobData			= new DataHolder( EntityType.CREEPER.getTypeId( ), "Creeper" ).add( EntityType.SKELETON.getTypeId( ), "Skeleton" ).add( EntityType.SPIDER.getTypeId( ), "Spider" ).add( EntityType.ZOMBIE.getTypeId( ), "Zombie" ).add( EntityType.SLIME.getTypeId( ), "Slime" ).add( EntityType.GHAST.getTypeId( ), "Ghast" ).add( EntityType.PIG_ZOMBIE.getTypeId( ), "Zombie Pigman", "pigman" ).add( EntityType.ENDERMAN.getTypeId( ), "Endman" ).add( EntityType.CAVE_SPIDER.getTypeId( ), "Cave Spider", "cavespider" ).add( EntityType.SILVERFISH.getTypeId( ), "Silverfish" ).add( EntityType.BLAZE.getTypeId( ), "Blaze" ).add( EntityType.MAGMA_CUBE.getTypeId( ), "Magma Cube", "magamacube" ).add( EntityType.GHAST.getTypeId( ), "Giant" ).add( EntityType.ENDER_DRAGON.getTypeId( ), "Ender Dragon", "enderdragon", "dragon" ).add( EntityType.PIG.getTypeId( ), "Pig" ).add( EntityType.SHEEP.getTypeId( ), "Sheep" ).add( EntityType.COW.getTypeId( ), "Cow" ).add( EntityType.CHICKEN.getTypeId( ), "Chicken" ).add( EntityType.SQUID.getTypeId( ), "Squid" ).add( EntityType.WOLF.getTypeId( ), "Wolf" ).add( EntityType.MUSHROOM_COW.getTypeId( ), "Mooshroom" ).add( EntityType.OCELOT.getTypeId( ), "Ocelot" ).add( EntityType.SNOWMAN.getTypeId( ), "Snow Golem", "snowgolem", "snowman" ).add( EntityType.IRON_GOLEM.getTypeId( ), "Iron Golem", "irongolem", "golem" ).add( EntityType.VILLAGER.getTypeId( ), "Villager" ).prefixName( );
 	
 	static {
 		WOOD.dataValues = woodData;
@@ -261,6 +261,13 @@ public enum Block {
 	public String nameDataValue( int value ) {
 		if ( this.dataValues == null ) return null;
 		return this.dataValues.name( value );
+	}
+	
+	/*========================================================================================================*/
+	
+	public String niceName(int damage) {
+		if ( this.dataValues == null ) return this.name;
+		return this.dataValues.niceName( damage, this.name );
 	}
 	
 	/*========================================================================================================*/

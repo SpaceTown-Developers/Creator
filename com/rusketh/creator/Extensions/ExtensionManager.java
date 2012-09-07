@@ -48,6 +48,8 @@ public class ExtensionManager {
 		registerExtension( "help", new HelpExtension( ) );
 		registerExtension( "ban", new BanExtension( ) );
 		registerExtension( "item", new ItemExtension( ) );
+		
+		plugin.saveConfig( );
 	}
 	
 	public Extension getExtension( String name ) {

@@ -18,7 +18,6 @@
 
 package com.rusketh.creator.commands;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -147,21 +146,18 @@ public class Command {
 	public boolean invoke( CommandSender sender, CommandInput input ) {
 		try {
 			return (Boolean) this.method.invoke( this.baseClass, sender, input );
-		} catch ( InvocationTargetException e ) {
-			
-			plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
+		} catch ( Exception e)  {
 			
 			if ( e.getCause( ) != null ) {
+				
+				if (e.getCause( ).getClass( ).equals( CommandException.class )) throw (CommandException) e.getCause( );
+				
+				plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
 				plugin.logger.info( e.getCause( ).getMessage( ) );
 				e.getCause( ).printStackTrace( );
+			} else {
+				plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
 			}
-			
-			throw new CommandException( "Oooops, somthing went horribad." );
-			
-		} catch ( Exception e ) {
-			plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
-			
-			e.printStackTrace( );
 			
 			throw new CommandException( "Oooops, somthing went horribad." );
 		}

@@ -103,7 +103,7 @@ public class ItemExtension extends Extension {
 		ItemStack itemStack = stringToItemStack( input.arg( 0 ) );
 		
 		Player player = (Player) sender;
-		if ( player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getID( ) ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.getName( ) ).append( "'." ).toString( ) );
+		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getID( ) ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
 		
 		if ( input.hasFlag( 'p' ) ) {
 			if ( !player.hasPermission( "creator.item.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
@@ -119,7 +119,7 @@ public class ItemExtension extends Extension {
 		player.getInventory( ).addItem( itemStack.toItemStack( ) );
 		player.updateInventory( ); // Not actually deprecated is just a work around.
 		
-		player.sendMessage( new StringBuilder( "Giving you " ).append( itemStack.getAmmount( ) ).append( " '" ).append( itemStack.getName( ) ).append( "'." ).toString( ) );
+		player.sendMessage( new StringBuilder( "Giving you " ).append( itemStack.getAmmount( ) ).append( " '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
 		return true;
 	}
 	

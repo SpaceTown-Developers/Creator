@@ -56,6 +56,8 @@ public class DataHolder {
 			names.put( id, list );
 		}
 		
+		list.add(name);
+		
 		for ( String a : ailas ) {
 			list.add( a );
 		}
@@ -94,5 +96,36 @@ public class DataHolder {
 	
 	/*========================================================================================================*/
 	
-	HashMap< Integer, ArrayList< String >>	names;
+	public DataHolder prefixName() {
+		prefixName = true;
+		dataName = false;
+		
+		return this;
+	}
+	
+	public DataHolder dataName() {
+		dataName = true;
+		prefixName = false;
+		
+		return this;
+	}
+	
+	public String niceName(int id, String name) {
+		String nice = name(id);
+		
+		if (nice.equalsIgnoreCase( "normal" )) return name;
+		
+		if (prefixName) return new StringBuilder(nice).append( " " ).append(name).toString( );
+		
+		if (dataName) return nice;
+		
+		return name;
+	}
+	
+	/*========================================================================================================*/
+	
+	private HashMap< Integer, ArrayList< String >>	names;
+	
+	private boolean	prefixName = false;
+	private boolean dataName = false;
 }
