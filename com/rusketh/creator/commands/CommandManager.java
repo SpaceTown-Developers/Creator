@@ -83,7 +83,9 @@ public class CommandManager implements Listener {
 		if ( args.length > 0 ) {
 			Command command = commands.get( args[0] );
 			
-			if ( command != null ) { return command.execute( plugin, sender, args ); }
+			if ( command != null ) {
+				return command.execute( plugin, sender, args );
+			}
 		}
 		
 		return false;

@@ -28,13 +28,7 @@ import com.rusketh.creator.commands.CreateCommand;
 
 public class HelpExtension extends Extension {
 	
-	@CreateCommand(
-			names = { "help" },
-			example = "/cr help [cmd]",
-			desc = "Get help with a command.",
-			least = 0,
-			most = 1,
-			console = true )
+	@CreateCommand( names = { "help" }, example = "/cr help [cmd]", desc = "Get help with a command.", least = 0, most = 1, console = true )
 	public boolean helpCommand( CommandSender sender, CommandInput input ) {
 		
 		if ( input.size( ) == 1 ) {

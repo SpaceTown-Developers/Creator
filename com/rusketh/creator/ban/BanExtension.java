@@ -274,10 +274,8 @@ public class BanExtension extends Extension {
 					cal.set( Calendar.HOUR_OF_DAY, count );
 					break;
 				case 'd':
-					if ( future )
-						cal.set( Calendar.DAY_OF_YEAR, count );
-					else
-						cal.set( Calendar.DAY_OF_MONTH, count );
+					if ( future ) cal.set( Calendar.DAY_OF_YEAR, count );
+					else cal.set( Calendar.DAY_OF_MONTH, count );
 					break;
 				case 'w':
 					if ( future ) cal.set( Calendar.WEEK_OF_YEAR, count );
@@ -300,14 +298,7 @@ public class BanExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-	@CreateCommand(
-			names = { "ban" },
-			example = "ban <player> <time> [reason -t]|| ban <player> [reason] -p",
-			desc = "Get help with a command.",
-			least = 1,
-			most = 3,
-			console = true,
-			flags = { "p", "t", "e", "s" } )
+	@CreateCommand( names = { "ban" }, example = "ban <player> <time> [reason -t]|| ban <player> [reason] -p", desc = "Get help with a command.", least = 1, most = 3, console = true, flags = { "p", "t", "e", "s" } )
 	public boolean BanCommand( CommandSender sender, CommandInput input ) {
 		if ( !enabled ) return false;
 		
@@ -316,8 +307,7 @@ public class BanExtension extends Extension {
 		if ( input.hasFlag( 'e' ) ) {
 			OfflinePlayer ply = plugin.getServer( ).getOfflinePlayer( input.arg( 0 ) );
 			
-			if ( ply.isOnline( ) )
-				target = ply.getPlayer( );
+			if ( ply.isOnline( ) ) target = ply.getPlayer( );
 			else {
 				if ( ply.getFirstPlayed( ) == 0 ) {
 					// TODO: Add message about banning a player that haven't played on the server
@@ -367,14 +357,7 @@ public class BanExtension extends Extension {
 		return true;
 	}
 	
-	@CreateCommand(
-			names = { "ipban" },
-			example = "ipban <player> <time> [reason -t]|| ipban <player> [reason] -p",
-			desc = "Get help with a command.",
-			least = 1,
-			most = 3,
-			console = true,
-			flags = { "p", "t", "e", "s" } )
+	@CreateCommand( names = { "ipban" }, example = "ipban <player> <time> [reason -t]|| ipban <player> [reason] -p", desc = "Get help with a command.", least = 1, most = 3, console = true, flags = { "p", "t", "e", "s" } )
 	public boolean IpBanCommand( CommandSender sender, CommandInput input ) {
 		if ( !enabled ) return false;
 		
@@ -383,8 +366,7 @@ public class BanExtension extends Extension {
 		if ( input.hasFlag( 'e' ) ) {
 			OfflinePlayer ply = plugin.getServer( ).getOfflinePlayer( input.arg( 0 ) );
 			
-			if ( ply.isOnline( ) )
-				target = ply.getPlayer( );
+			if ( ply.isOnline( ) ) target = ply.getPlayer( );
 			else {
 				if ( ply.getFirstPlayed( ) == 0 ) {
 					// TODO: Add message about banning a player that haven't played on the server

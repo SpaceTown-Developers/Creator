@@ -22,28 +22,27 @@ import org.bukkit.Material;
 
 import org.bukkit.material.MaterialData;
 
-
 public class ItemStack extends org.bukkit.inventory.ItemStack {
 	
 	public ItemStack( int type ) {
-		super(type);
+		super( type );
 		this.item = Item.get( type );
 	}
 	
 	public ItemStack( int type, byte data ) {
-		super(type, 1, (short) 0, data);
+		super( type, 1, (short) 0, data );
 		this.item = Item.get( type );
 	}
 	
 	public ItemStack( int type, byte data, int amount ) {
-		super(type, amount, (short) 0, data);
+		super( type, amount, (short) 0, data );
 		this.item = Item.get( type );
 	}
 	
 	/*========================================================================================================*/
 	
-	public void setTypeId(int type) {
-	    super.setTypeId(type);
+	public void setTypeId( int type ) {
+		super.setTypeId( type );
 		this.item = Item.get( type );
 	}
 	
@@ -51,12 +50,12 @@ public class ItemStack extends org.bukkit.inventory.ItemStack {
 	
 	public void setData( byte data ) {
 		Material mat = super.getType( );
-
-        if (mat == null) {
-            super.setData( new MaterialData(super.getTypeId( ), data) );
-        } else {
-            super.setData( mat.getNewData(data) );
-        }
+		
+		if ( mat == null ) {
+			super.setData( new MaterialData( super.getTypeId( ), data ) );
+		} else {
+			super.setData( mat.getNewData( data ) );
+		}
 	}
 	
 	public byte getDataByte( ) {
@@ -65,16 +64,16 @@ public class ItemStack extends org.bukkit.inventory.ItemStack {
 	
 	/*========================================================================================================*/
 	
-	public ItemStack clone() {
-	    ItemStack itemStack = (ItemStack) super.clone();
-	    itemStack.item = Item.get( itemStack.getTypeId( ) );
-	    
-	    return itemStack;
+	public ItemStack clone( ) {
+		ItemStack itemStack = (ItemStack) super.clone( );
+		itemStack.item = Item.get( itemStack.getTypeId( ) );
+		
+		return itemStack;
 	}
 	
 	/*========================================================================================================*/
 	
-	public Item getItem( ) {	
+	public Item getItem( ) {
 		return this.item;
 	}
 	
@@ -82,11 +81,11 @@ public class ItemStack extends org.bukkit.inventory.ItemStack {
 		return this.item.getName( );
 	}
 	
-	public String niceName() {
-		return item.niceName( (int) getDataByte() );
+	public String niceName( ) {
+		return item.niceName( (int) getDataByte( ) );
 	}
 	
 	/*========================================================================================================*/
 	
-	private Item item;
+	private Item	item;
 }

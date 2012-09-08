@@ -61,7 +61,7 @@ public class DataHolder {
 	
 	public int get( String name ) {
 		
-		if ( lookup.containsValue( name )) return lookup.get( name );
+		if ( lookup.containsValue( name ) ) return lookup.get( name );
 		
 		return -1; // Note: Invalid data type;
 	}
@@ -80,36 +80,36 @@ public class DataHolder {
 	
 	/*========================================================================================================*/
 	
-	public DataHolder prefixName() {
+	public DataHolder prefixName( ) {
 		prefixName = true;
 		dataName = false;
 		
 		return this;
 	}
 	
-	public DataHolder dataName() {
+	public DataHolder dataName( ) {
 		dataName = true;
 		prefixName = false;
 		
 		return this;
 	}
 	
-	public String niceName(int id, String name) {
-		String nice = name(id);
+	public String niceName( int id, String name ) {
+		String nice = name( id );
 		
-		if (nice.equalsIgnoreCase( "normal" )) return name;
+		if ( nice.equalsIgnoreCase( "normal" ) ) return name;
 		
-		if (prefixName) return new StringBuilder(nice).append( " " ).append(name).toString( );
+		if ( prefixName ) return new StringBuilder( nice ).append( " " ).append( name ).toString( );
 		
-		if (dataName) return nice;
+		if ( dataName ) return nice;
 		
 		return name;
 	}
 	
 	/*========================================================================================================*/
-	private HashMap< Integer, String>	names;
-	private HashMap< String, Integer>	lookup;
+	private HashMap< Integer, String >	names;
+	private HashMap< String, Integer >	lookup;
 	
-	private boolean	prefixName = false;
-	private boolean dataName = false;
+	private boolean						prefixName	= false;
+	private boolean						dataName	= false;
 }

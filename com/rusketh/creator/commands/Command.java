@@ -110,7 +110,9 @@ public class Command {
 		if ( isPlayer && !this.player ) {
 			sender.sendMessage( "This command can not be called by players." );
 			return true;
-		} else if ( !isPlayer && !this.console ) { throw new CommandException( "This command can not be called from console." ); }
+		} else if ( !isPlayer && !this.console ) {
+			throw new CommandException( "This command can not be called from console." );
+		}
 		
 		if ( isPlayer ) { // Note: Check permissions?
 			Player player = (Player) sender;
@@ -146,11 +148,11 @@ public class Command {
 	public boolean invoke( CommandSender sender, CommandInput input ) {
 		try {
 			return (Boolean) this.method.invoke( this.baseClass, sender, input );
-		} catch ( Exception e)  {
+		} catch ( Exception e ) {
 			
 			if ( e.getCause( ) != null ) {
 				
-				if (e.getCause( ).getClass( ).equals( CommandException.class )) throw (CommandException) e.getCause( );
+				if ( e.getCause( ).getClass( ).equals( CommandException.class ) ) throw (CommandException) e.getCause( );
 				
 				plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
 				plugin.logger.info( e.getCause( ).getMessage( ) );
@@ -166,7 +168,8 @@ public class Command {
 	/*========================================================================================================*/
 	
 	public boolean hasPermission( Player player ) {
-		if ( this.perms.length == 0 ) { return true; // No permission nodes.
+		if ( this.perms.length == 0 ) {
+			return true; // No permission nodes.
 		}
 		
 		boolean allowed = false;

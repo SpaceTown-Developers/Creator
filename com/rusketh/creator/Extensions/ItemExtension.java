@@ -133,32 +133,24 @@ public class ItemExtension extends Extension {
 	/*========================================================================================================*/
 	
 	@SuppressWarnings( "deprecation" )
-	@CreateCommand(
-			names = { "i", "item", "give" },
-			example = "i <id>[:<data> <amount> -p:<player>]",
-			desc = "Easily obtain an item.",
-			least = 1,
-			most = 2,
-			console = false,
-			flags = { "p*", "d", "e*" },
-			perms = { "creator.item.give" } )
+	@CreateCommand( names = { "i", "item", "give" }, example = "i <id>[:<data> <amount> -p:<player>]", desc = "Easily obtain an item.", least = 1, most = 2, console = false, flags = { "p*", "d", "e*" }, perms = { "creator.item.give" } )
 	public boolean ItemCommand( CommandSender sender, CommandInput input ) {
 		
 		ItemStack itemStack = stringToItemStack( input.arg( 0 ) );
 		
 		Player player = (Player) sender;
-		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getTypeId() ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
+		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getTypeId( ) ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
 		
 		int amount = 1;
 		
 		if ( input.size( ) == 2 ) {
 			amount = input.argInt( 1 );
 			
-			if (itemStack.getAmount( ) < 1) {
-				throw new CommandException("Invalid item amount!");
-			} else if (itemStack.getItem( ).shouldNotStack( )) {
+			if ( itemStack.getAmount( ) < 1 ) {
+				throw new CommandException( "Invalid item amount!" );
+			} else if ( itemStack.getItem( ).shouldNotStack( ) ) {
 				amount = 1;
-			} else if (itemStack.getAmount( ) < 64) {
+			} else if ( itemStack.getAmount( ) < 64 ) {
 				amount = 64;
 			}
 		}
@@ -179,19 +171,19 @@ public class ItemExtension extends Extension {
 		message.append( amount ).append( " '" ).append( itemStack.niceName( ) ).append( "'" );
 		
 		if ( input.hasFlag( 'e' ) ) {
-			String with = enchant(input.flagString( 'e' ), itemStack);
+			String with = enchant( input.flagString( 'e' ), itemStack );
 			
-			message.append( " enchanted with '" ).append(with).append( "'" );
+			message.append( " enchanted with '" ).append( with ).append( "'" );
 		}
 		
 		if ( input.hasFlag( 'd' ) ) {
-			player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+			player.getWorld( ).dropItemNaturally( player.getLocation( ), itemStack );
 		} else {
 			player.getInventory( ).addItem( itemStack );
 			player.updateInventory( ); // Not actually deprecated is just a work around.
 		}
 		
-		player.sendMessage( message.append(".").toString( ) );
+		player.sendMessage( message.append( "." ).toString( ) );
 		
 		return true;
 	}
@@ -266,14 +258,12 @@ public class ItemExtension extends Extension {
 		
 		if ( stack == null ) throw new CommandException( "Your hand is empty." );
 		
-		String with = enchant(input.arg( 0 ), stack);
+		String with = enchant( input.arg( 0 ), stack );
 		player.updateInventory( ); // Not actually deprecated is just a work around.
 		
-		player.sendMessage( new StringBuilder("Your item has been enchanted with '").append(with).append("'.").toString() );
+		player.sendMessage( new StringBuilder( "Your item has been enchanted with '" ).append( with ).append( "'." ).toString( ) );
 		
 		return true;
 	}
-	
-	
 	
 }

@@ -256,7 +256,9 @@ public class CreatorPlugin extends JavaPlugin {
 	 */
 	
 	public boolean onCommand( CommandSender sender, Command command, String commandLabel, String[] args ) {
-		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) { return commandManager.run( sender, args ); }
+		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) {
+			return commandManager.run( sender, args );
+		}
 		
 		return false;
 	}
