@@ -18,81 +18,63 @@
 
 package com.rusketh.creator.blocks;
 
-public class ItemStack {
+import org.bukkit.Material;
+
+import org.bukkit.material.MaterialData;
+
+
+public class ItemStack extends org.bukkit.inventory.ItemStack {
 	
-	public ItemStack( int id ) {
-		this.id = id;
-		
-		this.item = Item.get( id );
+	public ItemStack( int type ) {
+		super(type);
+		this.item = Item.get( type );
 	}
 	
-	public ItemStack( int id, byte data ) {
-		this.id = id;
-		this.data = data;
-		
-		this.item = Item.get( id );
+	public ItemStack( int type, byte data ) {
+		super(type, 1, (short) 0, data);
+		this.item = Item.get( type );
 	}
 	
-	public ItemStack( int id, byte data, int amount ) {
-		this.id = id;
-		this.data = data;
-		this.amount = amount;
-		
-		this.item = Item.get( id );
+	public ItemStack( int type, byte data, int amount ) {
+		super(type, amount, (short) 0, data);
+		this.item = Item.get( type );
 	}
 	
 	/*========================================================================================================*/
 	
-	public void setID( int id ) {
-		this.id = id;
-		
-		this.item = Item.get( id );
-	}
-	
-	public int getID( ) {
-		return this.id;
+	public void setTypeId(int type) {
+	    super.setTypeId(type);
+		this.item = Item.get( type );
 	}
 	
 	/*========================================================================================================*/
 	
 	public void setData( byte data ) {
-		this.data = data;
+		Material mat = super.getType( );
+
+        if (mat == null) {
+            super.setData( new MaterialData(super.getTypeId( ), data) );
+        } else {
+            super.setData( mat.getNewData(data) );
+        }
 	}
 	
-	public int getData( ) {
-		return this.data;
-	}
-	
-	/*========================================================================================================*/
-	
-	public void setDurability( short durability ) {
-		this.durability = durability;
-	}
-	
-	public int getDurability( ) {
-		return this.durability;
+	public byte getDataByte( ) {
+		return super.getData( ).getData( );
 	}
 	
 	/*========================================================================================================*/
 	
-	public void setAmount( int amount ) {
-		this.amount = amount;
-	}
-	
-	public int getAmount( ) {
-		return this.amount;
-	}
-	
-	/*========================================================================================================*/
-	
-	public org.bukkit.inventory.ItemStack toItemStack( ) {
-		return new org.bukkit.inventory.ItemStack( id, amount, durability, data );
+	public ItemStack clone() {
+	    ItemStack itemStack = (ItemStack) super.clone();
+	    itemStack.item = Item.get( itemStack.getTypeId( ) );
+	    
+	    return itemStack;
 	}
 	
 	/*========================================================================================================*/
 	
-	public Item getItem( ) {
-		
+	public Item getItem( ) {	
 		return this.item;
 	}
 	
@@ -101,23 +83,10 @@ public class ItemStack {
 	}
 	
 	public String niceName() {
-		return item.niceName( data );
+		return item.niceName( (int) getDataByte() );
 	}
 	
 	/*========================================================================================================*/
 	
-	public ItemStack clone( ) {
-		ItemStack itemStack = new ItemStack( id, data, amount );
-		itemStack.setDurability( durability );
-		return itemStack;
-	}
-	
-	/*========================================================================================================*/
-	
-	private int		id			= 0;
-	private byte	data		= 0;
-	private short	durability	= 0;
-	private int		amount		= 1;
-	
-	private Item	item;
+	private Item item;
 }

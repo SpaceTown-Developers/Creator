@@ -20,6 +20,8 @@
 
 package com.rusketh.creator.Extensions;
 
+import org.bukkit.enchantments.Enchantment;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -27,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.rusketh.creator.blocks.BlockID;
+import com.rusketh.creator.blocks.DataHolder;
 import com.rusketh.creator.blocks.Item;
 import com.rusketh.creator.blocks.ItemID;
 import com.rusketh.creator.blocks.ItemStack;
@@ -40,7 +43,7 @@ public class ItemExtension extends Extension {
 		
 		Item item;
 		
-		if (StringUtils.isNumeric(split[0])) { 
+		if ( StringUtils.isNumeric( split[0] ) ) {
 			int id = Integer.parseInt( split[0] );
 			item = Item.get( id );
 		} else {
@@ -55,7 +58,7 @@ public class ItemExtension extends Extension {
 		
 		int data;
 		
-		if ( StringUtils.isNumeric(split[1]) ) {
+		if ( StringUtils.isNumeric( split[1] ) ) {
 			data = Integer.parseInt( split[1] );
 		} else {
 			data = item.getDataValue( split[1] );
@@ -89,6 +92,46 @@ public class ItemExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
+	public final static DataHolder	enchantments	= new DataHolder( Enchantment.PROTECTION_ENVIRONMENTAL.getId( ), "Protection", "protect" ).add( Enchantment.PROTECTION_FIRE.getId( ), "Fire Protection", "fireprotection", "fireprotect" ).add( Enchantment.PROTECTION_FALL.getId( ), "Feather Falling", "featherfalling", "featherfall", "fallprotect" ).add( Enchantment.PROTECTION_EXPLOSIONS.getId( ), "Blast Protection", "blastprotection", "blastprotect" ).add( Enchantment.PROTECTION_PROJECTILE.getId( ), "Projectile Protection", "projectileprotection", "projectileprotect", "bulletprotect" ).add( Enchantment.OXYGEN.getId( ), "Respiration", "oxygen", "breeth" ).add( Enchantment.WATER_WORKER.getId( ), "Aqua Affinity", "aquaaffinity", "waterworker", "aqua" ).add( Enchantment.DAMAGE_ALL.getId( ), "Sharpness", "sharp" ).add( Enchantment.DAMAGE_UNDEAD.getId( ), "Smite" ).add( Enchantment.DAMAGE_ARTHROPODS.getId( ), "Bane of Arthropods", "arthropods", "bane" ).add( Enchantment.KNOCKBACK.getId( ), "Knockback" ).add( Enchantment.FIRE_ASPECT.getId( ), "Fire Aspect", "fire" ).add( Enchantment.LOOT_BONUS_MOBS.getId( ), "Looting", "loot" ).add( Enchantment.DIG_SPEED.getId( ), "Efficiency" ).add( Enchantment.SILK_TOUCH.getId( ), "Silk Touch", "silktouch", "silk" ).add( Enchantment.DURABILITY.getId( ), "Unbreaking", "unbreak" ).add( Enchantment.LOOT_BONUS_BLOCKS.getId( ), "Fortune", "ritch" ).add( Enchantment.ARROW_DAMAGE.getId( ), "Power" ).add( Enchantment.ARROW_KNOCKBACK.getId( ), "Punch" ).add( Enchantment.ARROW_FIRE.getId( ), "Flame", "ignite" ).add( Enchantment.ARROW_INFINITE.getId( ), "Infinity", "infinate" );
+	
+	public String enchant( String search, ItemStack item ) {
+		String[] split = search.split( ":" );
+		
+		Enchantment ench;
+		
+		if ( StringUtils.isNumeric( split[0] ) ) {
+			int id = Integer.parseInt( split[0] );
+			ench = Enchantment.getById( id );
+		} else {
+			int id = enchantments.get( split[0] );
+			ench = Enchantment.getById( id );
+		}
+		
+		if ( ench == null ) throw new CommandException( new StringBuilder( "Can not find enchantment '" ).append( split[0] ).append( "'." ).toString( ) );
+		
+		int level = ench.getStartLevel( );
+		
+		if ( split.length > 1 ) {
+			if ( StringUtils.isNumeric( split[1] ) ) {
+				level = Integer.parseInt( split[1] );
+			} else {
+				throw new CommandException( new StringBuilder( "'" ).append( split[1] ).append( "' is not a valid level (try a number?)." ).toString( ) );
+			}
+			
+			if ( level < ench.getStartLevel( ) ) throw new CommandException( new StringBuilder( enchantments.name( ench.getId( ) ) ).append( " does not support levels below '" ).append( ench.getStartLevel( ) ).append( "'." ).toString( ) );
+			
+			if ( level > ench.getMaxLevel( ) ) throw new CommandException( new StringBuilder( enchantments.name( ench.getId( ) ) ).append( " does not support levels above '" ).append( ench.getMaxLevel( ) ).append( "'." ).toString( ) );
+		}
+		
+		if ( !ench.canEnchantItem( item ) ) throw new CommandException( new StringBuilder( "You can not enchant a '" ).append( item.niceName( ) ).append( "' with '" ).append( enchantments.name( ench.getId( ) ) ).append( "'." ).toString( ) );
+		
+		item.addUnsafeEnchantment( ench, level );
+		
+		return new StringBuilder( enchantments.name( ench.getId( ) ) ).append( " level " ).append( level ).toString( );
+	}
+	
+	/*========================================================================================================*/
+	
 	@SuppressWarnings( "deprecation" )
 	@CreateCommand(
 			names = { "i", "item", "give" },
@@ -97,21 +140,14 @@ public class ItemExtension extends Extension {
 			least = 1,
 			most = 2,
 			console = false,
-			flags = { "p*", "d" },
+			flags = { "p*", "d", "e*" },
 			perms = { "creator.item.give" } )
 	public boolean ItemCommand( CommandSender sender, CommandInput input ) {
 		
 		ItemStack itemStack = stringToItemStack( input.arg( 0 ) );
 		
 		Player player = (Player) sender;
-		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getID( ) ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
-		
-		if ( input.hasFlag( 'p' ) ) {
-			if ( !player.hasPermission( "creator.item.give.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
-			
-			player = plugin.getServer( ).getPlayer( input.flagString( 'p' ) );
-			if ( player == null ) throw new CommandException( "Player was not found." );
-		}
+		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getTypeId() ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
 		
 		int amount = 1;
 		
@@ -129,29 +165,41 @@ public class ItemExtension extends Extension {
 		
 		itemStack.setAmount( amount );
 		
+		StringBuilder message = new StringBuilder( "Giving you " );
+		
+		if ( input.hasFlag( 'p' ) ) {
+			if ( !player.hasPermission( "creator.item.give.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
+			
+			player = plugin.getServer( ).getPlayer( input.flagString( 'p' ) );
+			if ( player == null ) throw new CommandException( "Player was not found." );
+			
+			message = new StringBuilder( sender.getName( ) ).append( " has given you " );
+		}
+		
+		message.append( amount ).append( " '" ).append( itemStack.niceName( ) ).append( "'" );
+		
+		if ( input.hasFlag( 'e' ) ) {
+			String with = enchant(input.flagString( 'e' ), itemStack);
+			
+			message.append( " enchanted with '" ).append(with).append( "'" );
+		}
+		
 		if ( input.hasFlag( 'd' ) ) {
-			player.getWorld().dropItemNaturally(player.getLocation(), itemStack.toItemStack( ));
+			player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
 		} else {
-			player.getInventory( ).addItem( itemStack.toItemStack( ) );
+			player.getInventory( ).addItem( itemStack );
 			player.updateInventory( ); // Not actually deprecated is just a work around.
 		}
 		
-		player.sendMessage( new StringBuilder( "Giving you " ).append( amount ).append( " '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
+		player.sendMessage( message.append(".").toString( ) );
+		
 		return true;
 	}
 	
 	/*========================================================================================================*/
 	
 	@SuppressWarnings( "deprecation" )
-	@CreateCommand(
-			names = { "clear" },
-			example = "clear [-a|-s -p:<player>]",
-			desc = "Easily clear your inventory.",
-			least = 0,
-			most = 0,
-			console = false,
-			flags = { "p*", "a", "s" },
-			perms = { "creator.item.clear" } )
+	@CreateCommand( names = { "clear" }, example = "clear [-a|-s -p:<player>]", desc = "Easily clear your inventory.", least = 0, most = 0, console = false, flags = { "p*", "a", "s" }, perms = { "creator.item.clear" } )
 	public boolean ClearCommand( CommandSender sender, CommandInput input ) {
 		
 		Player player = (Player) sender;
@@ -187,21 +235,13 @@ public class ItemExtension extends Extension {
 	/*========================================================================================================*/
 	
 	@SuppressWarnings( "deprecation" )
-	@CreateCommand(
-			names = { "more" },
-			example = "more",
-			desc = "Easily refil item.",
-			least = 0,
-			most = 0,
-			console = false,
-			flags = { },
-			perms = { "creator.item.more" } )
+	@CreateCommand( names = { "more" }, example = "more", desc = "Easily refil item.", least = 0, most = 0, console = false, flags = { }, perms = { "creator.item.more" } )
 	public boolean MoreCommand( CommandSender sender, CommandInput input ) {
 		
 		Player player = (Player) sender;
-		org.bukkit.inventory.ItemStack stack = player.getInventory( ).getItemInHand( );
+		ItemStack stack = (ItemStack) player.getInventory( ).getItemInHand( );
 		
-		if (stack == null) {
+		if ( stack == null ) {
 			throw new CommandException( "Your hand is empty." );
 		} else if ( Item.get( stack.getTypeId( ) ).shouldNotStack( ) ) {
 			throw new CommandException( "Your current item can not stack." );
@@ -214,5 +254,26 @@ public class ItemExtension extends Extension {
 		
 		return true;
 	}
+	
+	/*========================================================================================================*/
+	
+	@SuppressWarnings( "deprecation" )
+	@CreateCommand( names = { "enchant" }, example = "enchant <enchantment>:<level>", desc = "Easily enchant an item.", least = 1, most = 1, console = false, flags = { }, perms = { "creator.item.enchant" } )
+	public boolean EnchantCommand( CommandSender sender, CommandInput input ) {
+		
+		Player player = (Player) sender;
+		ItemStack stack = (ItemStack) player.getInventory( ).getItemInHand( );
+		
+		if ( stack == null ) throw new CommandException( "Your hand is empty." );
+		
+		String with = enchant(input.arg( 0 ), stack);
+		player.updateInventory( ); // Not actually deprecated is just a work around.
+		
+		player.sendMessage( new StringBuilder("Your item has been enchanted with '").append(with).append("'.").toString() );
+		
+		return true;
+	}
+	
+	
+	
 }
-

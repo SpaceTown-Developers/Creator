@@ -685,7 +685,7 @@ public enum Block {
 		if ( dropStack != null ) {
 			ItemStack stack = dropStack.clone( );
 			
-			if ( data != 0 && stack.getData( ) == 0 ) stack.setData( (byte) data );
+			if ( data != 0 && stack.getDataByte( ) == 0 ) stack.setData( (byte) data );
 			
 			return stack;
 		}

@@ -18,48 +18,40 @@
 
 package com.rusketh.creator.blocks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataHolder {
 	
 	public DataHolder( int id, String name ) {
-		names = new HashMap< Integer, ArrayList< String >>( );
-		add( id, name );
+		names = new HashMap< Integer, String >( );
+		lookup = new HashMap< String, Integer >( );
+		
+		names.put( id, name );
+		lookup.put( name.toLowerCase( ), id );
 	}
 	
 	public DataHolder( int id, String name, String... ailas ) {
-		names = new HashMap< Integer, ArrayList< String >>( );
+		names = new HashMap< Integer, String >( );
+		lookup = new HashMap< String, Integer >( );
+		
 		add( id, name, ailas );
 	}
 	
 	/*========================================================================================================*/
 	
 	public DataHolder add( int id, String name ) {
-		ArrayList< String > list = names.get( id );
-		
-		if ( list == null ) {
-			list = new ArrayList< String >( );
-			names.put( id, list );
-		}
-		
-		list.add( name );
+		names.put( id, name );
+		lookup.put( name.toLowerCase( ), id );
 		
 		return this;
 	}
 	
 	public DataHolder add( int id, String name, String... ailas ) {
-		ArrayList< String > list = names.get( id );
-		
-		if ( list == null ) {
-			list = new ArrayList< String >( );
-			names.put( id, list );
-		}
-		
-		list.add(name);
+		names.put( id, name );
+		lookup.put( name.toLowerCase( ), id );
 		
 		for ( String a : ailas ) {
-			list.add( a );
+			lookup.put( a, id );
 		}
 		
 		return this;
@@ -69,11 +61,7 @@ public class DataHolder {
 	
 	public int get( String name ) {
 		
-		for ( int id : names.keySet( ) ) {
-			for ( String alias : names.get( id ) ) {
-				if ( alias.equalsIgnoreCase( name ) ) return id;
-			}
-		}
+		if ( lookup.containsValue( name )) return lookup.get( name );
 		
 		return -1; // Note: Invalid data type;
 	}
@@ -81,17 +69,13 @@ public class DataHolder {
 	/*========================================================================================================*/
 	
 	public String name( int id ) {
-		ArrayList< String > list = names.get( id );
-		
-		if ( list == null ) return null;
-		
-		return list.get( 0 );
+		return names.get( id );
 	}
 	
 	/*========================================================================================================*/
 	
 	public boolean valid( int id ) {
-		return ( names.get( id ) != null );
+		return names.containsKey( id );
 	}
 	
 	/*========================================================================================================*/
@@ -123,8 +107,8 @@ public class DataHolder {
 	}
 	
 	/*========================================================================================================*/
-	
-	private HashMap< Integer, ArrayList< String >>	names;
+	private HashMap< Integer, String>	names;
+	private HashMap< String, Integer>	lookup;
 	
 	private boolean	prefixName = false;
 	private boolean dataName = false;
