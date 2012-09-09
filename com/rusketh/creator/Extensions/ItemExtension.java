@@ -27,12 +27,13 @@ import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import com.rusketh.creator.blocks.BlockID;
 import com.rusketh.creator.blocks.DataHolder;
 import com.rusketh.creator.blocks.Item;
 import com.rusketh.creator.blocks.ItemID;
-import com.rusketh.creator.blocks.ItemStack;
+import com.rusketh.creator.blocks.CreatorItemStack;
 import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
 
@@ -54,7 +55,7 @@ public class ItemExtension extends Extension {
 		
 		if ( item == null ) throw new CommandException( new StringBuilder( "Can not find item '" ).append( split[0] ).append( "'." ).toString( ) );
 		
-		if ( split.length == 1 ) return new ItemStack( item.getID( ) );
+		if ( split.length == 1 ) return new CreatorItemStack( item.getID( ) );
 		
 		int data;
 		
@@ -66,26 +67,26 @@ public class ItemExtension extends Extension {
 		
 		if ( !item.validDataValue( data ) ) throw new CommandException( new StringBuilder( item.getName( ) ).append( " does not have type '" ).append( split[1] ).append( "'." ).toString( ) );
 		
-		return new ItemStack( item.getID( ), (byte) data );
+		return new CreatorItemStack( item.getID( ), (byte) data );
 	}
 	
 	/*========================================================================================================*/
 	
 	public ItemStack aliasToItemStack( String alias ) {
 		int data = Item.CLOTH.getDataValue( alias );
-		if ( data != -1 ) return new ItemStack( BlockID.CLOTH, (byte) data );
+		if ( data != -1 ) return new CreatorItemStack( BlockID.CLOTH, (byte) data );
 		
 		data = Item.INK_SACK.getDataValue( alias );
-		if ( data != -1 ) return new ItemStack( ItemID.INK_SACK, (byte) data );
+		if ( data != -1 ) return new CreatorItemStack( ItemID.INK_SACK, (byte) data );
 		
 		data = Item.LOG.getDataValue( alias );
-		if ( data != -1 ) return new ItemStack( BlockID.LOG, (byte) data );
+		if ( data != -1 ) return new CreatorItemStack( BlockID.LOG, (byte) data );
 		
 		data = Item.COAL.getDataValue( alias );
-		if ( data != -1 ) return new ItemStack( ItemID.COAL, (byte) data );
+		if ( data != -1 ) return new CreatorItemStack( ItemID.COAL, (byte) data );
 		
 		data = Item.SPAWN_EGG.getDataValue( alias );
-		if ( data != -1 ) return new ItemStack( ItemID.SPAWN_EGG, (byte) data );
+		if ( data != -1 ) return new CreatorItemStack( ItemID.SPAWN_EGG, (byte) data );
 		
 		throw new CommandException( new StringBuilder( "Can not find item '" ).append( alias ).append( "'." ).toString( ) );
 	}
@@ -101,9 +102,11 @@ public class ItemExtension extends Extension {
 		
 		if ( StringUtils.isNumeric( split[0] ) ) {
 			int id = Integer.parseInt( split[0] );
+			plugin.logger.info( "Number -> " + id );
 			ench = Enchantment.getById( id );
 		} else {
 			int id = enchantments.get( split[0] );
+			plugin.logger.info( "String -> " + split[0] + " -> " + id );
 			ench = Enchantment.getById( id );
 		}
 		
@@ -123,7 +126,7 @@ public class ItemExtension extends Extension {
 			if ( level > ench.getMaxLevel( ) ) throw new CommandException( new StringBuilder( enchantments.name( ench.getId( ) ) ).append( " does not support levels above '" ).append( ench.getMaxLevel( ) ).append( "'." ).toString( ) );
 		}
 		
-		if ( !ench.canEnchantItem( item ) ) throw new CommandException( new StringBuilder( "You can not enchant a '" ).append( item.niceName( ) ).append( "' with '" ).append( enchantments.name( ench.getId( ) ) ).append( "'." ).toString( ) );
+		if ( !ench.canEnchantItem( item ) ) throw new CommandException( new StringBuilder( "You can not enchant '" ).append( new CreatorItemStack(item).niceName() ).append( "' with '" ).append( enchantments.name( ench.getId( ) ) ).append( "'." ).toString( ) );
 		
 		item.addUnsafeEnchantment( ench, level );
 		
@@ -136,7 +139,7 @@ public class ItemExtension extends Extension {
 	@CreateCommand( names = { "i", "item", "give" }, example = "i <id>[:<data> <amount> -p:<player>]", desc = "Easily obtain an item.", least = 1, most = 2, console = false, flags = { "p*", "d", "e*" }, perms = { "creator.item.give" } )
 	public boolean ItemCommand( CommandSender sender, CommandInput input ) {
 		
-		ItemStack itemStack = stringToItemStack( input.arg( 0 ) );
+		CreatorItemStack itemStack = (CreatorItemStack) stringToItemStack( input.arg( 0 ) );
 		
 		Player player = (Player) sender;
 		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getTypeId( ) ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );
@@ -231,7 +234,7 @@ public class ItemExtension extends Extension {
 	public boolean MoreCommand( CommandSender sender, CommandInput input ) {
 		
 		Player player = (Player) sender;
-		ItemStack stack = (ItemStack) player.getInventory( ).getItemInHand( );
+		ItemStack stack = player.getInventory( ).getItemInHand( );
 		
 		if ( stack == null ) {
 			throw new CommandException( "Your hand is empty." );
@@ -254,16 +257,15 @@ public class ItemExtension extends Extension {
 	public boolean EnchantCommand( CommandSender sender, CommandInput input ) {
 		
 		Player player = (Player) sender;
-		ItemStack stack = (ItemStack) player.getInventory( ).getItemInHand( );
+		ItemStack itemStack = player.getInventory( ).getItemInHand( );
 		
-		if ( stack == null ) throw new CommandException( "Your hand is empty." );
+		if ( itemStack == null ) throw new CommandException( "Your hand is empty." );
 		
-		String with = enchant( input.arg( 0 ), stack );
+		String with = enchant( input.arg( 0 ), itemStack );
 		player.updateInventory( ); // Not actually deprecated is just a work around.
 		
 		player.sendMessage( new StringBuilder( "Your item has been enchanted with '" ).append( with ).append( "'." ).toString( ) );
 		
 		return true;
 	}
-	
 }

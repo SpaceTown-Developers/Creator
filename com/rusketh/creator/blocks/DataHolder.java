@@ -61,7 +61,7 @@ public class DataHolder {
 	
 	public int get( String name ) {
 		
-		if ( lookup.containsValue( name ) ) return lookup.get( name );
+		if ( lookup.containsKey( name ) ) return lookup.get( name );
 		
 		return -1; // Note: Invalid data type;
 	}

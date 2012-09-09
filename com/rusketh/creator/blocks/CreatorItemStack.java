@@ -20,21 +20,30 @@ package com.rusketh.creator.blocks;
 
 import org.bukkit.Material;
 
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-public class ItemStack extends org.bukkit.inventory.ItemStack {
+public class CreatorItemStack extends ItemStack {
 	
-	public ItemStack( int type ) {
+	public CreatorItemStack( ItemStack itemStack ) {
+		super( itemStack.getTypeId( ), itemStack.getAmount( ), itemStack.getDurability( ), itemStack.getData( ).getData( ) );
+		super.addEnchantments( itemStack.getEnchantments( ) );
+		this.item = Item.get( itemStack.getTypeId( ) );
+	}
+	
+	/*========================================================================================================*/
+	
+	public CreatorItemStack( int type ) {
 		super( type );
 		this.item = Item.get( type );
 	}
 	
-	public ItemStack( int type, byte data ) {
+	public CreatorItemStack( int type, byte data ) {
 		super( type, 1, (short) 0, data );
 		this.item = Item.get( type );
 	}
 	
-	public ItemStack( int type, byte data, int amount ) {
+	public CreatorItemStack( int type, byte data, int amount ) {
 		super( type, amount, (short) 0, data );
 		this.item = Item.get( type );
 	}
@@ -64,8 +73,8 @@ public class ItemStack extends org.bukkit.inventory.ItemStack {
 	
 	/*========================================================================================================*/
 	
-	public ItemStack clone( ) {
-		ItemStack itemStack = (ItemStack) super.clone( );
+	public CreatorItemStack clone( ) {
+		CreatorItemStack itemStack = (CreatorItemStack) clone( );
 		itemStack.item = Item.get( itemStack.getTypeId( ) );
 		
 		return itemStack;
@@ -74,15 +83,16 @@ public class ItemStack extends org.bukkit.inventory.ItemStack {
 	/*========================================================================================================*/
 	
 	public Item getItem( ) {
+		if (this.item == null) this.item = Item.get( getTypeId( ) );
 		return this.item;
 	}
 	
 	public String getName( ) {
-		return this.item.getName( );
+		return getItem().getName( );
 	}
 	
 	public String niceName( ) {
-		return item.niceName( (int) getDataByte( ) );
+		return getItem().niceName( (int) getDataByte( ) );
 	}
 	
 	/*========================================================================================================*/

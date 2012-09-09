@@ -1116,42 +1116,42 @@ public enum Block {
 	
 	/*========================================================================================================*/
 	
-	private ItemStack	dropStack;
+	private CreatorItemStack	dropStack;
 	private boolean		noDrop	= false;
 	
 	static {
-		STONE.dropStack = new ItemStack( BlockID.COBBLESTONE );
-		GRASS.dropStack = new ItemStack( BlockID.DIRT );
-		COAL_ORE.dropStack = new ItemStack( ItemID.COAL );
-		WEB.dropStack = new ItemStack( ItemID.STRING );
-		REDSTONE_WIRE.dropStack = new ItemStack( ItemID.REDSTONE_DUST );
-		DIAMOND_ORE.dropStack = new ItemStack( ItemID.DIAMOND );
-		CROPS.dropStack = new ItemStack( ItemID.SEEDS );
-		SOIL.dropStack = new ItemStack( BlockID.DIRT );
-		BURNING_FURNACE.dropStack = new ItemStack( BlockID.FURNACE );
-		SIGN_POST.dropStack = new ItemStack( ItemID.SIGN );
-		WALL_SIGN.dropStack = new ItemStack( ItemID.SIGN );
-		GLOWING_REDSTONE_ORE.dropStack = new ItemStack( ItemID.REDSTONE_DUST, (byte) 0, 4 );
-		REDSTONE_ORE.dropStack = new ItemStack( ItemID.REDSTONE_DUST, (byte) 0, 4 );
-		REDSTONE_TORCH_OFF.dropStack = new ItemStack( BlockID.REDSTONE_TORCH_ON );
-		REED.dropStack = new ItemStack( ItemID.SUGAR_CANE_ITEM );
-		CAKE.dropStack = new ItemStack( ItemID.CAKE_ITEM );
-		REDSTONE_REPEATER_OFF.dropStack = new ItemStack( ItemID.REDSTONE_REPEATER );
-		REDSTONE_REPEATER_ON.dropStack = new ItemStack( ItemID.REDSTONE_REPEATER );
-		PUMPKIN_STEM.dropStack = new ItemStack( ItemID.PUMPKIN_SEEDS );
-		MELON_STEM.dropStack = new ItemStack( ItemID.MELON_SEEDS );
-		MYCELIUM.dropStack = new ItemStack( BlockID.DIRT );
-		NETHER_WART.dropStack = new ItemStack( ItemID.NETHER_WART_SEED );
-		BREWING_STAND.dropStack = new ItemStack( ItemID.BREWING_STAND );
-		CAULDRON.dropStack = new ItemStack( ItemID.CAULDRON );
-		REDSTONE_LAMP_ON.dropStack = new ItemStack( BlockID.REDSTONE_LAMP_OFF );
-		COCOA_PLANT.dropStack = new ItemStack( ItemID.INK_SACK, (byte) 3, 3 );
-		EMERALD_ORE.dropStack = new ItemStack( ItemID.EMERALD );
-		TRIPWIRE.dropStack = new ItemStack( ItemID.STRING );
-		LAPIS_LAZULI_ORE.dropStack = new ItemStack( ItemID.INK_SACK, (byte) 4, 4 );
-		BED.dropStack = new ItemStack( ItemID.BED_ITEM );
-		LONG_GRASS.dropStack = new ItemStack( ItemID.SEEDS );
-		DOUBLE_STEP.dropStack = new ItemStack( BlockID.STEP, (byte) 0, 2 );
+		STONE.dropStack = new CreatorItemStack( BlockID.COBBLESTONE );
+		GRASS.dropStack = new CreatorItemStack( BlockID.DIRT );
+		COAL_ORE.dropStack = new CreatorItemStack( ItemID.COAL );
+		WEB.dropStack = new CreatorItemStack( ItemID.STRING );
+		REDSTONE_WIRE.dropStack = new CreatorItemStack( ItemID.REDSTONE_DUST );
+		DIAMOND_ORE.dropStack = new CreatorItemStack( ItemID.DIAMOND );
+		CROPS.dropStack = new CreatorItemStack( ItemID.SEEDS );
+		SOIL.dropStack = new CreatorItemStack( BlockID.DIRT );
+		BURNING_FURNACE.dropStack = new CreatorItemStack( BlockID.FURNACE );
+		SIGN_POST.dropStack = new CreatorItemStack( ItemID.SIGN );
+		WALL_SIGN.dropStack = new CreatorItemStack( ItemID.SIGN );
+		GLOWING_REDSTONE_ORE.dropStack = new CreatorItemStack( ItemID.REDSTONE_DUST, (byte) 0, 4 );
+		REDSTONE_ORE.dropStack = new CreatorItemStack( ItemID.REDSTONE_DUST, (byte) 0, 4 );
+		REDSTONE_TORCH_OFF.dropStack = new CreatorItemStack( BlockID.REDSTONE_TORCH_ON );
+		REED.dropStack = new CreatorItemStack( ItemID.SUGAR_CANE_ITEM );
+		CAKE.dropStack = new CreatorItemStack( ItemID.CAKE_ITEM );
+		REDSTONE_REPEATER_OFF.dropStack = new CreatorItemStack( ItemID.REDSTONE_REPEATER );
+		REDSTONE_REPEATER_ON.dropStack = new CreatorItemStack( ItemID.REDSTONE_REPEATER );
+		PUMPKIN_STEM.dropStack = new CreatorItemStack( ItemID.PUMPKIN_SEEDS );
+		MELON_STEM.dropStack = new CreatorItemStack( ItemID.MELON_SEEDS );
+		MYCELIUM.dropStack = new CreatorItemStack( BlockID.DIRT );
+		NETHER_WART.dropStack = new CreatorItemStack( ItemID.NETHER_WART_SEED );
+		BREWING_STAND.dropStack = new CreatorItemStack( ItemID.BREWING_STAND );
+		CAULDRON.dropStack = new CreatorItemStack( ItemID.CAULDRON );
+		REDSTONE_LAMP_ON.dropStack = new CreatorItemStack( BlockID.REDSTONE_LAMP_OFF );
+		COCOA_PLANT.dropStack = new CreatorItemStack( ItemID.INK_SACK, (byte) 3, 3 );
+		EMERALD_ORE.dropStack = new CreatorItemStack( ItemID.EMERALD );
+		TRIPWIRE.dropStack = new CreatorItemStack( ItemID.STRING );
+		LAPIS_LAZULI_ORE.dropStack = new CreatorItemStack( ItemID.INK_SACK, (byte) 4, 4 );
+		BED.dropStack = new CreatorItemStack( ItemID.BED_ITEM );
+		LONG_GRASS.dropStack = new CreatorItemStack( ItemID.SEEDS );
+		DOUBLE_STEP.dropStack = new CreatorItemStack( BlockID.STEP, (byte) 0, 2 );
 		
 		AIR.noDrop = true;
 		BEDROCK.noDrop = true;
@@ -1161,18 +1161,18 @@ public enum Block {
 		END_PORTAL_FRAME.noDrop = true;
 	}
 	
-	public ItemStack getDropedItems( int data ) {
+	public CreatorItemStack getDropedItems( int data ) {
 		if ( noDrop ) return null;
 		
 		if ( dropStack != null ) {
-			ItemStack stack = dropStack.clone( );
+			CreatorItemStack stack = dropStack.clone( );
 			
 			if ( data != 0 && stack.getDataByte( ) == 0 ) stack.setData( (byte) data );
 			
 			return stack;
 		}
 		
-		return new ItemStack( id, (byte) data, 1 );
+		return new CreatorItemStack( id, (byte) data, 1 );
 	}
 	
 }
