@@ -18,6 +18,8 @@
 
 package com.rusketh.creator.commands;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +27,8 @@ import java.util.HashMap;
 import net.minecraft.server.CommandException;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,6 +40,8 @@ public class CommandManager implements Listener {
 	
 	public CommandManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
+		
+		initializeConfig( );
 		
 		commands = new HashMap< String, Command >( );
 		leastCommands = new ArrayList< Command >( );
@@ -83,9 +89,7 @@ public class CommandManager implements Listener {
 		if ( args.length > 0 ) {
 			Command command = commands.get( args[0] );
 			
-			if ( command != null ) {
-				return command.execute( plugin, sender, args );
-			}
+			if ( command != null ) { return command.execute( plugin, sender, args ); }
 		}
 		
 		return false;
@@ -103,8 +107,59 @@ public class CommandManager implements Listener {
 	
 	/*========================================================================================================*/
 	
+	private void initializeConfig( ) {
+		configFile = new File( plugin.getDataFolder( ), "commands.yml" );
+		if ( !configFile.exists( ) ) {
+			try {
+				configFile.getParentFile( ).mkdirs( );
+				configFile.createNewFile( );
+			} catch ( IOException e ) {
+				plugin.getLogger( ).severe( "Unable to create commands.yml: " + e.getMessage( ) );
+			}
+		}
+		
+		reloadConfig( );
+	}
+	
+	public FileConfiguration getConfig( ) {
+		return YamlConfig;
+	}
+	
+	public void saveConfig( ) {
+		try {
+			YamlConfig.save( configFile );
+		} catch ( Exception e ) {
+			plugin.getLogger( ).info( "Failed to save commands.yml: " + e.getMessage( ) );
+		}
+	}
+	
+	public void reloadConfig( ) {
+		YamlConfig = new YamlConfiguration( );
+		YamlConfig.options( ).pathSeparator( '.' );
+		try {
+			YamlConfig.load( configFile );
+			
+		} catch ( Exception e ) {
+			plugin.getLogger( ).warning( "Unable to load commands.yml: " + e.getMessage( ) );
+		}
+	}
+	
+	protected void refreshConfig( ) {
+		try {
+			YamlConfig.save( configFile );
+			reloadConfig( );
+		} catch ( IOException e ) {
+			plugin.getLogger( ).warning( "Failed to write changed commands.yml: " + e.getMessage( ) );
+		}
+	}
+	
+	/*========================================================================================================*/
+	
 	CreatorPlugin						plugin;
 	
 	private HashMap< String, Command >	commands;
 	private ArrayList< Command >		leastCommands;
+	
+	private File						configFile;
+	private YamlConfiguration			YamlConfig;
 }

@@ -26,7 +26,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.rusketh.creator.CreatorPlugin;
@@ -59,29 +59,32 @@ public class Command {
 			}
 		}
 		
-		FileConfiguration settings = plugin.getConfig( );
+		YamlConfiguration config = (YamlConfiguration) plugin.getCommandManager( ).getConfig( );
 		
-		if ( settings.getConfigurationSection( "commands." + this.name ) == null ) {
-			this.plugin.getConfig( ).set( "commands." + this.name + ".enabled", true );
+		if ( !config.isConfigurationSection( this.name ) ) {
+			config.set( this.name + ".enabled", true );
 			
 			if ( anote.usePrice( ) != -1 ) {
-				settings.set( "commands." + this.name + ".price", anote.usePrice( ) );
+				config.set( this.name + ".price", anote.usePrice( ) );
 			}
 			
 			if ( anote.blockPrice( ) != -1 ) {
-				settings.set( "commands." + this.name + ".blockprice", anote.blockPrice( ) );
+				config.set( this.name + ".blockprice", anote.blockPrice( ) );
 			}
+			
+			plugin.getCommandManager( ).saveConfig( );
 		}
 		
-		this.enabled = settings.getBoolean( "commands." + this.name + ".enabled" );
-		this.usePrice = settings.getInt( "commands." + this.name + ".price" );
-		this.blockPrice = settings.getInt( "commands." + this.name + ".blockprice" );
+		this.enabled = config.getBoolean( this.name + ".enabled" );
+		this.usePrice = config.getInt( this.name + ".price" );
+		this.blockPrice = config.getInt( this.name + ".blockprice" );
+		
 	}
 	
 	/*========================================================================================================*/
 	
 	public ConfigurationSection getConfig( ) {
-		return plugin.getConfig( ).getConfigurationSection( "commands." + this.name );
+		return plugin.getCommandManager( ).getConfig( ).getConfigurationSection( this.name );
 	}
 	
 	/*========================================================================================================*/
@@ -110,9 +113,7 @@ public class Command {
 		if ( isPlayer && !this.player ) {
 			sender.sendMessage( "This command can not be called by players." );
 			return true;
-		} else if ( !isPlayer && !this.console ) {
-			throw new CommandException( "This command can not be called from console." );
-		}
+		} else if ( !isPlayer && !this.console ) { throw new CommandException( "This command can not be called from console." ); }
 		
 		if ( isPlayer ) { // Note: Check permissions?
 			Player player = (Player) sender;
@@ -168,8 +169,7 @@ public class Command {
 	/*========================================================================================================*/
 	
 	public boolean hasPermission( Player player ) {
-		if ( this.perms.length == 0 ) {
-			return true; // No permission nodes.
+		if ( this.perms.length == 0 ) { return true; // No permission nodes.
 		}
 		
 		boolean allowed = false;
