@@ -25,6 +25,13 @@ import com.rusketh.creator.CreatorPlugin;
 public class TaskSession {
 	
 	public TaskSession( CreatorPlugin plugin, Player player ) {
+		this.plugin = plugin;
+		this.player = player;
 	}
+	
+	/*========================================================================================================*/
+	
+	 CreatorPlugin plugin;
+	Player player;
 	
 }

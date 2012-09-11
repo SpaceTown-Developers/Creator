@@ -85,6 +85,9 @@ public class ItemExtension extends Extension {
 		data = Item.COAL.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( ItemID.COAL, (byte) data );
 		
+		data = Item.POTION.getDataValue( alias );
+		if ( data != -1 ) return new CreatorItemStack( ItemID.POTION, (byte) data );
+		
 		data = Item.SPAWN_EGG.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( ItemID.SPAWN_EGG, (byte) data );
 		
