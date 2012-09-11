@@ -18,20 +18,61 @@
 
 package com.rusketh.creator.tasks;
 
+import java.util.ArrayList;
+
 import org.bukkit.entity.Player;
 
 import com.rusketh.creator.CreatorPlugin;
+import com.rusketh.creator.tasks.selection.BoxSelection;
+import com.rusketh.creator.tasks.selection.Selection;
 
 public class TaskSession {
 	
 	public TaskSession( CreatorPlugin plugin, Player player ) {
 		this.plugin = plugin;
 		this.player = player;
+		
+		selection = new BoxSelection(player.getWorld());
 	}
 	
 	/*========================================================================================================*/
 	
-	 CreatorPlugin plugin;
-	Player player;
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
 	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	/*========================================================================================================*/
+	
+	public void setSelection(Selection selection) {
+		this.selection = selection;
+	}
+	
+	public Selection getSelection() {
+		return selection;
+	}
+	
+	/*========================================================================================================*/
+	
+	public void stop() {
+		if (task != null) task.stop();
+	}
+	
+	/*========================================================================================================*/
+	
+	
+	
+	/*========================================================================================================*/
+	
+	private CreatorPlugin plugin;
+	private Player player;
+	
+	private Selection selection;
+	private Task task;
+	
+	private ArrayList<Task> undoQue;
+	private ArrayList<Task> reundoQue;
 }

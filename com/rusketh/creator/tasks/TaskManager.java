@@ -21,6 +21,8 @@ package com.rusketh.creator.tasks;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.rusketh.creator.CreatorPlugin;
 
@@ -34,13 +36,15 @@ public class TaskManager {
 		reloadSessions( );
 	}
 	
+	/*========================================================================================================*/
+	
 	public void reloadSessions( ) {
 		for ( Player player : plugin.getServer( ).getOnlinePlayers( ) ) {
 			TaskSession oldSession = sessions.get( player.getName( ) );
 			TaskSession newSession = new TaskSession( plugin, player );
 			
 			if ( oldSession != null ) {
-				// oldSession.stop();
+				oldSession.stop();
 			}
 			
 			sessions.put( player.getName( ), newSession );
@@ -48,8 +52,30 @@ public class TaskManager {
 	}
 	
 	public void closeSessions( ) {
-		
+		for ( Player player : plugin.getServer( ).getOnlinePlayers( ) ) {
+			sessions.get( player.getName( ) ).stop();
+		}
 	}
+	
+	public TaskSession getSession(Player player) {
+		return sessions.get(player.getName( ));
+	}
+	
+	/*========================================================================================================*/
+	
+	@EventHandler
+	public void playerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		TaskSession oldSession = sessions.get( player.getName( ) );
+		
+		if ( oldSession == null ) {
+			sessions.put( player.getName( ), new TaskSession( plugin, player ) );
+		} else {
+			oldSession.setPlayer(player);
+		}
+	}
+	
+	/*========================================================================================================*/
 	
 	CreatorPlugin					plugin;
 	HashMap< String, TaskSession >	sessions;
