@@ -26,14 +26,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.rusketh.creator.CreatorPlugin;
 
-public class TaskManager {
+public class TaskManager implements Runnable {
 	
 	public TaskManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
 		sessions = new HashMap< String, TaskSession >( );
-		
 		reloadSessions( );
+		
+		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, 2L, 20L);
 	}
 	
 	/*========================================================================================================*/
@@ -77,6 +78,13 @@ public class TaskManager {
 	
 	/*========================================================================================================*/
 	
+	public void run( ) {
+		
+	}
+	
+	/*========================================================================================================*/
+	
 	CreatorPlugin					plugin;
 	HashMap< String, TaskSession >	sessions;
+	
 }

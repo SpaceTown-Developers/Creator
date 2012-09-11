@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.bukkit.entity.EntityType;
 
-public enum Block {
+public enum CreatorBlock {
 	
 	AIR( BlockID.AIR, "Air", "air" ),
 	STONE( BlockID.STONE, "Stone", "stone", "rock" ),
@@ -654,19 +654,19 @@ public enum Block {
 	
 	/*========================================================================================================*/
 	
-	public Block get( int id ) {
+	public static CreatorBlock get( int id ) {
 		return ids.get( id );
 	}
 	
-	public Block get( String name ) {
+	public static CreatorBlock get( String name ) {
 		return lookup.get( name );
 	}
 	
-	private static final Map< Integer, Block >	ids		= new HashMap< Integer, Block >( );
-	private static final Map< String, Block >	lookup	= new HashMap< String, Block >( );
+	private static final Map< Integer, CreatorBlock >	ids		= new HashMap< Integer, CreatorBlock >( );
+	private static final Map< String, CreatorBlock >	lookup	= new HashMap< String, CreatorBlock >( );
 	
 	static {
-		for ( Block block : EnumSet.allOf( Block.class ) ) {
+		for ( CreatorBlock block : EnumSet.allOf( CreatorBlock.class ) ) {
 			ids.put( block.id, block );
 			for ( String key : block.lookupKeys ) {
 				lookup.put( key, block );
@@ -676,13 +676,13 @@ public enum Block {
 	
 	/*========================================================================================================*/
 	
-	Block( int id, String name, String lookupKey ) {
+	CreatorBlock( int id, String name, String lookupKey ) {
 		this.id = id;
 		this.name = name;
 		this.lookupKeys = new String[] { lookupKey };
 	}
 	
-	Block( int id, String name, String... lookupKeys ) {
+	CreatorBlock( int id, String name, String... lookupKeys ) {
 		this.id = id;
 		this.name = name;
 		this.lookupKeys = lookupKeys;
@@ -753,7 +753,6 @@ public enum Block {
 		return this.dataValues.niceName( damage, this.name );
 	}
 	
-	/*========================================================================================================*/
 	/*========================================================================================================*/
 	
 	private boolean	shouldPlaceLast	= false;
@@ -885,7 +884,7 @@ public enum Block {
 		BREWING_STAND.isContainerBlock = true;
 	}
 	
-	public boolean isContainerBlock( ) {
+	public boolean isContainerCreatorBlock( ) {
 		return this.isContainerBlock;
 	}
 	
@@ -915,7 +914,7 @@ public enum Block {
 		TRIPWIRE_HOOK.isRedstoneBlock = true;
 	}
 	
-	public boolean isRedstoneBlock( ) {
+	public boolean isRedstoneCreatorBlock( ) {
 		return this.isRedstoneBlock;
 	}
 	
@@ -964,7 +963,7 @@ public enum Block {
 		MINECART_TRACKS.isRailBlock = true;
 	}
 	
-	public boolean isRailBlock( ) {
+	public boolean isRailCreatorBlock( ) {
 		return this.isRailBlock;
 	}
 	
@@ -998,7 +997,7 @@ public enum Block {
 		EMERALD_ORE.isNaturalTerrainBlock = true;
 	}
 	
-	public boolean isNaturalTerrainBlock( ) {
+	public boolean isNaturalTerrainCreatorBlock( ) {
 		return this.isNaturalTerrainBlock;
 	}
 	

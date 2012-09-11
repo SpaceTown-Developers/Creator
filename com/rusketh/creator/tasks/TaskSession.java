@@ -26,6 +26,7 @@ import com.rusketh.creator.CreatorPlugin;
 import com.rusketh.creator.tasks.selection.BoxSelection;
 import com.rusketh.creator.tasks.selection.Selection;
 
+@SuppressWarnings( "unused" )
 public class TaskSession {
 	
 	public TaskSession( CreatorPlugin plugin, Player player ) {

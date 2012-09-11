@@ -24,7 +24,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Item {
+public enum CreatorItem {
 	// Blocks
 	AIR( BlockID.AIR, "Air", "air" ),
 	STONE( BlockID.STONE, "Stone", "stone", "rock" ),
@@ -1268,19 +1268,19 @@ public enum Item {
 	
 	/*========================================================================================================*/
 	
-	public static Item get( int id ) {
+	public static CreatorItem get( int id ) {
 		return ids.get( id );
 	}
 	
-	public static Item get( String name ) {
+	public static CreatorItem get( String name ) {
 		return lookup.get( name );
 	}
 	
-	private static final Map< Integer, Item >	ids		= new HashMap< Integer, Item >( );
-	private static final Map< String, Item >	lookup	= new HashMap< String, Item >( );
+	private static final Map< Integer, CreatorItem >	ids		= new HashMap< Integer, CreatorItem >( );
+	private static final Map< String, CreatorItem >	lookup	= new HashMap< String, CreatorItem >( );
 	
 	static {
-		for ( Item item : EnumSet.allOf( Item.class ) ) {
+		for ( CreatorItem item : EnumSet.allOf( CreatorItem.class ) ) {
 			ids.put( item.id, item );
 			
 			for ( String key : item.lookupKeys ) {
@@ -1291,13 +1291,13 @@ public enum Item {
 	
 	/*========================================================================================================*/
 	
-	Item( int id, String name, String lookupKey ) {
+	CreatorItem( int id, String name, String lookupKey ) {
 		this.id = id;
 		this.name = name;
 		this.lookupKeys = new String[] { lookupKey };
 	}
 	
-	Item( int id, String name, String... lookupKeys ) {
+	CreatorItem( int id, String name, String... lookupKeys ) {
 		this.id = id;
 		this.name = name;
 		this.lookupKeys = lookupKeys;
@@ -1322,22 +1322,22 @@ public enum Item {
 	private DataHolder		dataValues	= null;
 	
 	static {
-		WOOD.dataValues = Block.woodData;
-		SAPLING.dataValues = Block.woodData;
-		LOG.dataValues = Block.woodData;
-		LEAVES.dataValues = Block.woodData;
-		SANDSTONE.dataValues = Block.sandstoneData;
-		CLOTH.dataValues = Block.woolData;
-		DOUBLE_STEP.dataValues = Block.slabData;
-		STEP.dataValues = Block.slabData;
-		WOODEN_STAIRS.dataValues = Block.woodData;
-		STONE_BRICK.dataValues = Block.stoneData;
-		DOUBLE_WOODEN_STEP.dataValues = Block.woodData;
-		WOODEN_STEP.dataValues = Block.woodData;
-		COAL.dataValues = Block.coalData;
-		INK_SACK.dataValues = Block.dyeData;
-		SPAWN_EGG.dataValues = Block.mobData;
-		POTION.dataValues = Block.potionData;
+		WOOD.dataValues = CreatorBlock.woodData;
+		SAPLING.dataValues = CreatorBlock.woodData;
+		LOG.dataValues = CreatorBlock.woodData;
+		LEAVES.dataValues = CreatorBlock.woodData;
+		SANDSTONE.dataValues = CreatorBlock.sandstoneData;
+		CLOTH.dataValues = CreatorBlock.woolData;
+		DOUBLE_STEP.dataValues = CreatorBlock.slabData;
+		STEP.dataValues = CreatorBlock.slabData;
+		WOODEN_STAIRS.dataValues = CreatorBlock.woodData;
+		STONE_BRICK.dataValues = CreatorBlock.stoneData;
+		DOUBLE_WOODEN_STEP.dataValues = CreatorBlock.woodData;
+		WOODEN_STEP.dataValues = CreatorBlock.woodData;
+		COAL.dataValues = CreatorBlock.coalData;
+		INK_SACK.dataValues = CreatorBlock.dyeData;
+		SPAWN_EGG.dataValues = CreatorBlock.mobData;
+		POTION.dataValues = CreatorBlock.potionData;
 		// GLASS_BOTTLE.dataValues = ; -- ^^
 	}
 	

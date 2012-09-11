@@ -136,12 +136,7 @@ public class Command {
 		
 		input.setCommand( this );
 		
-		try {
-			return invoke( sender, input );
-		} catch ( CommandException e ) {
-			sender.sendMessage( e.getMessage( ) );
-			return true;
-		}
+		return invoke( sender, input );
 	}
 	
 	/*========================================================================================================*/
@@ -149,20 +144,28 @@ public class Command {
 	public boolean invoke( CommandSender sender, CommandInput input ) {
 		try {
 			return (Boolean) this.method.invoke( this.baseClass, sender, input );
-		} catch ( Exception e ) {
 			
-			if ( e.getCause( ) != null ) {
+		} catch ( Exception e ) {
+			Throwable cause = e.getCause();
+			
+			if ( cause != null ) {
 				
-				if ( e.getCause( ).getClass( ).equals( CommandException.class ) ) throw (CommandException) e.getCause( );
+				if ( cause.getClass( ).equals( CommandException.class ) ) {
+					sender.sendMessage(e.getMessage( ));
+					return true;
+				}
 				
 				plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
-				plugin.logger.info( e.getCause( ).getMessage( ) );
+				plugin.logger.info( cause.getMessage( ) );
+				
 				e.getCause( ).printStackTrace( );
+				
 			} else {
 				plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
 			}
 			
-			throw new CommandException( "Oooops, somthing went horribad." );
+			sender.sendMessage("Oooops, somthing just failed epicly." );
+			return true;
 		}
 	}
 	

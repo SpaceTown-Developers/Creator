@@ -31,7 +31,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.rusketh.creator.blocks.BlockID;
 import com.rusketh.creator.blocks.DataHolder;
-import com.rusketh.creator.blocks.Item;
+import com.rusketh.creator.blocks.CreatorItem;
 import com.rusketh.creator.blocks.ItemID;
 import com.rusketh.creator.blocks.CreatorItemStack;
 import com.rusketh.creator.commands.CommandInput;
@@ -42,13 +42,13 @@ public class ItemExtension extends Extension {
 	public ItemStack stringToItemStack( String search ) throws CommandException {
 		String[] split = search.split( ":" );
 		
-		Item item;
+		CreatorItem item;
 		
 		if ( StringUtils.isNumeric( split[0] ) ) {
 			int id = Integer.parseInt( split[0] );
-			item = Item.get( id );
+			item = CreatorItem.get( id );
 		} else {
-			item = Item.get( split[0] );
+			item = CreatorItem.get( split[0] );
 			
 			if ( item == null & split.length == 1 ) return aliasToItemStack( split[0] );
 		}
@@ -73,22 +73,22 @@ public class ItemExtension extends Extension {
 	/*========================================================================================================*/
 	
 	public ItemStack aliasToItemStack( String alias ) {
-		int data = Item.CLOTH.getDataValue( alias );
+		int data = CreatorItem.CLOTH.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( BlockID.CLOTH, (byte) data );
 		
-		data = Item.INK_SACK.getDataValue( alias );
+		data = CreatorItem.INK_SACK.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( ItemID.INK_SACK, (byte) data );
 		
-		data = Item.LOG.getDataValue( alias );
+		data = CreatorItem.LOG.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( BlockID.LOG, (byte) data );
 		
-		data = Item.COAL.getDataValue( alias );
+		data = CreatorItem.COAL.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( ItemID.COAL, (byte) data );
 		
-		data = Item.POTION.getDataValue( alias );
+		data = CreatorItem.POTION.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( ItemID.POTION, (byte) data );
 		
-		data = Item.SPAWN_EGG.getDataValue( alias );
+		data = CreatorItem.SPAWN_EGG.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( ItemID.SPAWN_EGG, (byte) data );
 		
 		throw new CommandException( new StringBuilder( "Can not find item '" ).append( alias ).append( "'." ).toString( ) );
@@ -139,7 +139,7 @@ public class ItemExtension extends Extension {
 	/*========================================================================================================*/
 	
 	@SuppressWarnings( "deprecation" )
-	@CreateCommand( names = { "i", "item", "give" }, example = "i <id>[:<data> <amount> -p:<player>]", desc = "Easily obtain an item.", least = 1, most = 2, console = false, flags = { "p*", "d", "e*" }, perms = { "creator.item.give" } )
+	@CreateCommand( names = { "i", "item", "give" }, example = "i <id>[:<data> <amount> -p:<player>]", desc = "Easily obtain an item.", least = 1, most = 2, console = false, flags = { "p*", "d", "e*", "m*" }, perms = { "creator.item.give" } )
 	public boolean ItemCommand( CommandSender sender, CommandInput input ) {
 		
 		CreatorItemStack itemStack = (CreatorItemStack) stringToItemStack( input.arg( 0 ) );
@@ -181,6 +181,16 @@ public class ItemExtension extends Extension {
 			
 			message.append( " enchanted with '" ).append( with ).append( "'" );
 		}
+		
+		/*if ( input.hasFlag( 'm' ) ) {
+			if ( itemStack.getTypeId( ) != BlockID.MOB_SPAWNER) throw new CommandException( "The mob flag (-m) can only be used with 'Mob Spawners'" );
+			
+			int mob = Item.SPAWN_EGG.getDataValue( input.flagString( 'm' ) );
+			if ( mob == -1 ) throw new CommandException( new StringBuilder( "Can not find mob '" ).append(input.flagString( 'm' )).append( "'." ).toString( ) );
+			
+			itemStack.setDurability( (short) mob );
+			message.append( " of type '" ).append( Item.SPAWN_EGG.nameDataValue( mob ) ).append( "'" );
+		} CURRENTLY IMPOSSIBLE TODO WITH BUKKIT */
 		
 		if ( input.hasFlag( 'd' ) ) {
 			player.getWorld( ).dropItemNaturally( player.getLocation( ), itemStack );
@@ -241,7 +251,7 @@ public class ItemExtension extends Extension {
 		
 		if ( stack == null ) {
 			throw new CommandException( "Your hand is empty." );
-		} else if ( Item.get( stack.getTypeId( ) ).shouldNotStack( ) ) {
+		} else if ( CreatorItem.get( stack.getTypeId( ) ).shouldNotStack( ) ) {
 			throw new CommandException( "Your current item can not stack." );
 		}
 		

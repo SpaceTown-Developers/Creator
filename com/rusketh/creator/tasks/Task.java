@@ -20,10 +20,15 @@ package com.rusketh.creator.tasks;
 
 
 public abstract class Task {
-	//TODO: This;
+	
+	
+	/*========================================================================================================*/
 	
 	public abstract void stop();
 	
 	public abstract void run(int count);
 	
+	/*========================================================================================================*/
+	
+	//private Origonals
 }

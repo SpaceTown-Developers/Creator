@@ -28,31 +28,28 @@ public class CreatorItemStack extends ItemStack {
 	public CreatorItemStack( ItemStack itemStack ) {
 		super( itemStack.getTypeId( ), itemStack.getAmount( ), itemStack.getDurability( ), itemStack.getData( ).getData( ) );
 		super.addEnchantments( itemStack.getEnchantments( ) );
-		this.item = Item.get( itemStack.getTypeId( ) );
 	}
 	
 	/*========================================================================================================*/
 	
 	public CreatorItemStack( int type ) {
 		super( type );
-		this.item = Item.get( type );
 	}
 	
 	public CreatorItemStack( int type, byte data ) {
 		super( type, 1, (short) 0, data );
-		this.item = Item.get( type );
 	}
 	
 	public CreatorItemStack( int type, byte data, int amount ) {
 		super( type, amount, (short) 0, data );
-		this.item = Item.get( type );
 	}
 	
 	/*========================================================================================================*/
 	
 	public void setTypeId( int type ) {
 		super.setTypeId( type );
-		this.item = Item.get( type );
+		this.item = null;
+		this.block = null;
 	}
 	
 	/*========================================================================================================*/
@@ -75,15 +72,18 @@ public class CreatorItemStack extends ItemStack {
 	
 	public CreatorItemStack clone( ) {
 		CreatorItemStack itemStack = (CreatorItemStack) clone( );
-		itemStack.item = Item.get( itemStack.getTypeId( ) );
-		
 		return itemStack;
 	}
 	
 	/*========================================================================================================*/
 	
-	public Item getItem( ) {
-		if (this.item == null) this.item = Item.get( getTypeId( ) );
+	public CreatorBlock getBlock( ) {
+		if (this.block == null) this.block = CreatorBlock.get( getTypeId( ) );
+		return this.block;
+	}
+	
+	public CreatorItem getItem( ) {
+		if (this.item == null) this.item = CreatorItem.get( getTypeId( ) );
 		return this.item;
 	}
 	
@@ -97,5 +97,6 @@ public class CreatorItemStack extends ItemStack {
 	
 	/*========================================================================================================*/
 	
-	private Item	item;
+	private CreatorItem	item;
+	private CreatorBlock	block;
 }
