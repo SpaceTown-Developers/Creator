@@ -27,6 +27,7 @@ import org.bukkit.block.BrewingStand;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import com.rusketh.creator.blocks.BlockID;
 import com.rusketh.creator.blocks.CreatorBlock;
@@ -118,13 +119,20 @@ public abstract class Task {
 			return finish( );
 		}
 		
+		stopTask( );
+		
 		return false;
 	}
 	
 	/*========================================================================================================*/
 	
 	public void stopTask( ) {
-	};
+		for (Chunk chunk : newChunks) {
+			if (chunk.isLoaded( ) ) {
+				chunk.unload( false, true );
+			}
+		}
+	}
 	
 	public abstract boolean runTask( ) throws CreatorException;
 	
@@ -151,7 +159,7 @@ public abstract class Task {
 		
 		Chunk chunk = world.getChunkAt( block );
 		if ( !world.isChunkLoaded( chunk ) ) {
-			world.loadChunk( chunk );
+			chunk.load(true);
 			newChunks.add( chunk );
 		}
 		
