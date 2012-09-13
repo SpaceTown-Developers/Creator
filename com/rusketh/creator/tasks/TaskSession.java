@@ -34,6 +34,11 @@ public class TaskSession {
 		this.player = player;
 		
 		selection = new BoxSelection(player.getWorld());
+		
+		blockRate = plugin.BlockRate;
+		maxBlocks = plugin.MaxBlocks;
+		if ( player.hasPermission( "creator.nolimit.maxblocks" ) ) maxBlocks = -1;
+		
 	}
 	
 	/*========================================================================================================*/
@@ -58,8 +63,22 @@ public class TaskSession {
 	
 	/*========================================================================================================*/
 	
+	public int getBlockRate() {
+		return blockRate;
+	}
+	
+	public void setBlockRate(int blockRate) {
+		this.blockRate = blockRate;
+	}
+	
+	public int getMaxBlocks() {
+		return maxBlocks;
+	}
+	
+	/*========================================================================================================*/
+	
 	public void stop() {
-		if (task != null) task.stop();
+		if (task != null) task.stopTask();
 	}
 	
 	/*========================================================================================================*/
@@ -70,6 +89,9 @@ public class TaskSession {
 	
 	private CreatorPlugin plugin;
 	private Player player;
+	
+	private int maxBlocks;
+	private int blockRate;
 	
 	private Selection selection;
 	private Task task;

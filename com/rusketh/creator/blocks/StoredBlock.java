@@ -1,5 +1,6 @@
 package com.rusketh.creator.blocks;
 
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
@@ -12,6 +13,7 @@ import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 
 public class StoredBlock {
@@ -67,7 +69,7 @@ public class StoredBlock {
 			Jukebox to = (Jukebox) block;
 			
 			to.setPlaying( from.getPlaying( ) );
-		
+			
 		} else if (state instanceof NoteBlock) {
 			NoteBlock from = (NoteBlock) state;
 			NoteBlock to = (NoteBlock) block;
@@ -79,6 +81,8 @@ public class StoredBlock {
 			
 			to.setSpawnedType( from.getSpawnedType( ) );
 			to.setDelay( from.getDelay() );
+		} else {
+			special = false;
 		}
 	}
 	
@@ -95,9 +99,43 @@ public class StoredBlock {
 	
 	/*========================================================================================================*/
 	
-	//TODO: Rotate?
+	public int getTypeId() {
+		return state.getTypeId( );
+	}
+	
+	public byte getDataByte() {
+		return state.getData( ).getData( );
+	}
+	
+	/*========================================================================================================*/
+	
+	public Vector getVector() {
+		return new Vector(state.getX( ), state.getY( ), state.getZ( ));
+	}
+	
+	public World getWorld() {
+		return state.getWorld( );
+	}
+	
+	/*========================================================================================================*/
+	
+	public Block getBlock() {
+		return state.getBlock( );
+	}
+	
+	public BlockState getState() {
+		return state;
+	}
+	
+	/*========================================================================================================*/
+	
+	public boolean isSpecial() {
+		return special;
+	}
 	
 	/*========================================================================================================*/
 	
 	private BlockState state;
+	
+	private boolean special = true;
 }

@@ -18,17 +18,241 @@
 
 package com.rusketh.creator.tasks;
 
+import java.util.ArrayList;
+
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BrewingStand;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Dispenser;
+import org.bukkit.block.Furnace;
+import org.bukkit.inventory.Inventory;
+import com.rusketh.creator.blocks.BlockID;
+import com.rusketh.creator.blocks.CreatorBlock;
+import com.rusketh.creator.blocks.StoredBlock;
+import com.rusketh.creator.exceptions.CreatorException;
+import com.rusketh.creator.exceptions.MaxBlocksChangedException;
+import com.rusketh.creator.masks.Mask;
 
 public abstract class Task {
 	
+	public Task( TaskSession session, World world, int rate ) {
+		this.session = session;
+		this.world = world;
+		this.rate = rate;
+	}
 	
 	/*========================================================================================================*/
 	
-	public abstract void stop();
+	public TaskSession getSession( ) {
+		return session;
+	}
 	
-	public abstract void run(int count);
+	public int getRate( ) {
+		return rate;
+	}
+	
+	public World getWorld( ) {
+		return world;
+	}
 	
 	/*========================================================================================================*/
 	
-	//private Origonals
+	public void setBag( TaskBag bag ) {
+		this.bag = bag;
+	}
+	
+	public TaskBag getBag( ) {
+		return bag;
+	}
+	
+	/*========================================================================================================*/
+	
+	public void setMask( Mask mask ) {
+		this.mask = mask;
+	}
+	
+	public Mask getMask( ) {
+		return mask;
+	}
+	
+	/*========================================================================================================*/
+	
+	public void setNoneQueued( ) {
+		queued = false;
+	}
+	
+	/*========================================================================================================*/
+	
+	public int getCount( ) {
+		return counter;
+	}
+	
+	/*========================================================================================================*/
+	
+	public ArrayList< StoredBlock > getUndoArray( ) {
+		return oldBlocks;
+	}
+	
+	public ArrayList< StoredBlock > getRedoArray( ) {
+		return newBlocks;
+	}
+	
+	/*========================================================================================================*/
+	
+	public boolean run( ) throws CreatorException {
+		if ( !processing ) {
+			processing = runTask( );
+		} else if ( queued && process < 3 ) {
+			
+			if ( process == 0 ) {
+				if ( doQueue( queueAfter ) ) process++;
+			} else if ( process == 1 ) {
+				if ( doQueue( queueLast ) ) process++;
+			} else if ( process == 2 ) {
+				if ( doQueue( queueFinal ) ) process++;
+			}
+			
+		} else {
+			return finish( );
+		}
+		
+		return false;
+	}
+	
+	/*========================================================================================================*/
+	
+	public void stopTask( ) {
+	};
+	
+	public abstract boolean runTask( ) throws CreatorException;
+	
+	/*========================================================================================================*/
+	
+	private boolean doQueue( TaskQue queue ) {
+		for ( int i = 1; i <= rate; i++ ) {
+			if ( queue.valid( ) ) changeBlock( queue.getBlock( ), queue.getTypeId( ), queue.getData( ) );
+			if ( !queue.hasNext( ) ) return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean finish( ) {
+		return true;
+	}
+	
+	/*========================================================================================================*/
+	
+	public boolean changeBlock( Block block, int type, byte data ) {
+		int y = block.getY( );
+		if ( y < 0 || y > world.getMaxHeight( ) ) return false;
+		
+		Chunk chunk = world.getChunkAt( block );
+		if ( !world.isChunkLoaded( chunk ) ) {
+			world.loadChunk( chunk );
+			newChunks.add( chunk );
+		}
+		
+		if ( mask != null ) {
+			// TODO: this;
+		}
+		
+		if ( CreatorBlock.get( block.getTypeId( ) ).isContainerCreatorBlock( ) ) {
+			Inventory inventory = getInventory( block );
+			
+			if ( inventory != null ) {
+				if ( bag == null ) {
+					inventory.clear( );
+				} else {
+					// TODO: Move contents to bag.
+				}
+			}
+			
+		} else if ( block.getTypeId( ) == BlockID.ICE ) {
+			block.setTypeId( BlockID.AIR );
+		}
+		
+		if ( bag == null ) {
+			// TODO: Move contents to bag.
+		}
+		
+		block.setTypeId( type );
+		block.setData( data );
+		
+		newBlocks.add( new StoredBlock( block ) );
+		
+		return true;
+	}
+	
+	/*========================================================================================================*/
+	
+	public Inventory getInventory( Block block ) {
+		if ( block instanceof Chest ) {
+			return ( (Chest) block ).getInventory( );
+		} else if ( block instanceof Furnace ) {
+			return ( (Furnace) block ).getInventory( );
+		} else if ( block instanceof BrewingStand ) {
+			return ( (BrewingStand) block ).getInventory( );
+		} else if ( block instanceof Dispenser ) {
+			return ( (Dispenser) block ).getInventory( );
+		}
+		
+		return null;
+	}
+	
+	/*========================================================================================================*/
+	
+	public boolean queBlock( Block block, int type, byte data ) throws MaxBlocksChangedException {
+		int maxBlocks = session.getMaxBlocks( );
+		if ( counter++ > maxBlocks && maxBlocks != -1 ) throw new MaxBlocksChangedException( maxBlocks );
+		oldBlocks.add( new StoredBlock( block ) );
+		
+		if ( queued ) {
+			CreatorBlock cBlock = CreatorBlock.get( type );
+			
+			if ( cBlock.shouldPlaceLast( ) ) {
+				queueLast.add( block, type, data );
+				return !( type == block.getTypeId( ) && data == block.getData( ) );
+				
+			} else if ( cBlock.shouldPlaceFinal( ) ) {
+				queueFinal.add( block, type, data );
+				return !( type == block.getTypeId( ) && data == block.getData( ) );
+				
+			} else if ( CreatorBlock.get( block.getTypeId( ) ).shouldPlaceLast( ) ) {
+				changeBlock( block, 0, (byte) 0 );
+				
+			} else {
+				queueAfter.add( block, type, data );
+				return !( type == block.getTypeId( ) && data == block.getData( ) );
+			}
+		}
+		
+		return changeBlock( block, type, data );
+	}
+	
+	/*========================================================================================================*/
+	
+	private TaskSession					session;
+	private World						world;
+	private int							rate;
+	
+	private TaskBag						bag;
+	private Mask						mask;
+	
+	protected int						counter		= 0;
+	
+	private boolean						queued		= true;
+	private boolean						processing	= false;
+	private byte						process		= 0;
+	
+	private ArrayList< Chunk >			newChunks	= new ArrayList< Chunk >( );
+	private ArrayList< StoredBlock >	oldBlocks	= new ArrayList< StoredBlock >( );
+	private ArrayList< StoredBlock >	newBlocks	= new ArrayList< StoredBlock >( );
+	
+	private TaskQue						queueAfter	= new TaskQue( );
+	private TaskQue						queueLast	= new TaskQue( );
+	private TaskQue						queueFinal	= new TaskQue( );
+	
 }
