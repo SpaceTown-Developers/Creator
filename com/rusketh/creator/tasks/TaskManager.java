@@ -45,7 +45,7 @@ public class TaskManager implements Runnable {
 			TaskSession newSession = new TaskSession( plugin, player );
 			
 			if ( oldSession != null ) {
-				oldSession.stop();
+				oldSession.stopTask();
 			}
 			
 			sessions.put( player.getName( ), newSession );
@@ -54,7 +54,7 @@ public class TaskManager implements Runnable {
 	
 	public void closeSessions( ) {
 		for ( Player player : plugin.getServer( ).getOnlinePlayers( ) ) {
-			sessions.get( player.getName( ) ).stop();
+			sessions.get( player.getName( ) ).stopTask();
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class TaskManager implements Runnable {
 	/*========================================================================================================*/
 	
 	public void run( ) {
-		
+		for (TaskSession session : sessions.values( )) session.runTask( );
 	}
 	
 	/*========================================================================================================*/

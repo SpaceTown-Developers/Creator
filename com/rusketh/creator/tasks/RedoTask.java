@@ -16,12 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.tasks.misc;
+package com.rusketh.creator.tasks;
 
 import com.rusketh.creator.blocks.StoredBlock;
 import com.rusketh.creator.exceptions.CreatorException;
-import com.rusketh.creator.tasks.Task;
-import com.rusketh.creator.tasks.TaskSession;
 
 
 public class RedoTask extends Task {

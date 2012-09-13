@@ -746,6 +746,10 @@ public enum CreatorBlock {
 		return this.dataValues.name( value );
 	}
 	
+	public DataHolder dataValues() {
+		return dataValues;
+	}
+	
 	/*========================================================================================================*/
 	
 	public String niceName( int damage ) {
@@ -1174,4 +1178,7 @@ public enum CreatorBlock {
 		return new CreatorItemStack( id, (byte) data, 1 );
 	}
 	
+	public boolean hasNoDrop() {
+		return noDrop;
+	}
 }

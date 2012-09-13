@@ -36,10 +36,11 @@ import com.rusketh.creator.blocks.ItemID;
 import com.rusketh.creator.blocks.CreatorItemStack;
 import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
+import com.rusketh.creator.exceptions.WildDataException;
 
 public class ItemExtension extends Extension {
 	
-	public ItemStack stringToItemStack( String search ) throws CommandException {
+	public static ItemStack stringToItemStack( String search ) throws WildDataException {
 		String[] split = search.split( ":" );
 		
 		CreatorItem item;
@@ -61,6 +62,8 @@ public class ItemExtension extends Extension {
 		
 		if ( StringUtils.isNumeric( split[1] ) ) {
 			data = Integer.parseInt( split[1] );
+		} else if (split[1].equals( "*" )){
+			throw new WildDataException(item.getID( ));
 		} else {
 			data = item.getDataValue( split[1] );
 		}
@@ -72,7 +75,7 @@ public class ItemExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-	public ItemStack aliasToItemStack( String alias ) {
+	public static ItemStack aliasToItemStack( String alias ) {
 		int data = CreatorItem.CLOTH.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( BlockID.CLOTH, (byte) data );
 		
@@ -98,18 +101,16 @@ public class ItemExtension extends Extension {
 	
 	public final static DataHolder	enchantments	= new DataHolder( Enchantment.PROTECTION_ENVIRONMENTAL.getId( ), "Protection", "protect" ).add( Enchantment.PROTECTION_FIRE.getId( ), "Fire Protection", "fireprotection", "fireprotect" ).add( Enchantment.PROTECTION_FALL.getId( ), "Feather Falling", "featherfalling", "featherfall", "fallprotect" ).add( Enchantment.PROTECTION_EXPLOSIONS.getId( ), "Blast Protection", "blastprotection", "blastprotect" ).add( Enchantment.PROTECTION_PROJECTILE.getId( ), "Projectile Protection", "projectileprotection", "projectileprotect", "bulletprotect" ).add( Enchantment.OXYGEN.getId( ), "Respiration", "oxygen", "breeth" ).add( Enchantment.WATER_WORKER.getId( ), "Aqua Affinity", "aquaaffinity", "waterworker", "aqua" ).add( Enchantment.DAMAGE_ALL.getId( ), "Sharpness", "sharp" ).add( Enchantment.DAMAGE_UNDEAD.getId( ), "Smite" ).add( Enchantment.DAMAGE_ARTHROPODS.getId( ), "Bane of Arthropods", "arthropods", "bane" ).add( Enchantment.KNOCKBACK.getId( ), "Knockback" ).add( Enchantment.FIRE_ASPECT.getId( ), "Fire Aspect", "fire" ).add( Enchantment.LOOT_BONUS_MOBS.getId( ), "Looting", "loot" ).add( Enchantment.DIG_SPEED.getId( ), "Efficiency" ).add( Enchantment.SILK_TOUCH.getId( ), "Silk Touch", "silktouch", "silk" ).add( Enchantment.DURABILITY.getId( ), "Unbreaking", "unbreak" ).add( Enchantment.LOOT_BONUS_BLOCKS.getId( ), "Fortune", "ritch" ).add( Enchantment.ARROW_DAMAGE.getId( ), "Power" ).add( Enchantment.ARROW_KNOCKBACK.getId( ), "Punch" ).add( Enchantment.ARROW_FIRE.getId( ), "Flame", "ignite" ).add( Enchantment.ARROW_INFINITE.getId( ), "Infinity", "infinate" );
 	
-	public String enchant( String search, ItemStack item ) {
+	public static String enchant( String search, ItemStack item ) {
 		String[] split = search.split( ":" );
 		
 		Enchantment ench;
 		
 		if ( StringUtils.isNumeric( split[0] ) ) {
 			int id = Integer.parseInt( split[0] );
-			plugin.logger.info( "Number -> " + id );
 			ench = Enchantment.getById( id );
 		} else {
 			int id = enchantments.get( split[0] );
-			plugin.logger.info( "String -> " + split[0] + " -> " + id );
 			ench = Enchantment.getById( id );
 		}
 		
@@ -142,7 +143,13 @@ public class ItemExtension extends Extension {
 	@CreateCommand( names = { "i", "item", "give" }, example = "i <id>[:<data> <amount> -p:<player>]", desc = "Easily obtain an item.", least = 1, most = 2, console = false, flags = { "p*", "d", "e*", "m*" }, perms = { "creator.item.give" } )
 	public boolean ItemCommand( CommandSender sender, CommandInput input ) {
 		
-		CreatorItemStack itemStack = (CreatorItemStack) stringToItemStack( input.arg( 0 ) );
+		CreatorItemStack itemStack;
+		
+		try {
+			itemStack = (CreatorItemStack) stringToItemStack( input.arg( 0 ) );
+		} catch ( WildDataException e ) {
+			throw new CommandException( "This command does not support wildcards (*)." );
+		}
 		
 		Player player = (Player) sender;
 		if ( !player.isOp( ) && player.hasPermission( new StringBuilder( "creator.blockitem." ).append( itemStack.getTypeId( ) ).toString( ) ) ) throw new CommandException( new StringBuilder( "You are not allowed to spawn '" ).append( itemStack.niceName( ) ).append( "'." ).toString( ) );

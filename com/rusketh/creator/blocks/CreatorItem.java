@@ -1356,6 +1356,10 @@ public enum CreatorItem {
 		return this.dataValues.name( value );
 	}
 	
+	public DataHolder dataValues() {
+		return dataValues;
+	}
+	
 	/*========================================================================================================*/
 	
 	public String niceName( int damage ) {

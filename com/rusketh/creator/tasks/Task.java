@@ -19,7 +19,6 @@
 package com.rusketh.creator.tasks;
 
 import java.util.ArrayList;
-
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -27,10 +26,10 @@ import org.bukkit.block.BrewingStand;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import com.rusketh.creator.blocks.BlockID;
 import com.rusketh.creator.blocks.CreatorBlock;
+import com.rusketh.creator.blocks.CreatorItemStack;
 import com.rusketh.creator.blocks.StoredBlock;
 import com.rusketh.creator.exceptions.CreatorException;
 import com.rusketh.creator.exceptions.MaxBlocksChangedException;
@@ -84,6 +83,10 @@ public abstract class Task {
 		queued = false;
 	}
 	
+	public void setBlockPrice(int price) {
+		this.price = price;
+	}
+	
 	/*========================================================================================================*/
 	
 	public int getCount( ) {
@@ -103,8 +106,11 @@ public abstract class Task {
 	/*========================================================================================================*/
 	
 	public boolean run( ) throws CreatorException {
+		if ( bag != null ) bag.loadInventory( );
+		
 		if ( !processing ) {
 			processing = runTask( );
+			
 		} else if ( queued && process < 3 ) {
 			
 			if ( process == 0 ) {
@@ -115,11 +121,13 @@ public abstract class Task {
 				if ( doQueue( queueFinal ) ) process++;
 			}
 			
-		} else {
-			return finish( );
+		} else if ( finish( ) ) {
+			if ( bag != null ) bag.pushChanges( );
+			
+			return true;
 		}
 		
-		stopTask( );
+		if ( bag != null ) bag.pushChanges( );
 		
 		return false;
 	}
@@ -127,8 +135,8 @@ public abstract class Task {
 	/*========================================================================================================*/
 	
 	public void stopTask( ) {
-		for (Chunk chunk : newChunks) {
-			if (chunk.isLoaded( ) ) {
+		for ( Chunk chunk : newChunks ) {
+			if ( chunk.isLoaded( ) ) {
 				chunk.unload( false, true );
 			}
 		}
@@ -163,19 +171,18 @@ public abstract class Task {
 			newChunks.add( chunk );
 		}
 		
+		if ( price > 0 && !session.chargePrice(price) ) return false;
+		
 		if ( mask != null ) {
-			// TODO: this;
+			if ( !mask.check( block ) ) return false;
 		}
 		
 		if ( CreatorBlock.get( block.getTypeId( ) ).isContainerCreatorBlock( ) ) {
 			Inventory inventory = getInventory( block );
 			
 			if ( inventory != null ) {
-				if ( bag == null ) {
-					inventory.clear( );
-				} else {
-					// TODO: Move contents to bag.
-				}
+				// if ( bag != null ) bag.storeItems( inventory.getContents( ) ); Note: Can be used to cheat items with undo/redo.
+				inventory.clear( );
 			}
 			
 		} else if ( block.getTypeId( ) == BlockID.ICE ) {
@@ -183,7 +190,11 @@ public abstract class Task {
 		}
 		
 		if ( bag == null ) {
-			// TODO: Move contents to bag.
+			bag.storeBlockDrops( block ); //TODO: use the return boolean of this somehow?
+			
+			if ( !bag.takeItem( new CreatorItemStack(type, data) ) ) {
+				return false;
+			}
 		}
 		
 		block.setTypeId( type );
@@ -249,18 +260,19 @@ public abstract class Task {
 	private TaskBag						bag;
 	private Mask						mask;
 	
-	protected int						counter		= 0;
+	protected int						counter			= 0;
+	protected int						price			= 0;
 	
-	private boolean						queued		= true;
-	private boolean						processing	= false;
-	private byte						process		= 0;
+	private boolean						queued			= true;
+	private boolean						processing		= false;
+	private byte						process			= 0;
 	
-	private ArrayList< Chunk >			newChunks	= new ArrayList< Chunk >( );
-	private ArrayList< StoredBlock >	oldBlocks	= new ArrayList< StoredBlock >( );
-	private ArrayList< StoredBlock >	newBlocks	= new ArrayList< StoredBlock >( );
+	private ArrayList< Chunk >			newChunks		= new ArrayList< Chunk >( );
+	private ArrayList< StoredBlock >	oldBlocks		= new ArrayList< StoredBlock >( );
+	private ArrayList< StoredBlock >	newBlocks		= new ArrayList< StoredBlock >( );
 	
-	private TaskQue						queueAfter	= new TaskQue( );
-	private TaskQue						queueLast	= new TaskQue( );
-	private TaskQue						queueFinal	= new TaskQue( );
+	private TaskQue						queueAfter		= new TaskQue( );
+	private TaskQue						queueLast		= new TaskQue( );
+	private TaskQue						queueFinal		= new TaskQue( );
 	
 }

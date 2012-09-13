@@ -20,20 +20,23 @@ package com.rusketh.creator.tasks;
 
 import java.util.ArrayList;
 
+import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 
 import com.rusketh.creator.CreatorPlugin;
+import com.rusketh.creator.exceptions.CreatorException;
+import com.rusketh.creator.exceptions.MaxBlocksChangedException;
+import com.rusketh.creator.masks.Mask;
 import com.rusketh.creator.tasks.selection.BoxSelection;
 import com.rusketh.creator.tasks.selection.Selection;
 
-@SuppressWarnings( "unused" )
 public class TaskSession {
 	
 	public TaskSession( CreatorPlugin plugin, Player player ) {
 		this.plugin = plugin;
 		this.player = player;
 		
-		selection = new BoxSelection(player.getWorld());
+		selection = new BoxSelection( player.getWorld( ) );
 		
 		blockRate = plugin.BlockRate;
 		maxBlocks = plugin.MaxBlocks;
@@ -43,59 +46,126 @@ public class TaskSession {
 	
 	/*========================================================================================================*/
 	
-	public void setPlayer(Player player) {
+	public void setPlayer( Player player ) {
 		this.player = player;
 	}
 	
-	public Player getPlayer() {
+	public Player getPlayer( ) {
 		return player;
 	}
 	
 	/*========================================================================================================*/
 	
-	public void setSelection(Selection selection) {
+	public void setSelection( Selection selection ) {
 		this.selection = selection;
 	}
 	
-	public Selection getSelection() {
+	public Selection getSelection( ) {
 		return selection;
 	}
 	
 	/*========================================================================================================*/
 	
-	public int getBlockRate() {
+	public int getBlockRate( ) {
 		return blockRate;
 	}
 	
-	public void setBlockRate(int blockRate) {
+	public void setBlockRate( int blockRate ) {
 		this.blockRate = blockRate;
 	}
 	
-	public int getMaxBlocks() {
+	public int getMaxBlocks( ) {
 		return maxBlocks;
 	}
 	
 	/*========================================================================================================*/
 	
-	public void stop() {
-		if (task != null) task.stopTask();
+	/*========================================================================================================*/
+	
+	public boolean startTask( Task newTask, boolean useMask ) {
+		if ( task != null ) return false;
+		
+		if ( useMask && mask != null ) task.setMask( mask );
+		
+		if ( player.hasPermission( "creator.useInventory" ) ) task.setBag( new TaskBag( player ) );
+		
+		return true;
 	}
 	
 	/*========================================================================================================*/
 	
-	
+	public void stopTask( ) {
+		if ( task == null ) return;
+		task.stopTask( );
+		addUndo(task);
+		task = null;
+	}
 	
 	/*========================================================================================================*/
 	
-	private CreatorPlugin plugin;
-	private Player player;
+	public void runTask() {
+		if ( task != null ) try {
+			if ( task.run( ) ) stopTask();
+			
+		} catch ( MaxBlocksChangedException e ) {
+			player.sendMessage( new StringBuilder("Operation aborted - Maxamum blocks changed. (").append( task.counter ).append(" blocks changed)").toString() );
+			stopTask( );
+			
+		} catch ( CreatorException e ) {
+			player.sendMessage( new StringBuilder("Operation aborted - Somthing whent wrong. (").append( task.counter ).append(" blocks changed)").toString());
+			stopTask( );
+		}
+	}
 	
-	private int maxBlocks;
-	private int blockRate;
+	/*========================================================================================================*/
 	
-	private Selection selection;
-	private Task task;
+	public void addUndo(Task task) {
+		if ( task instanceof UndoTask ) {
+			undoPos--;
+		} else if ( task instanceof RedoTask ) {
+			undoPos++;
+		} else {
+			undoPos++;
+			undoQue.set( undoPos, task );
+			for (int i = undoPos + 1; i < undoQue.size( ); i++) undoQue.set( i, null );
+			
+			//TODO: Limit undoQue size.
+		}
+	}
 	
-	private ArrayList<Task> undoQue;
-	private ArrayList<Task> reundoQue;
+	public boolean undo() {
+		if (undoPos == 0) throw new CommandException("Nothing to undo.");
+		return startTask(undoQue.get( undoPos ), false);
+	}
+	
+	public boolean redo() {
+		if ( task != null ) return false;
+		Task newTask = undoQue.get( undoPos + 1 );
+		
+		if (newTask == null) throw new CommandException("Nothing to redo.");
+		return startTask(newTask, false);
+	}
+	
+	/*========================================================================================================*/
+	
+	public boolean chargePrice( int price ) {
+		if ( !plugin.Vault ) return true;
+		return plugin.getEconomy( ).withdrawPlayer( player.getName( ), price ).transactionSuccess( );
+	}
+	
+	/*========================================================================================================*/
+	
+	private CreatorPlugin		plugin;
+	private Player				player;
+	
+	private int					maxBlocks;
+	private int					blockRate;
+	
+	private Selection			selection;
+	private Mask				mask;
+	private Task				task;
+	
+	private int					undoPos = 0;
+	private ArrayList< Task >	undoQue = new ArrayList< Task >();
+	
 }

@@ -25,7 +25,6 @@ public class StoredBlock {
 	/*========================================================================================================*/
 	
 	public void pushState(Block block) {
-		block.setTypeId( state.getTypeId( ) );
 		block.setTypeIdAndData(state.getTypeId(), state.getRawData(), false);
 		
 		if ( state instanceof Chest ) {

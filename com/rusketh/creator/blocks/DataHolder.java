@@ -18,7 +18,9 @@
 
 package com.rusketh.creator.blocks;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 public class DataHolder {
 	
@@ -72,10 +74,18 @@ public class DataHolder {
 		return names.get( id );
 	}
 	
+	public Collection< String > names() {
+		return names.values( );
+	}
+	
 	/*========================================================================================================*/
 	
 	public boolean valid( int id ) {
 		return names.containsKey( id );
+	}
+	
+	public Set<Integer> values() {
+		return names.keySet( );
 	}
 	
 	/*========================================================================================================*/

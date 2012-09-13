@@ -16,13 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.masks;
-
-import org.bukkit.block.Block;
+package com.rusketh.creator.exceptions;
 
 
-public abstract class Mask {
+public class WildDataException extends CreatorException {
 	
-	public abstract boolean check(Block block);
+	public WildDataException(int typeId) {
+		this.typeId = typeId;
+	}
+	
+	/*========================================================================================================*/
+	
+	public int typeId;
+	
+	private static final long	serialVersionUID	= 3910694927801112042L;
 	
 }
