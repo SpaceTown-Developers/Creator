@@ -18,7 +18,6 @@
 
 package com.rusketh.creator.blocks;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,9 +28,9 @@ import com.rusketh.creator.Extensions.ItemExtension;
 import com.rusketh.creator.exceptions.WildDataException;
 import com.rusketh.util.MathUtil;
 
-public class RandomBlockList {
+public class RandomBlockArray {
 	
-	public RandomBlockList( String input ) {
+	public RandomBlockArray( String input ) {
 		for ( String string : input.split( "," ) ) {
 			
 			int chance = 1;
@@ -43,54 +42,51 @@ public class RandomBlockList {
 			}
 			
 			try {
-				add(ItemExtension.stringToItemStack( string ), chance);
+				add( ItemExtension.stringToItemStack( string ), chance );
 			} catch ( WildDataException e ) {
-				for ( int data : CreatorItem.get(e.typeId).dataValues( ).values( ) ) add( new CreatorItemStack(e.typeId, (byte) data), chance);
+				for ( int data : CreatorItem.get( e.typeId ).dataValues( ).values( ) )
+					add( new CreatorItemStack( e.typeId, (byte) data ), chance );
 			}
 		}
 	}
 	
 	/*========================================================================================================*/
 	
-	private void add(ItemStack item, int chance) {
-		if ( CreatorBlock.get( item.getTypeId( ) ) == null  ) throw new CommandException( new StringBuilder("'").append( CreatorItem.get( item.getTypeId() ).niceName( (int) item.getData().getData( ) ) ).append("' is not a placeable block.").toString() );
+	private void add( ItemStack item, int chance ) {
+		int type = item.getTypeId( );
+		byte data = item.getData( ).getData( );
+		
+		if ( CreatorBlock.get( type ) == null ) {
+			throw new CommandException( new StringBuilder( "'" ).append( CreatorItem.get( type ).niceName( data ) ).append( "' is not a placeable block." ).toString( ) );
 			
+		} else if ( blocks.contains( type, data ) ) {
+			max -= blocks.get( type, data );
+		}
+		
 		max = max + chance;
-		blocks.add(new RandomBlock(item, chance));
+		blocks.put( type, data, chance );
 	}
 	
 	/*========================================================================================================*/
 	
-	public ItemStack next() {
+	public ItemStack next( ) {
 		int total = 0;
-		int rand = MathUtil.random(0, max);
+		int random = MathUtil.random( 0, max );
 		
-		for (RandomBlock random : blocks) {
-			total = total + random.chance;
-			if (rand <= total ) return random.item;
+		blocks.first( );
+		while ( blocks.hasNext( ) ) {
+			total += blocks.next( );
+			if ( random <= total ) return new CreatorItemStack( blocks.getTypeId( ), blocks.getData( ) );
 		}
 		
-		throw new RuntimeException("Failed to get a random itemstack.");
+		throw new RuntimeException( "Failed to get a random itemstack." );
 	}
 	
 	/*========================================================================================================*/
 	
-	private int max = 0;
-	private ArrayList< RandomBlock >	blocks	= new ArrayList< RandomBlock >( );
+	private int								max		= 0;
+	private IterableBlockArray< Integer >	blocks	= new IterableBlockArray< Integer >( );
 	
-	public final Pattern	pattern	= Pattern.compile( "([0-9]+)%(.+)" );
-	
-	/*========================================================================================================*/
-	
-	private class RandomBlock {
-		
-		public RandomBlock(ItemStack item, int chance) {
-			this.item = item;
-			this.chance = chance;
-		}
-		
-		public int chance;
-		public ItemStack item;
-	}
+	public final Pattern					pattern	= Pattern.compile( "([0-9]+)%(.+)" );
 	
 }

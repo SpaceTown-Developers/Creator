@@ -27,6 +27,8 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.inventory.Inventory;
+
+import com.rusketh.creator.blocks.BlockArray;
 import com.rusketh.creator.blocks.BlockID;
 import com.rusketh.creator.blocks.CreatorBlock;
 import com.rusketh.creator.blocks.CreatorItemStack;
@@ -181,7 +183,7 @@ public abstract class Task {
 			Inventory inventory = getInventory( block );
 			
 			if ( inventory != null ) {
-				// if ( bag != null ) bag.storeItems( inventory.getContents( ) ); Note: Can be used to cheat items with undo/redo.
+				//if ( bag != null ) bag.storeItems( inventory.getContents( ) ); Note: Can be used to cheat items with undo/redo.
 				inventory.clear( );
 			}
 			
@@ -190,9 +192,15 @@ public abstract class Task {
 		}
 		
 		if ( bag == null ) {
-			bag.storeBlockDrops( block ); //TODO: use the return boolean of this somehow?
+			bag.storeBlockDrops( block );
 			
 			if ( !bag.takeItem( new CreatorItemStack(type, data) ) ) {
+				if ( missing.contains( type, data ) ) {
+					missing.put(type, data, missing.get( type, data ) + 1);
+				} else {
+					missing.put(type, data, 1);
+				}
+				
 				return false;
 			}
 		}
@@ -268,6 +276,8 @@ public abstract class Task {
 	private byte						process			= 0;
 	
 	private ArrayList< Chunk >			newChunks		= new ArrayList< Chunk >( );
+	private BlockArray<Integer>			missing			= new BlockArray<Integer>();
+	
 	private ArrayList< StoredBlock >	oldBlocks		= new ArrayList< StoredBlock >( );
 	private ArrayList< StoredBlock >	newBlocks		= new ArrayList< StoredBlock >( );
 	
