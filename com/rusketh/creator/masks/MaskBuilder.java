@@ -21,12 +21,12 @@ package com.rusketh.creator.masks;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.inventory.ItemStack;
 
 import com.rusketh.creator.Extensions.ItemExtension;
 import com.rusketh.creator.blocks.CreatorBlock;
 import com.rusketh.creator.blocks.CreatorItem;
+import com.rusketh.creator.exceptions.CmdException;
 import com.rusketh.creator.exceptions.WildDataException;
 
 
@@ -53,9 +53,10 @@ public class MaskBuilder {
 		
 		switch( buffer.charAt( pos ) ) {
 			case '(':
+				int epos = pos;
 				pos++;
 				mask = nextMask();
-				if (buffer.charAt( pos ) != ')') throw new CommandException("Invalid mask.");
+				if (buffer.charAt( pos ) != ')') throw new CmdException("%rInvalid mask - '%c)%r' expected to end '%c(%r' at char %c").append( epos ).append("%r.");
 				break;
 				
 			case '!':
@@ -74,7 +75,7 @@ public class MaskBuilder {
 				break;
 			
 			case '&': case '|': //These can't be used here.
-				throw new CommandException("Invalid mask.");
+				throw new CmdException("%rInvalid mask - unexpected '%c").append( buffer.charAt( pos ) ).append( "%r' at char %c").append( pos ).append("%r.");
 				
 			default:
 				mask = nextBlockMask();
@@ -101,7 +102,7 @@ public class MaskBuilder {
 	public Mask nextBlockMask() {
 		Matcher m = pattern.matcher( buffer.substring( pos ) );
 		
-		if ( !m.matches( ) ) throw new CommandException("Invalid mask.");
+		if ( !m.matches( ) ) throw new CmdException("%rInvalid mask - '%c", buffer, "%r'.");
 		
 		BlockMask mask = new BlockMask();
 		
@@ -114,11 +115,11 @@ public class MaskBuilder {
 				int type = item.getTypeId( );
 				byte data = item.getData( ).getData( );
 				
-				if ( CreatorBlock.get( type ) == null ) throw new CommandException( new StringBuilder( "'" ).append( CreatorItem.get( type ).niceName( data ) ).append( "' is not a placeable block." ).toString( ) );
+				if ( CreatorBlock.get( type ) == null ) throw new CmdException("%r'%c", CreatorItem.get( type ).niceName( data ), "%r' is not a placeable block." );
 				
 				mask.add(type, data);
 			} catch (WildDataException e) {
-				if ( CreatorBlock.get( e.typeId ) == null ) throw new CommandException( new StringBuilder( "'" ).append( CreatorItem.get( e.typeId ).name( ) ).append( "' is not a placeable block." ).toString( ) );
+				if ( CreatorBlock.get( e.typeId ) == null ) throw new CmdException("%r'%c", CreatorItem.get( e.typeId ).name( ), "%r' is not a placeable block." );
 				
 				for ( int data : CreatorItem.get( e.typeId ).dataValues( ).values( ) ) mask.add( e.typeId, (byte) data);
 			}
