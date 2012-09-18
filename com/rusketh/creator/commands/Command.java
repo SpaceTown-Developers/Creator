@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,6 +29,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.rusketh.creator.CreatorPlugin;
+import com.rusketh.creator.exceptions.CmdException;
+import com.rusketh.util.CreatorString;
 
 public class Command {
 	
@@ -101,19 +102,22 @@ public class Command {
 		
 		// Note: Going to use string builders here, Java is shit at combining strings with out them!
 		if ( size < this.least && this.least != -1 ) {
-			sender.sendMessage( new StringBuilder( "Not enogh perameters. [" ).append( size ).append( "/" ).append( this.least ).append( "]\n" ).append( this.example ).toString( ) );
+			sender.sendMessage( new CreatorString( "%rNot enogh perameters. [%R" ).append( size ).append( "/" ).append( this.least ).append( "%r]\n", this.example ).toString( ) );
 			return true;
 		} else if ( size > this.most && this.most != -1 ) {
-			sender.sendMessage( new StringBuilder( "Too meany perameters. [" ).append( size ).append( "/" ).append( this.most ).append( "]\n" ).append( this.example ).toString( ) );
+			sender.sendMessage( new CreatorString( "%rToo meany perameters. [%R" ).append( size ).append( "/" ).append( this.most ).append( "%r]\n", this.example ).toString( ) );
 			return true;
 		}
 		
 		boolean isPlayer = ( sender instanceof Player );
 		
 		if ( isPlayer && !this.player ) {
-			sender.sendMessage( "This command can not be called by players." );
+			sender.sendMessage( new CreatorString("%rThis command can not be called by players.").toString() );
 			return true;
-		} else if ( !isPlayer && !this.console ) { throw new CommandException( "This command can not be called from console." ); }
+		} else if ( !isPlayer && !this.console ) {
+			sender.sendMessage( "This command can not be called from console.");
+			return true;
+		}
 		
 		if ( isPlayer ) { // Note: Check permissions?
 			Player player = (Player) sender;
@@ -150,7 +154,7 @@ public class Command {
 			
 			if ( cause != null ) {
 				
-				if ( cause.getClass( ).equals( CommandException.class ) ) {
+				if ( cause.getClass( ).equals( CmdException.class ) || cause.getClass( ).equals( CommandException.class ) ) {
 					sender.sendMessage(e.getMessage( ));
 					return true;
 				}
@@ -191,13 +195,13 @@ public class Command {
 	
 	public String getHelp( ) {
 		
-		StringBuilder msg = new StringBuilder( ChatColor.YELLOW.toString( ) ).append( this.example ).append( " " );
+		CreatorString msg = new CreatorString( "%y", this.example, " " );
 		
 		if ( this.usePrice > 0 ) { // Add price data
-			msg.append( "(£" ).append( ChatColor.RED.toString( ) ).append( this.usePrice ).append( ")" );
+			msg.append( "(%r" ).append( this.usePrice ).append( plugin.getEconomy( ).currencyNameSingular( ) , "%y)" );
 		}
 		
-		return msg.append( "\n" ).append( ChatColor.BLUE.toString( ) ).append( this.desc ).toString( );
+		return msg.append( "\n %b", this.desc ).toString( );
 	}
 	
 	/*========================================================================================================*/

@@ -18,13 +18,13 @@
 
 package com.rusketh.creator.Extensions;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.rusketh.creator.commands.Command;
 import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
+import com.rusketh.creator.exceptions.CmdException;
 
 public class HelpExtension extends Extension {
 	
@@ -37,7 +37,7 @@ public class HelpExtension extends Extension {
 			if ( helpWith != null ) {
 				sender.sendMessage( helpWith.getHelp( ) );
 			} else {
-				throw new CommandException( "That command does not exist." );
+				throw new CmdException( "%rThat command does not exist." );
 			}
 			
 		} else {

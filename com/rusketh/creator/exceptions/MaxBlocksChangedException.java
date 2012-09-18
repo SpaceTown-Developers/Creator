@@ -19,15 +19,14 @@
 package com.rusketh.creator.exceptions;
 
 
-public class MaxBlocksChangedException extends CreatorException  {	
+@SuppressWarnings( "serial" )
+public class MaxBlocksChangedException extends RuntimeException  {	
 
 	public MaxBlocksChangedException(int maxBlocks) {
 		this.maxBlocks = maxBlocks;
 	}
 	
 	/*========================================================================================================*/
-	
-	private static final long	serialVersionUID	= 5689253229043117587L;
 	
 	protected int maxBlocks;
 }

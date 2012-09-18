@@ -19,7 +19,6 @@
 package com.rusketh.creator.tasks;
 
 import com.rusketh.creator.blocks.StoredBlock;
-import com.rusketh.creator.exceptions.CreatorException;
 
 
 public class UndoTask extends Task {
@@ -31,7 +30,7 @@ public class UndoTask extends Task {
 	
 	/*========================================================================================================*/
 	
-	public boolean runTask( ) throws CreatorException {
+	public boolean runTask( ) {
 		for (int i = 1; i < getRate(); i++) {
 			StoredBlock block = task.getUndoArray( ).get( pos );
 			

@@ -20,15 +20,15 @@ package com.rusketh.creator.tasks;
 
 import java.util.ArrayList;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 
 import com.rusketh.creator.CreatorPlugin;
-import com.rusketh.creator.exceptions.CreatorException;
+import com.rusketh.creator.exceptions.CmdException;
 import com.rusketh.creator.exceptions.MaxBlocksChangedException;
 import com.rusketh.creator.masks.Mask;
 import com.rusketh.creator.tasks.selection.BoxSelection;
 import com.rusketh.creator.tasks.selection.Selection;
+import com.rusketh.util.CreatorString;
 
 public class TaskSession {
 	
@@ -108,11 +108,11 @@ public class TaskSession {
 			if ( task.run( ) ) stopTask();
 			
 		} catch ( MaxBlocksChangedException e ) {
-			player.sendMessage( new StringBuilder("Operation aborted - Maxamum blocks changed. (").append( task.counter ).append(" blocks changed)").toString() );
+			player.sendMessage( new CreatorString("%rOperation aborted - Maxamum blocks changed. (%R").append( task.counter ).append(" blocks changed%r)").toString() );
 			stopTask( );
 			
-		} catch ( CreatorException e ) {
-			player.sendMessage( new StringBuilder("Operation aborted - Somthing whent wrong. (").append( task.counter ).append(" blocks changed)").toString());
+		} catch ( Exception e ) {
+			player.sendMessage( new CreatorString("%rOperation aborted - Somthing whent wrong. (%R").append( task.counter ).append(" blocks changed%r)").toString());
 			stopTask( );
 		}
 	}
@@ -134,7 +134,7 @@ public class TaskSession {
 	}
 	
 	public boolean undo() {
-		if (undoPos == 0) throw new CommandException("Nothing to undo.");
+		if (undoPos == 0) throw new CmdException("%rNothing to undo.");
 		return startTask(undoQue.get( undoPos ), false);
 	}
 	
@@ -142,7 +142,7 @@ public class TaskSession {
 		if ( task != null ) return false;
 		Task newTask = undoQue.get( undoPos + 1 );
 		
-		if (newTask == null) throw new CommandException("Nothing to redo.");
+		if (newTask == null) throw new CmdException("%rNothing to redo.");
 		return startTask(newTask, false);
 	}
 	

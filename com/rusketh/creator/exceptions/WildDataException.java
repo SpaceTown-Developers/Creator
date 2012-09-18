@@ -19,7 +19,8 @@
 package com.rusketh.creator.exceptions;
 
 
-public class WildDataException extends CreatorException {
+@SuppressWarnings( "serial" )
+public class WildDataException extends RuntimeException {
 	
 	public WildDataException(int typeId) {
 		this.typeId = typeId;
@@ -28,7 +29,5 @@ public class WildDataException extends CreatorException {
 	/*========================================================================================================*/
 	
 	public int typeId;
-	
-	private static final long	serialVersionUID	= 3910694927801112042L;
 	
 }

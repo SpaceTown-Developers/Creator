@@ -33,7 +33,6 @@ import com.rusketh.creator.blocks.BlockID;
 import com.rusketh.creator.blocks.CreatorBlock;
 import com.rusketh.creator.blocks.CreatorItemStack;
 import com.rusketh.creator.blocks.StoredBlock;
-import com.rusketh.creator.exceptions.CreatorException;
 import com.rusketh.creator.exceptions.MaxBlocksChangedException;
 import com.rusketh.creator.masks.Mask;
 
@@ -107,7 +106,7 @@ public abstract class Task {
 	
 	/*========================================================================================================*/
 	
-	public boolean run( ) throws CreatorException {
+	public boolean run( ) {
 		if ( bag != null ) bag.loadInventory( );
 		
 		if ( !processing ) {
@@ -144,7 +143,7 @@ public abstract class Task {
 		}
 	}
 	
-	public abstract boolean runTask( ) throws CreatorException;
+	public abstract boolean runTask( );
 	
 	/*========================================================================================================*/
 	

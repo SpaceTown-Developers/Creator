@@ -16,53 +16,61 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.tasks;
+package com.rusketh.creator.exceptions;
 
-import com.rusketh.creator.blocks.StoredBlock;
+import org.bukkit.entity.Player;
+
+import com.rusketh.creator.blocks.CreatorItemStack;
+import com.rusketh.util.CreatorString;
 
 
-public class RedoTask extends Task {
+@SuppressWarnings( "serial" )
+public class CmdException extends RuntimeException {
 	
-	public RedoTask(Task task) {
-		super( task.getSession( ), task.getWorld( ), task.getRate( ) );
-		this.task = task;
+	public CmdException(String message) {
+		builder.append(message);
+	}
+	
+	public CmdException(String... message) {
+		builder.append(message);
 	}
 	
 	/*========================================================================================================*/
 	
-	public boolean runTask( ) {
-		for (int i = 1; i < getRate(); i++) {
-			StoredBlock block = task.getRedoArray( ).get( pos );
-			
-			if (block == null) {
-				return true;
-				
-			} else if ( block.isSpecial( ) ) {
-				block.pushState( block.getBlock( ) );
-				counter++;
-				
-			} else {
-				queBlock(block.getBlock( ), block.getTypeId( ), block.getDataByte( ));
-			}
-		}
-		
-		return false;
+	public CmdException append(String message) {
+		builder.append(message);
+		return this;
+	}
+	
+	public CmdException append(String... message) {
+		builder.append(message);
+		return this;
 	}
 	
 	/*========================================================================================================*/
 	
-	public boolean finish() {
-		TaskSession session = getSession();
-		//TODO: Pop undo queue.
-		
-		session.getPlayer( ).sendMessage( new StringBuilder("Redo Complete (").append( counter ).append( " Blocks cchanged" ).toString( ) );
-		return true;
-		
+	public CmdException append(int number) {
+		builder.append(number);
+		return this;
+	}
+	
+	public CmdException append(Player player) {
+		builder.append(player);
+		return this;
+	}
+	
+	public CmdException append(CreatorItemStack item) {
+		builder.append(item);
+		return this;
 	}
 	
 	/*========================================================================================================*/
 	
-	private Task task;
+	public String getMessage() {
+		return builder.toString( );
+	}
 	
-	private int pos = 0;
+	/*========================================================================================================*/
+	
+	CreatorString builder = new CreatorString();
 }

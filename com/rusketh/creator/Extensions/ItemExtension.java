@@ -36,7 +36,9 @@ import com.rusketh.creator.blocks.ItemID;
 import com.rusketh.creator.blocks.CreatorItemStack;
 import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
+import com.rusketh.creator.exceptions.CmdException;
 import com.rusketh.creator.exceptions.WildDataException;
+import com.rusketh.util.CreatorString;
 
 public class ItemExtension extends Extension {
 	
@@ -54,7 +56,7 @@ public class ItemExtension extends Extension {
 			if ( item == null & split.length == 1 ) return aliasToItemStack( split[0] );
 		}
 		
-		if ( item == null ) throw new CommandException( new StringBuilder( "Can not find item '" ).append( split[0] ).append( "'." ).toString( ) );
+		if ( item == null ) throw new CmdException("%rCan not find item '%c", split[0], "%r'.");
 		
 		if ( split.length == 1 ) return new CreatorItemStack( item.getID( ) );
 		
@@ -68,7 +70,7 @@ public class ItemExtension extends Extension {
 			data = item.getDataValue( split[1] );
 		}
 		
-		if ( !item.validDataValue( data ) ) throw new CommandException( new StringBuilder( item.getName( ) ).append( " does not have type '" ).append( split[1] ).append( "'." ).toString( ) );
+		if ( !item.validDataValue( data ) ) throw new CmdException("%r'%c", item.getName( ),"%r' does not have type '%c", split[1], "%r'.");
 		
 		return new CreatorItemStack( item.getID( ), (byte) data );
 	}
@@ -94,7 +96,7 @@ public class ItemExtension extends Extension {
 		data = CreatorItem.SPAWN_EGG.getDataValue( alias );
 		if ( data != -1 ) return new CreatorItemStack( ItemID.SPAWN_EGG, (byte) data );
 		
-		throw new CommandException( new StringBuilder( "Can not find item '" ).append( alias ).append( "'." ).toString( ) );
+		throw new CmdException("%rCan not find item '%c", alias, "%r'.");
 	}
 	
 	/*========================================================================================================*/
@@ -114,7 +116,7 @@ public class ItemExtension extends Extension {
 			ench = Enchantment.getById( id );
 		}
 		
-		if ( ench == null ) throw new CommandException( new StringBuilder( "Can not find enchantment '" ).append( split[0] ).append( "'." ).toString( ) );
+		if ( ench == null ) throw new CmdException("%rCan not find enchantment '%c", split[0], "%r'.");
 		
 		int level = ench.getStartLevel( );
 		
@@ -122,19 +124,19 @@ public class ItemExtension extends Extension {
 			if ( StringUtils.isNumeric( split[1] ) ) {
 				level = Integer.parseInt( split[1] );
 			} else {
-				throw new CommandException( new StringBuilder( "'" ).append( split[1] ).append( "' is not a valid level (try a number?)." ).toString( ) );
+				throw new CmdException("%r'%c", split[1], "%r' is not a valid level (%Rtry a number?%r)." );
 			}
 			
-			if ( level < ench.getStartLevel( ) ) throw new CommandException( new StringBuilder( enchantments.name( ench.getId( ) ) ).append( " does not support levels below '" ).append( ench.getStartLevel( ) ).append( "'." ).toString( ) );
+			if ( level < ench.getStartLevel( ) ) throw new CmdException( "%r'%c", enchantments.name( ench.getId( ) ), "%r' does not support levels below '%c").append( ench.getStartLevel( ) ).append( "%r'.");
 			
-			if ( level > ench.getMaxLevel( ) ) throw new CommandException( new StringBuilder( enchantments.name( ench.getId( ) ) ).append( " does not support levels above '" ).append( ench.getMaxLevel( ) ).append( "'." ).toString( ) );
+			if ( level > ench.getMaxLevel( ) ) throw new CmdException( "%r'%c", enchantments.name( ench.getId( ) ), "%r' does not support levels above '%c" ).append( ench.getMaxLevel( ) ).append( "%r'." );
 		}
 		
-		if ( !ench.canEnchantItem( item ) ) throw new CommandException( new StringBuilder( "You can not enchant '" ).append( new CreatorItemStack(item).niceName() ).append( "' with '" ).append( enchantments.name( ench.getId( ) ) ).append( "'." ).toString( ) );
+		if ( !ench.canEnchantItem( item ) ) throw new CmdException("%rYou can not enchant '%c" ).append( new CreatorItemStack(item) ).append( "%r' with '%c" ).append( enchantments.name( ench.getId( ) ) ).append( "%r'." );
 		
 		item.addUnsafeEnchantment( ench, level );
 		
-		return new StringBuilder( enchantments.name( ench.getId( ) ) ).append( " level " ).append( level ).toString( );
+		return new CreatorString( enchantments.name( ench.getId( ) ) ).append( " level " ).append( level ).toString( );
 	}
 	
 	/*========================================================================================================*/
@@ -148,7 +150,7 @@ public class ItemExtension extends Extension {
 		try {
 			itemStack = (CreatorItemStack) stringToItemStack( input.arg( 0 ) );
 		} catch ( WildDataException e ) {
-			throw new CommandException( "This command does not support wildcards (*)." );
+			throw new CmdException( "%rThis command does not support wildcards (%c*%r)." );
 		}
 		
 		Player player = (Player) sender;
@@ -160,7 +162,7 @@ public class ItemExtension extends Extension {
 			amount = input.argInt( 1 );
 			
 			if ( itemStack.getAmount( ) < 1 ) {
-				throw new CommandException( "Invalid item amount!" );
+				throw new CmdException( "%rInvalid item amount!" );
 			} else if ( itemStack.getItem( ).shouldNotStack( ) ) {
 				amount = 1;
 			} else if ( itemStack.getAmount( ) < 64 ) {
@@ -170,7 +172,7 @@ public class ItemExtension extends Extension {
 		
 		itemStack.setAmount( amount );
 		
-		StringBuilder message = new StringBuilder( "Giving you " );
+		CreatorString message = new CreatorString( "%gGiving you '%c" );
 		
 		if ( input.hasFlag( 'p' ) ) {
 			if ( !player.hasPermission( "creator.item.give.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
@@ -178,15 +180,15 @@ public class ItemExtension extends Extension {
 			player = plugin.getServer( ).getPlayer( input.flagString( 'p' ) );
 			if ( player == null ) throw new CommandException( "Player was not found." );
 			
-			message = new StringBuilder( sender.getName( ) ).append( " has given you " );
+			message = new CreatorString("%G").append( sender.getName( ) ).append( "%g has given you '%c" );
 		}
 		
-		message.append( amount ).append( " '" ).append( itemStack.niceName( ) ).append( "'" );
+		message.append( amount ).append( "%g' of '%c" ).append( itemStack ).append( "%g'" );
 		
 		if ( input.hasFlag( 'e' ) ) {
 			String with = enchant( input.flagString( 'e' ), itemStack );
 			
-			message.append( " enchanted with '" ).append( with ).append( "'" );
+			message.append( " enchanted with '%c" ).append( with ).append( "%g'" );
 		}
 		
 		/*if ( input.hasFlag( 'm' ) ) {
@@ -219,10 +221,10 @@ public class ItemExtension extends Extension {
 		
 		Player player = (Player) sender;
 		if ( input.hasFlag( 'p' ) ) {
-			if ( !player.hasPermission( "creator.item.clear.other" ) ) throw new CommandException( "You are not allowed to give items to players" );
+			if ( !player.hasPermission( "creator.item.clear.other" ) ) throw new CmdException( "%rYou are not allowed to give items to players" );
 			
 			player = plugin.getServer( ).getPlayer( input.flagString( 'p' ) );
-			if ( player == null ) throw new CommandException( "Player was not found." );
+			if ( player == null ) throw new CmdException( "%rPlayer was not found." );
 		}
 		
 		if ( input.hasFlag( 's' ) ) {
@@ -257,9 +259,9 @@ public class ItemExtension extends Extension {
 		ItemStack stack = player.getInventory( ).getItemInHand( );
 		
 		if ( stack == null ) {
-			throw new CommandException( "Your hand is empty." );
+			throw new CmdException( "%rYour hand is empty." );
 		} else if ( CreatorItem.get( stack.getTypeId( ) ).shouldNotStack( ) ) {
-			throw new CommandException( "Your current item can not stack." );
+			throw new CmdException( "%rYour current item can not stack." );
 		}
 		
 		stack.setAmount( 64 );
@@ -284,7 +286,7 @@ public class ItemExtension extends Extension {
 		String with = enchant( input.arg( 0 ), itemStack );
 		player.updateInventory( ); // Not actually deprecated is just a work around.
 		
-		player.sendMessage( new StringBuilder( "Your item has been enchanted with '" ).append( with ).append( "'." ).toString( ) );
+		player.sendMessage( new CreatorString( "%gYour item has been enchanted with '%c", with ,"%g'." ).toString( ) );
 		
 		return true;
 	}
