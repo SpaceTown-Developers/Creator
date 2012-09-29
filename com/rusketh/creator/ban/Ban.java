@@ -19,29 +19,65 @@
 package com.rusketh.creator.ban;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Hashtable;
 
-public abstract class Ban {
+public class Ban {
 	
-	private String	banner, reason;
-	private long	timeBanned, unban;
+	private String						banner, reason,
+			name, ip;
+	private long						timeBanned, unban;
+	private Hashtable< String, Object >	sqlDump	= new Hashtable< String, Object >( );
 	
-	protected Ban( String banner, String reason, long timeBanned, long unban ) {
+	protected Ban( String name, String ip, String banner, String reason, long timeBanned, long unban ) {
 		this.banner = banner;
 		this.reason = reason;
 		this.timeBanned = timeBanned;
 		this.unban = unban;
+		this.name = name;
+		this.ip = ip;
 	}
 	
 	protected Ban( ResultSet result ) throws SQLException {
+		ResultSetMetaData data = result.getMetaData( );
+		
+		for ( int i = 1; i <= data.getColumnCount( ); i++ )
+			sqlDump.put( data.getColumnName( i ), result.getObject( i ) );
+		
 		this.banner = result.getString( "banner" );
 		this.reason = result.getString( "reason_banned" );
 		this.timeBanned = result.getLong( "time_banned" );
 		this.unban = result.getLong( "unban" );
+		this.ip = result.getString( "ip" );
+		this.name = result.getString( "name" );
+		
+		result.first( );
 	}
 	
 	/**
-	 * @return the name of the name who issued the ban.
+	 * @return a object with the data in the column specified. Null if invalid column or not created with a ResultSet object.
+	 */
+	protected Object getColumn( String name ) {
+		return sqlDump.get( name );
+	}
+	
+	/**
+	 * @return the name of the banned player.
+	 */
+	public String getName( ) {
+		return this.name;
+	}
+	
+	/**
+	 * @return the ip of the banned player.
+	 */
+	public String getIp( ) {
+		return this.ip;
+	}
+	
+	/**
+	 * @return the name of the player who issued the ban.
 	 */
 	public String getBanner( ) {
 		return this.banner;
@@ -67,5 +103,4 @@ public abstract class Ban {
 	public long getUnban( ) {
 		return this.unban;
 	}
-	
 }

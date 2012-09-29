@@ -30,6 +30,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.YamlConfigurationOptions;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -80,7 +81,8 @@ public class CreatorPlugin extends JavaPlugin {
 		}
 		
 		setupEconomy( );
-		
+
+		configManager = new ConfigManager( this );
 		mysqlManager = new MysqlManager( this );
 		taskManager = new TaskManager( this );
 		commandManager = new CommandManager( this );
@@ -144,17 +146,21 @@ public class CreatorPlugin extends JavaPlugin {
 	@Override
 	public void reloadConfig( ) {
 		YamlConfig = new YamlConfiguration( );
-		YamlConfig.options( ).pathSeparator( '.' );
+		YamlConfigurationOptions YamlOptions = YamlConfig.options( );
+		YamlOptions.pathSeparator( '.' );
+		YamlOptions.copyDefaults( true );
+		
 		try {
 			YamlConfig.load( configFile );
 			
-			if ( !YamlConfig.contains( "enabled" ) ) YamlConfig.set( "enabled", true );
-			if ( !YamlConfig.contains( "usevault" ) ) YamlConfig.set( "usevault", false );
-			if ( !YamlConfig.contains( "blockrate" ) ) YamlConfig.set( "blockrate", 500 );
-			if ( !YamlConfig.contains( "maxblocks" ) ) YamlConfig.set( "maxblocks", -1 );
-			if ( !YamlConfig.contains( "maxradius" ) ) YamlConfig.set( "maxradius", -1 );
-			if ( !YamlConfig.contains( "commands.custom.enable" ) ) YamlConfig.set( "commands.custom.enable", true );
-			if ( !YamlConfig.contains( "commands.custom.prefix" ) ) YamlConfig.set( "commands.custom.prefix", "!" );
+			YamlConfig.addDefault( "enabled", true );
+			YamlConfig.addDefault( "usevault", false );
+			YamlConfig.addDefault( "blockrate", 500 );
+			YamlConfig.addDefault( "maxblocks", -1 );
+			YamlConfig.addDefault( "maxradius", -1 );
+			YamlConfig.addDefault( "commands.custom.enable", true );
+			YamlConfig.addDefault( "commands.custom.prefix", "!" );
+			
 			saveConfig( );
 			
 			Enabled = YamlConfig.getBoolean( "enabled" );
@@ -256,9 +262,7 @@ public class CreatorPlugin extends JavaPlugin {
 	 */
 	
 	public boolean onCommand( CommandSender sender, Command command, String commandLabel, String[] args ) {
-		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) {
-			return commandManager.run( sender, args );
-		}
+		if ( commandLabel.equalsIgnoreCase( "creator" ) || commandLabel.equalsIgnoreCase( "cr" ) ) { return commandManager.run( sender, args ); }
 		
 		return false;
 	}
@@ -297,12 +301,26 @@ public class CreatorPlugin extends JavaPlugin {
 	 * Gets the Task Manager.
 	 * The task manager handles all player build tasks.
 	 * 
-	 * @return {@link TaskManager}
+	 * @return {@link ExtensionManager}
 	 * @author Rusketh
 	 */
 	
 	public ExtensionManager getExtensionManager( ) {
 		return extensionManager;
+	}
+	
+	/*========================================================================================================*/
+	
+	/**
+	 * Gets the Configuration Manager.
+	 * The configuration manager handles all configuration loading.
+	 * 
+	 * @return {@link ConfigManager}
+	 * @author Oskar
+	 */
+	
+	public ConfigManager getConfigManager( ) {
+		return configManager;
 	}
 	
 	/*========================================================================================================*/
@@ -314,6 +332,7 @@ public class CreatorPlugin extends JavaPlugin {
 	private TaskManager			taskManager;
 	private MysqlManager		mysqlManager;
 	private ExtensionManager	extensionManager;
+	private ConfigManager		configManager;
 	
 	private File				configFile;
 	private YamlConfiguration	YamlConfig;
@@ -327,4 +346,5 @@ public class CreatorPlugin extends JavaPlugin {
 	
 	public boolean				cmdUse;
 	public String				cmdPrefix;
+	
 }
