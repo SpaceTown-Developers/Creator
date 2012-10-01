@@ -281,7 +281,7 @@ public class _BanExtension extends Extension {
 			cal.setTimeInMillis( 0 );
 		}
 		
-		Matcher m = pattern.matcher( time ); 
+		Matcher m = pattern.matcher( time );
 		
 		while ( m.find( ) ) {
 			int count = Integer.parseInt( m.group( 1 ) );

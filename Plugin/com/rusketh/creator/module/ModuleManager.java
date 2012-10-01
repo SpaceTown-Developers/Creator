@@ -108,7 +108,7 @@ public class ModuleManager {
 		YamlConfiguration yamlConfig = moduleYamls.get(name);
 		if ( yamlConfig == null ) return false;
 		
-		List<String> hardDepend = yamlConfig.getStringList("softdepend");
+		List<String> hardDepend = yamlConfig.getStringList("harddepend");
 		if ( hardDepend != null && hardDepend.size() > 0 ) {
 			for (String module : hardDepend ) {
 				if ( !loadModule(module) ) {
@@ -118,7 +118,7 @@ public class ModuleManager {
 			}
 		}
 		
-		List<String> softDepend = yamlConfig.getStringList("harddepend");
+		List<String> softDepend = yamlConfig.getStringList("softdepend");
 		if ( softDepend != null && softDepend.size() > 0 ) {
 			for (String module : softDepend ) loadModule(module);
 		}

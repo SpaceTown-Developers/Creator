@@ -1,26 +1,33 @@
 package com.rusketh.creator;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.file.YamlConfigurationOptions;
 
+/*
+ * TODO:
+ * Add throws and exceptions
+ */
+
 public class ConfigManager {
 	
 	private CreatorPlugin	plugin;
 	
-	protected ConfigManager( CreatorPlugin creatorPlugin ) {
+	public ConfigManager( CreatorPlugin creatorPlugin ) {
 		plugin = creatorPlugin;
 	}
 	
-	
-	/**	
+	/**
 	 * Creates a new {@link YamlConfiguration} and set the default options.
+	 * 
 	 * @return {@link YamlConfiguration}
+	 * 
+	 * @author Oskar
 	 */
 	public YamlConfiguration createConfig( ) {
 		YamlConfiguration yamlFile = new YamlConfiguration( );
@@ -34,68 +41,65 @@ public class ConfigManager {
 	}
 	
 	/**
-	 * Loads a configuration from disk.
-	 * If the file do not exist, it will create it.
-	 * @param name The filename that will be loaded.
-	 * @return {@link YamlConfiguration} The configuration loaded.
+	 * Creates a new {@link YamlConfiguration} and set the default options.
+	 * 
+	 * @param defaults The default values for the new configuration.
+	 * @return {@link YamlConfiguration}
+	 * 
+	 * @author Oskar
 	 */
-	public YamlConfiguration loadConfig( String name ) {
-		return loadConfig( name, new HashMap< String, Object >( ) );
-	}
-	
-	public YamlConfiguration loadConfig( String name, Map< String, Object > defaults ) {
-		if ( !name.matches( "[^%.]+%.yml" ) ) name = name.concat( ".yml" );
+	public YamlConfiguration createConfig( Map< String, Object > defaults ) {
+		YamlConfiguration yamlFile = new YamlConfiguration( );
+		YamlConfigurationOptions YamlOptions = yamlFile.options( );
 		
-		File file = new File( plugin.getDataFolder( ), name );
+		YamlOptions.pathSeparator( '.' );
+		YamlOptions.copyDefaults( true );
+		YamlOptions.copyHeader( true );
 		
-		if ( !file.exists( ) ) {
-			try {
-				if ( !file.getParentFile( ).exists( ) ) file.mkdirs( );
-				file.createNewFile( );
-			} catch ( IOException e ) {
-				plugin.getLogger( ).severe( "Unable to create ?!".replace( "?", name ) );
-				return null;
-			}
-		}
-		
-		YamlConfiguration yamlFile = createConfig( );
-		
-		try {
-			yamlFile.addDefaults( defaults );
-			yamlFile.load( file );
-			yamlFile.save( file );
-		} catch ( IOException | InvalidConfigurationException e ) {
-			plugin.getLogger( ).severe( "Unable to load ?!".replace( "?", name ) );
-			return null;
-		}
+		yamlFile.addDefaults( defaults );
 		
 		return yamlFile;
 	}
 	
-	public void saveConfig( YamlConfiguration config, String name ) {
+	/**
+	 * Loads a configuration from disk.
+	 * 
+	 * @param name The name of the configuration file that will be loaded.
+	 * @return {@link YamlConfiguration} The configuration loaded.
+	 * 
+	 * @throws {@link FileNotFoundException}
+	 * @throws {@link IOException }
+	 * @throws {@link InvalidConfigurationException}
+	 * 
+	 * @author Oskar
+	 */
+	public YamlConfiguration loadConfig( String name ) throws FileNotFoundException, IOException, InvalidConfigurationException {
+		if ( !name.matches( "[^%.]+%.yml" ) ) name = name.concat( ".yml" );
+		YamlConfiguration yamlFile = createConfig( );
+		yamlFile.load( name );
+		return yamlFile;
+	}
+	
+	/**
+	 * Saves a configuration the the specified path.
+	 * 
+	 * @param config The configuration to be saved.
+	 * @param name The name of the file where the configuration will be saved.
+	 * 
+	 * @throws IOException
+	 * 
+	 * @author Oskar
+	 */
+	public void saveConfig( YamlConfiguration config, String name ) throws IOException {
 		if ( !name.matches( "[^%.]+%.yml" ) ) name = name.concat( ".yml" );
 		
 		File file = new File( plugin.getDataFolder( ), name );
 		
 		if ( !file.exists( ) ) {
-			try {
-				if ( !file.getParentFile( ).exists( ) ) file.mkdirs( );
-				file.createNewFile( );
-			} catch ( IOException e ) {
-				plugin.getLogger( ).severe( "Unable to create ?!".replace( "?", name ) );
-				return;
-			}
+			if ( !file.getParentFile( ).exists( ) ) file.mkdirs( );
+			file.createNewFile( );
 		}
 		
-		saveConfig( config, file );
+		config.save( file );
 	}
-	
-	private void saveConfig( YamlConfiguration config, File file ) {
-		try {
-			config.save( file );
-		} catch ( IOException e ) {
-			plugin.getLogger( ).severe( "Unable to save ?!".replace( "?", file.getName( ) ) );
-		}
-	}
-	
 }
