@@ -36,6 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.rusketh.creator.Extensions.ExtensionManager;
 import com.rusketh.creator.commands.CommandManager;
+import com.rusketh.creator.module.ModuleManager;
 import com.rusketh.creator.tasks.TaskManager;
 
 public class CreatorPlugin extends JavaPlugin {
@@ -87,6 +88,7 @@ public class CreatorPlugin extends JavaPlugin {
 		taskManager = new TaskManager( this );
 		commandManager = new CommandManager( this );
 		extensionManager = new ExtensionManager( this );
+		moduleManager = new ModuleManager( this );
 		
 		getLogger( ).info( "Loaded" );
 	}
@@ -102,6 +104,8 @@ public class CreatorPlugin extends JavaPlugin {
 	public void onDisable( ) {
 		if ( !Enabled ) return;
 		
+		moduleManager.shutDown();
+		extensionManager.shutDown();
 		taskManager.closeSessions( );
 		mysqlManager.disconnect( );
 	}
@@ -160,6 +164,7 @@ public class CreatorPlugin extends JavaPlugin {
 			YamlConfig.addDefault( "maxradius", -1 );
 			YamlConfig.addDefault( "commands.custom.enable", true );
 			YamlConfig.addDefault( "commands.custom.prefix", "!" );
+			YamlConfig.addDefault( "debug", false );
 			
 			saveConfig( );
 			
@@ -170,6 +175,7 @@ public class CreatorPlugin extends JavaPlugin {
 			MaxRadius = YamlConfig.getInt( "maxradius" );
 			cmdUse = YamlConfig.getBoolean( "commands.custom.enable" );
 			cmdPrefix = YamlConfig.getString( "commands.custom.prefix" ).toLowerCase( );
+			Debug = YamlConfig.getBoolean( "debug" );
 			
 		} catch ( Exception e ) {
 			getLogger( ).severe( "Unable to load configuration!" );
@@ -325,6 +331,20 @@ public class CreatorPlugin extends JavaPlugin {
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * Displays exception information if debugging is enabled.
+	 * 
+	 * @author Rusketh
+	 */
+	
+	public void debug( Throwable e ) {
+		if ( !Debug ) return;
+		logger.info("[Creator] Debug: ?".replace("?", e.getMessage()) );
+		e.getStackTrace();
+	}
+	
+	/*========================================================================================================*/
+	
 	public Logger				logger;
 	private static Economy		economy;
 	
@@ -333,10 +353,12 @@ public class CreatorPlugin extends JavaPlugin {
 	private MysqlManager		mysqlManager;
 	private ExtensionManager	extensionManager;
 	private ConfigManager		configManager;
+	private ModuleManager		moduleManager;
 	
 	private File				configFile;
 	private YamlConfiguration	YamlConfig;
 	
+	public boolean				Debug;
 	public boolean				Enabled;
 	public boolean				Vault;
 	

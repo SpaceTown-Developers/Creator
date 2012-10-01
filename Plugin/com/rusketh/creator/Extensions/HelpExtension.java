@@ -28,6 +28,10 @@ import com.rusketh.creator.exceptions.CmdException;
 
 public class HelpExtension extends Extension {
 	
+	protected String name = "core.help";
+	
+	/*========================================================================================================*/
+	
 	@CreateCommand( names = { "help" }, example = "/cr help [cmd]", desc = "Get help with a command.", least = 0, most = 1, console = true )
 	public boolean helpCommand( CommandSender sender, CommandInput input ) {
 		
@@ -50,5 +54,7 @@ public class HelpExtension extends Extension {
 		
 		return true;
 	}
+	
+	/*========================================================================================================*/
 	
 }

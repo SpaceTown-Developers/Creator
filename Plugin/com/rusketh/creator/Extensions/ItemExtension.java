@@ -42,6 +42,10 @@ import com.rusketh.util.CreatorString;
 
 public class ItemExtension extends Extension {
 	
+	protected String name = "core.item";
+	
+	/*========================================================================================================*/
+	
 	public static ItemStack stringToItemStack( String search ) throws WildDataException {
 		String[] split = search.split( ":" );
 		

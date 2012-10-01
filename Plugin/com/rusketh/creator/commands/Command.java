@@ -158,14 +158,12 @@ public class Command {
 					sender.sendMessage(e.getMessage( ));
 					return true;
 				}
-				
-				plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
-				plugin.logger.info( cause.getMessage( ) );
-				
-				e.getCause( ).printStackTrace( );
+				plugin.logger.info( "Creator failed to invoke command ?".replace( "?", this.name ) );
+				plugin.debug(cause);
 				
 			} else {
-				plugin.logger.info( new StringBuilder( "Creator failed to invoke command " ).append( this.name ).toString( ) );
+				plugin.logger.info( "Creator failed to invoke command ?".replace( "?", this.name ) );
+				plugin.debug(e);
 			}
 			
 			sender.sendMessage("Oooops, somthing just failed epicly." );

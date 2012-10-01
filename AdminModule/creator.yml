@@ -1,0 +1,3 @@
+name: 'Admin'
+desc: 'Adds admin features to creator'
+main: 'com.rusketh.creator.CreatorAdmin'

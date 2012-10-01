@@ -128,8 +128,12 @@ public class TaskSession {
 			undoPos++;
 			undoQue.set( undoPos, task );
 			for (int i = undoPos + 1; i < undoQue.size( ); i++) undoQue.set( i, null );
-			
-			//TODO: Limit undoQue size.
+		}
+		
+		
+		if (undoQue.size( ) > 10) {
+			undoQue.remove( 0 );
+			undoPos--; //Think this should work.
 		}
 	}
 	

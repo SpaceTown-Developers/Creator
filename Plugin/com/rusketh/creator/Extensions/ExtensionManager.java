@@ -34,10 +34,22 @@ public class ExtensionManager {
 	
 	/*========================================================================================================*/
 	
+	public void registerExtension( Extension extension ) {
+		if (extension == null || extension.name.isEmpty() ) return;
+		registerExtension(extension.name, extension);
+	}
+	
 	public void registerExtension( String name, Extension extension ) {
+		if (extension == null) return;
 		if ( extension.setUp( plugin ) ) {
 			extensions.put( name, extension );
 		}
+	}
+	
+	/*========================================================================================================*/
+	
+	public void shutDown() {
+		for (Extension extension : extensions.values()) extension.setEnabled(false);
 	}
 	
 	/*=========================================================================================================
@@ -45,9 +57,9 @@ public class ExtensionManager {
 	==========================================================================================================*/
 	
 	private void registerExtensions( ) {
-		registerExtension( "help", new HelpExtension( ) );
-		registerExtension( "ban", new BanExtension( ) );
-		registerExtension( "item", new ItemExtension( ) );
+		registerExtension( new HelpExtension( ) );
+		registerExtension( new BanExtension( ) );
+		registerExtension( new ItemExtension( ) );
 		
 		plugin.saveConfig( );
 	}

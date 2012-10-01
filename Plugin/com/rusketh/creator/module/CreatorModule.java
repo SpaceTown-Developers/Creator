@@ -16,28 +16,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.rusketh.creator.Extensions;
+package com.rusketh.creator.module;
 
-import org.bukkit.event.Listener;
+import org.bukkit.Server;
 
 import com.rusketh.creator.CreatorPlugin;
+import com.rusketh.creator.Extensions.Extension;
 
-/*
- * ==============================================================================================================
- * Base Extension
- * ==============================================================================================================
- */
-
-public abstract class Extension implements Listener {
+public abstract class CreatorModule {
 	
 	protected boolean setUp( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
 		enabled = enable( );
 		if ( !enabled ) return false;
-		
-		plugin.getCommandManager( ).registerCommands( this );
-		plugin.getServer( ).getPluginManager( ).registerEvents( this, plugin );
 		
 		return true;
 	}
@@ -48,9 +40,16 @@ public abstract class Extension implements Listener {
 		return plugin;
 	}
 	
+	protected Server getServer() {
+		return plugin.getServer();
+	}
+	
 	/*========================================================================================================*/
 	
 	protected void setEnabled( boolean enabled ) {
+		if (enabled == this.enabled) return;
+		else if (!enabled) disable();
+		else enabled = enable( );
 		this.enabled = enabled;
 	}
 	
@@ -64,8 +63,19 @@ public abstract class Extension implements Listener {
 		return true;
 	}
 	
+	public void disable() {
+		
+	}
+
+	/*========================================================================================================*/
+	
+	public void registerExtension(Extension extension) {
+		plugin.getExtensionManager().registerExtension(extension);
+	}
+	
 	/*========================================================================================================*/
 	
 	protected CreatorPlugin	plugin;
 	protected boolean		enabled;
+	protected String 		name;
 }
