@@ -26,9 +26,9 @@ import com.rusketh.creator.commands.CommandInput;
 import com.rusketh.creator.commands.CreateCommand;
 import com.rusketh.creator.exceptions.CmdException;
 
-public class HelpExtension extends Extension {
+public class CreatorExtension extends Extension {
 	
-	protected String name = "core.help";
+	protected String name = "core.creator";
 	
 	/*========================================================================================================*/
 	
@@ -57,4 +57,15 @@ public class HelpExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
+	@CreateCommand( names = { "reload" }, example = "/cr reload", desc = "Reload Creator.", least = 0, most = 0, console = true, perms = {"creator.reload"} )
+	public boolean reloadCommand( CommandSender sender, CommandInput input ) {
+		
+		sender.sendMessage("Reloading Creator - this might lag.");
+		
+		plugin.reload();
+		
+		sender.sendMessage("Creator has been reloaded.");
+		
+		return true;
+	}
 }

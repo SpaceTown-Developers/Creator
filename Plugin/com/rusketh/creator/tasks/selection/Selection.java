@@ -3,7 +3,12 @@ package com.rusketh.creator.tasks.selection;
 import java.util.ArrayList;
 
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.util.Vector;
+
+import com.rusketh.util.Direction;
 
 public abstract class Selection implements Cloneable {
 	
@@ -57,6 +62,10 @@ public abstract class Selection implements Cloneable {
 	
 	/*========================================================================================================*/
 	
+	public abstract int expand(Direction dir, int amount);
+	
+	/*========================================================================================================*/
+	
 	public abstract Vector getFirst( );
 	
 	public abstract Vector getNext( );
@@ -79,6 +88,10 @@ public abstract class Selection implements Cloneable {
 		min = new Vector(0, 0, 0);
 		max = new Vector(0, 0, 0);
 	}
+	
+	/*========================================================================================================*/
+	
+	public abstract void wandEvent(Player player, Block block, Action action);
 	
 	/*========================================================================================================*/
 	

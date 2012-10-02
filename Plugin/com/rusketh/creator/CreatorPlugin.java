@@ -35,6 +35,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.rusketh.creator.Extensions.ExtensionManager;
+import com.rusketh.creator.blocks.ItemID;
 import com.rusketh.creator.commands.CommandManager;
 import com.rusketh.creator.module.ModuleManager;
 import com.rusketh.creator.tasks.TaskManager;
@@ -113,6 +114,34 @@ public class CreatorPlugin extends JavaPlugin {
 	/*========================================================================================================*/
 	
 	/**
+	 * Reloads the entire plugin.
+	 * 
+	 * @author Rusketh
+	 */
+	
+	public void reload() {
+		onDisable( );
+		
+		logger = null;
+		economy = null;
+		commandManager = null;
+		taskManager = null;
+		mysqlManager = null;
+		extensionManager = null;
+		configManager = null;
+		moduleManager = null;
+		configFile = null;
+		YamlConfig = null;
+		cmdPrefix = null;
+		
+		System.gc( ); //Note: We force garbage collection!
+		
+		onEnable( );
+	}
+	
+	/*========================================================================================================*/
+	
+	/**
 	 * Gets the plugins main configuration file.
 	 * 
 	 * @return {@link FileConfiguration}
@@ -165,11 +194,13 @@ public class CreatorPlugin extends JavaPlugin {
 			YamlConfig.addDefault( "commands.custom.enable", true );
 			YamlConfig.addDefault( "commands.custom.prefix", "!" );
 			YamlConfig.addDefault( "debug", false );
+			YamlConfig.addDefault( "wandid", ItemID.WOOD_AXE );
 			
 			saveConfig( );
 			
 			Enabled = YamlConfig.getBoolean( "enabled" );
 			Vault = YamlConfig.getBoolean( "usevault" );
+			WandID = YamlConfig.getInt( "wandid" );
 			BlockRate = YamlConfig.getInt( "blockrate" );
 			MaxBlocks = YamlConfig.getInt( "maxblocks" );
 			MaxRadius = YamlConfig.getInt( "maxradius" );
@@ -362,6 +393,7 @@ public class CreatorPlugin extends JavaPlugin {
 	public boolean				Enabled;
 	public boolean				Vault;
 	
+	public int					WandID;
 	public int					BlockRate;
 	public int					MaxBlocks;
 	public int					MaxRadius;

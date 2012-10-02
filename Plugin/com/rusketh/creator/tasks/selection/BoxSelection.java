@@ -21,7 +21,13 @@ package com.rusketh.creator.tasks.selection;
 import java.util.ArrayList;
 
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.util.Vector;
+
+import com.rusketh.util.CreatorString;
+import com.rusketh.util.Direction;
 
 public class BoxSelection extends Selection {
 	
@@ -56,6 +62,32 @@ public class BoxSelection extends Selection {
 	public int getVolume( ) {
 		Vector size = getSize();
 		return size.getBlockX( ) * size.getBlockY( ) * size.getBlockZ( );
+	}
+	
+	/*========================================================================================================*/
+	
+	public int expand(Direction dir, int amount) {
+		int cur = getVolume( );
+		
+		Vector min = getMin();
+		Vector max = getMax();
+		
+		if ( dir.getX() < 1 ) min.setX(min.getX() + (dir.getX() * amount));
+		if ( dir.getX() > 1 ) min.setX(max.getX() + (dir.getX() * amount));
+		
+		if ( dir.getY() < 1 ) min.setX(min.getY() + (dir.getY() * amount));
+		if ( dir.getY() > 1 ) min.setX(max.getY() + (dir.getY() * amount));
+		
+		if ( dir.getZ() < 1 ) min.setX(min.getZ() + (dir.getZ() * amount));
+		if ( dir.getZ() > 1 ) min.setX(max.getZ() + (dir.getZ() * amount));
+		
+		pos1 = min;
+		pos2 = max;
+		
+		setMin(min);
+		setMax(max);
+		
+		return getVolume( ) - cur;
 	}
 	
 	/*========================================================================================================*/
@@ -166,6 +198,25 @@ public class BoxSelection extends Selection {
 		
 		setMin(min);
 		setMax(max);
+	}
+	
+	/*========================================================================================================*/
+	
+	public void wandEvent(Player player, Block block, Action action) {
+		Vector pos = block.getLocation().toVector();
+		
+		if ( action == Action.LEFT_CLICK_BLOCK ) {
+			if ( !block.getWorld().equals(getWorld()) ) reset();
+			
+			setPos1(pos);
+			player.sendMessage( new CreatorString("%gPosition 1 set (%b", pos.toString(), "%g).").toString() );
+		
+		}else if ( action == Action.RIGHT_CLICK_BLOCK ) {
+			if ( !block.getWorld().equals(getWorld()) ) reset();
+			
+			setPos2(pos);
+			player.sendMessage( new CreatorString("%gPosition 2 set (%b", pos.toString(), "%g).").toString() );
+		}
 	}
 	
 	/*========================================================================================================*/

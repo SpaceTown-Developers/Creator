@@ -22,7 +22,7 @@ public class BanExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-public boolean enable( ) {
+	public boolean enable( ) {
 		if ( !loadConfig( ) ) return false;
 		loadBans( );
 		

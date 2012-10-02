@@ -57,7 +57,7 @@ public class ExtensionManager {
 	==========================================================================================================*/
 	
 	private void registerExtensions( ) {
-		registerExtension( new HelpExtension( ) );
+		registerExtension( new CreatorExtension( ) );
 		registerExtension( new BanExtension( ) );
 		registerExtension( new ItemExtension( ) );
 		

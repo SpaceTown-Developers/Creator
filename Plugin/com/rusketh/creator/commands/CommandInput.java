@@ -26,11 +26,29 @@ import java.util.Set;
 
 import org.bukkit.command.CommandException;
 
+import com.rusketh.creator.exceptions.CmdException;
+
 public class CommandInput {
+	
+	/**
+	 * Generates Arguments and Flags.
+	 * 
+	 * @author Rusketh
+	 * @param args String to phase into arguments and flags. 
+	 * @param flags Keys of valid flags and values of true if extra input is supported. 
+	 */
 	
 	public CommandInput( String args, Map< Character, Boolean > flags ) {
 		this( args.split( " " ), flags );
 	}
+	
+	/**
+	 * Generates Arguments and Flags.
+	 * 
+	 * @author Rusketh
+	 * @param args Strings to phase into arguments and flags. 
+	 * @param flags Keys of valid flags and values of true if extra input is supported. 
+	 */
 	
 	public CommandInput( String[] args, Map< Character, Boolean > validFlags ) {
 		command = args[0];
@@ -113,9 +131,19 @@ public class CommandInput {
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * @author Rusketh
+	 * @param command The commands class.
+	 */
+	 
 	public void setCommand( Command command ) {
 		calledCommand = command;
 	}
+	
+	/**
+	 * @author Rusketh
+	 * @return The called command as a class.
+	 */
 	
 	public Command getComamnd( ) {
 		return calledCommand;
@@ -123,13 +151,32 @@ public class CommandInput {
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * @author Rusketh
+	 * @return The total arguments.
+	 */
+	
 	public int size( ) {
 		return phasedArgs.size( );
 	}
 	
+	/**
+	 * @author Rusketh
+	 * @param i Argument index starting at 0.
+	 * @return The argument at index (i).
+	 */
+	
 	public String arg( int i ) {
 		return phasedArgs.get( i );
 	}
+	
+	/**
+	 * Converts an argument to a number.
+	 * 
+	 * @author Rusketh
+	 * @param i Argument index starting at 0.
+	 * @return The argument at index (i) as integer.
+	 */
 	
 	public int argInt( int i ) {
 		String value = phasedArgs.get( i );
@@ -138,9 +185,56 @@ public class CommandInput {
 		try {
 			return Integer.parseInt( value );
 		} catch ( NumberFormatException e ) {
-			throw new CommandException( new StringBuilder( "Improper value for argument '" ).append( i + 1 ).append( "' (Number exspected)." ).toString( ) );
+			throw new CmdException("%rImproper value for argument '").append( i + 1 ).append( "' (Number exspected)." );
 		}
 	}
+	
+	/**
+	 * Converts an argument to a boolean.
+	 * 
+	 * @author Rusketh
+	 * @param i Argument index starting at 0.
+	 * @param def The default value is argument does not exist.
+	 * @return The argument at index (i) as boolean.
+	 */
+	
+	public boolean argBool( int i , boolean def ) {
+		String value = phasedArgs.get( i );
+		if ( value == null )
+			return def;
+		else if ( value.equalsIgnoreCase( "false" ) || value.equalsIgnoreCase( "f" ) ) {
+			return false;
+		} else if ( value.equalsIgnoreCase( "true" ) || value.equalsIgnoreCase( "t" ) ) {
+			return true;
+		} else {
+			throw new CmdException( "%Improper value for argument '").append( i + 1 ).append( "' (True|False exspected)." );
+		}
+	}
+	
+	/**
+	 * Converts an argument to a boolean.
+	 * 
+	 * @author Rusketh
+	 * @param i Argument index starting at 0.
+	 * @return The argument at index (i) as boolean.
+	 */
+	
+	public boolean argBool( int i ) {
+		String value = phasedArgs.get( i );
+		
+		if ( value == null || value.equalsIgnoreCase( "false" ) || value.equalsIgnoreCase( "f" ) ) {
+			return false;
+		} else if ( value.equalsIgnoreCase( "true" ) || value.equalsIgnoreCase( "t" ) ) {
+			return true;
+		} else {
+			throw new CmdException( "%Improper value for argument '").append( i + 1 ).append( "' (True|False exspected)." );
+		}
+	}
+	
+	/**
+	 * @author Rusketh
+	 * @return Original arguments before phasing.
+	 */
 	
 	public String[] origonalArgs( ) {
 		return origonalArgs;
@@ -148,17 +242,41 @@ public class CommandInput {
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * @author Rusketh
+	 * @param flag The char of the flag.
+	 * @return Boolean if the flag exists or not.
+	 */
+	
 	public boolean hasFlag( char flag ) {
 		return ( flags.contains( flag ) || flagValues.containsKey( flag ) );
 	}
+	
+	/**
+	 * @author Rusketh
+	 * @param flag The char of the flag.
+	 * @return The flag if used.
+	 */
 	
 	public boolean flag( char flag ) {
 		return flags.contains( flag );
 	}
 	
+	/**
+	 * @author Rusketh
+	 * @param flag The char of the flag.
+	 * @return The flag as a string
+	 */
+	
 	public String flagString( char flag ) {
 		return flagValues.get( flag );
 	}
+	
+	/**
+	 * @author Rusketh
+	 * @param flag The char of the flag.
+	 * @return The flag as a integer
+	 */
 	
 	public int flagInt( char flag ) {
 		String value = flagValues.get( flag );
@@ -171,11 +289,17 @@ public class CommandInput {
 		}
 	}
 	
+	/**
+	 * @author Rusketh
+	 * @param flag The char of the flag.
+	 * @return The flag as a boolean
+	 */
+	
 	public boolean flagBool( char flag ) {
 		String value = flagValues.get( flag );
-		if ( value == null || value.equalsIgnoreCase( "false" ) ) {
+		if ( value == null || value.equalsIgnoreCase( "false" ) || value.equalsIgnoreCase( "f" ) ) {
 			return false;
-		} else if ( value.equalsIgnoreCase( "true" ) ) {
+		} else if ( value.equalsIgnoreCase( "true" ) || value.equalsIgnoreCase( "t" ) ) {
 			return true;
 		} else {
 			throw new CommandException( new StringBuilder( "Improper value for flag '-" ).append( flag ).append( "' (True|False exspected)." ).toString( ) );
@@ -184,6 +308,10 @@ public class CommandInput {
 	
 	/*========================================================================================================*/
 	
+	/**
+	 * @author Rusketh
+	 * @return The called command.
+	 */
 	public String getCommand( ) {
 		return command;
 	}
