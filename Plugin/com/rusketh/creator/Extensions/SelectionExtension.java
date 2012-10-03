@@ -20,11 +20,9 @@ package com.rusketh.creator.Extensions;
 
 import java.util.HashSet;
 
-import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.rusketh.creator.blocks.CreatorItem;
@@ -53,7 +51,7 @@ public class SelectionExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-	@CreateCommand( names = { "wand", "w" }, example = "wand [<T/F> -p:<player>]", desc = "Enable Wand useage.", least = 0, most = 1, console = false, flags = { "p*" }, perms = { "creator.selection.wand" } )
+	@CreateCommand( names = { "wand" }, example = "wand [<T/F> -p:<player>]", desc = "Enable Wand useage.", least = 0, most = 1, console = false, flags = { "p*" }, perms = { "creator.selection.wand" } )
 	public boolean wandCommand( CommandSender sender, CommandInput input ) {
 		Player player = (Player) sender;
 		
@@ -74,9 +72,9 @@ public class SelectionExtension extends Extension {
 		return true;
 	}
 	
-	/*========================================================================================================*/
+/*========================================================================================================*/
 	
-	@CreateCommand( names = { "expand", "e" }, example = "expand <Lengh> [<Lengh>/<dir>]", desc = "Expands your region.", least = 1, most = 2, console = false, flags = { "p*" }, perms = { "creator.selection.expand" } )
+	@CreateCommand( names = { "expand", "ex" }, example = "expand <Lengh> [<Lengh>/<dir>]", desc = "Expands your region.", least = 1, most = 2, console = false, perms = { "creator.selection.expand" } )
 	public boolean expandCommand( CommandSender sender, CommandInput input ) {
 		Player player = (Player) sender;
 		Selection selection = plugin.getTaskManager().getSession(player).getSelection();
@@ -102,7 +100,31 @@ public class SelectionExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-	@CreateCommand( names = { "selection", "sel", "s" }, example = "selection <clear>", desc = "Sets your region type.", least = 1, most = 1, console = false, perms = { "creator.selection" } )
+	@CreateCommand( names = { "shift" }, example = "shift <Lengh> [dir]", desc = "Shifts your region.", least = 1, most = 2, console = false, perms = { "creator.selection.shift" } )
+	public boolean shiftCommand( CommandSender sender, CommandInput input ) {
+		Player player = (Player) sender;
+		Selection selection = plugin.getTaskManager().getSession(player).getSelection();
+		
+		if ( !selection.isValid() ) throw new CmdException("%rMake a valid selection first.");
+		
+		if ( input.size() == 1 ) {
+			selection.shift(Direction.getDirection(player), input.argInt(0) );
+		} else {
+			Direction dir = Direction.getDirection(player, input.arg(1));
+			if (dir == null) {
+				selection.shift(Direction.getDirection(player, 180), input.argInt(1) );
+			} else {
+				selection.shift(dir, input.argInt(0) );
+			}
+		}
+		
+		player.sendMessage(new CreatorString("%gSelection shifted %b").append(input.argInt(0)).append(" %g blocks.").toString() );
+		return true;
+	}
+	
+	/*========================================================================================================*/
+	
+	@CreateCommand( names = { "selection", "sel" }, example = "selection <clear>", desc = "Sets your region type.", least = 1, most = 1, console = false, perms = { "creator.selection" } )
 	public boolean selectionCommand( CommandSender sender, CommandInput input ) {
 		Player player = (Player) sender;
 		TaskSession session = plugin.getTaskManager().getSession(player);

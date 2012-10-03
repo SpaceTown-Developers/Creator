@@ -66,6 +66,17 @@ public class TaskSession {
 	
 	/*========================================================================================================*/
 	
+	/** WARNING: Make sure the current task has finished safly first. */
+	public void setTask(Task task) {
+		this.task = task;
+	}
+	
+	public boolean taskRunning() {
+		return task != null;
+	}
+	
+	/*========================================================================================================*/
+	
 	public int getBlockRate( ) {
 		return blockRate;
 	}
@@ -79,6 +90,14 @@ public class TaskSession {
 	}
 	
 	/*========================================================================================================*/
+	
+	public void setMask(Mask mask) {
+		this.mask = mask;
+	}
+	
+	public Mask getMask() {
+		return mask;
+	}
 	
 	/*========================================================================================================*/
 	

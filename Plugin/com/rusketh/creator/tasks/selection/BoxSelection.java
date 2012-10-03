@@ -92,6 +92,13 @@ public class BoxSelection extends Selection {
 	
 	/*========================================================================================================*/
 	
+	public void shift(Direction dir, int amount) {
+		setMin(pos1 = getMin().add(dir.vector().multiply(amount)));
+		setMax(pos1 = getMax().add(dir.vector().multiply(amount)));
+	}
+	
+	/*========================================================================================================*/
+	
 	public Vector getFirst( ) {
 		indexX = 0;
 		indexY = 0;
@@ -214,7 +221,7 @@ public class BoxSelection extends Selection {
 		}else if ( action == Action.RIGHT_CLICK_BLOCK ) {
 			if ( !block.getWorld().equals(getWorld()) ) reset();
 			
-			setPos2(pos);
+			setPos1(pos);
 			player.sendMessage( new CreatorString("%gPosition 2 set (%b", pos.toString(), "%g).").toString() );
 		}
 	}

@@ -27,6 +27,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import com.rusketh.creator.blocks.BlockArray;
 import com.rusketh.creator.blocks.BlockID;
@@ -162,6 +163,10 @@ public abstract class Task {
 	
 	/*========================================================================================================*/
 	
+	public boolean changeBlock( Block block, ItemStack stack ) {
+		return changeBlock( block, stack.getTypeId(), stack.getData().getData() );
+	}
+	
 	public boolean changeBlock( Block block, int type, byte data ) {
 		int y = block.getY( );
 		if ( y < 0 || y > world.getMaxHeight( ) ) return false;
@@ -229,6 +234,10 @@ public abstract class Task {
 	}
 	
 	/*========================================================================================================*/
+	
+	public boolean queBlock( Block block, ItemStack stack ) {
+		return queBlock( block, stack.getTypeId(), stack.getData().getData() );
+	}
 	
 	public boolean queBlock( Block block, int type, byte data ) throws MaxBlocksChangedException {
 		int maxBlocks = session.getMaxBlocks( );

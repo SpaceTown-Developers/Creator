@@ -64,6 +64,8 @@ public abstract class Selection implements Cloneable {
 	
 	public abstract int expand(Direction dir, int amount);
 	
+	public abstract void shift(Direction dir, int amount);
+	
 	/*========================================================================================================*/
 	
 	public abstract Vector getFirst( );
@@ -71,6 +73,12 @@ public abstract class Selection implements Cloneable {
 	public abstract Vector getNext( );
 	
 	public abstract ArrayList< Vector > getNext( int count );
+	
+	public Block nextBlock() {
+		Vector n = getNext();
+		if ( n == null ) return null;
+		return getWorld().getBlockAt(n.getBlockX(), n.getBlockX(), n.getBlockX());
+	}
 	
 	/*========================================================================================================*/
 	
@@ -80,7 +88,7 @@ public abstract class Selection implements Cloneable {
 	
 	/*========================================================================================================*/
 	
-	public abstract Selection clone() throws CloneNotSupportedException;
+	public abstract Selection clone();
 	
 	/*========================================================================================================*/
 	

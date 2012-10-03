@@ -60,6 +60,8 @@ public class ExtensionManager {
 		registerExtension( new CreatorExtension( ) );
 		registerExtension( new BanExtension( ) );
 		registerExtension( new ItemExtension( ) );
+		registerExtension( new SelectionExtension( ) );
+		registerExtension( new EditExtension( ) );
 		
 		plugin.saveConfig( );
 	}
