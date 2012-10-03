@@ -27,11 +27,11 @@ public class CreatorAdmin extends CreatorModule {
 	 * Creator Admin
 	 * 
 	 * @author Rusketh
-	 * @return 
+	 * @return
 	 */
 	
 	public boolean enable( ) {
-		registerExtension( new BanExtension() );
+		registerExtension( new BanExtension( ) );
 		
 		return true;
 	}

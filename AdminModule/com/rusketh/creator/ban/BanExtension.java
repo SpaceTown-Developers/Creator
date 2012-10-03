@@ -1,5 +1,7 @@
 package com.rusketh.creator.ban;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.command.CommandException;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.rusketh.creator.ConfigManager;
@@ -18,7 +21,17 @@ import com.rusketh.creator.Extensions.Extension;
 
 public class BanExtension extends Extension {
 	
-	protected String name = "admin.ban";
+	protected String			name	= "admin.ban";
+	
+	private YamlConfiguration	YamlBans;
+	private YamlConfiguration	YamlIpBans;
+	
+	private ConfigManager		configManager;
+	
+	private boolean				ipBans;
+	private boolean				useMysql;
+	
+	public final Pattern		pattern	= Pattern.compile( "([0-9]+)([yjdhmsw])" );
 	
 	/*========================================================================================================*/
 	
@@ -28,10 +41,6 @@ public class BanExtension extends Extension {
 		
 		configManager = plugin.getConfigManager( );
 		
-		YamlConfiguration c = configManager.createConfig( );
-		
-		configManager.saveConfig( c, "test" );
-		
 		return true;
 	}
 	
@@ -40,14 +49,19 @@ public class BanExtension extends Extension {
 	private boolean loadConfig( ) {
 		YamlConfiguration YamlConfig = (YamlConfiguration) plugin.getConfig( );
 		
-		YamlConfig.addDefault( "bans.enable", false );
-		YamlConfig.addDefault( "bans.mysql", false );
-		YamlConfig.addDefault( "bans.ipbans", false );
+		YamlConfig.addDefault( name, false );
 		
-		useMysql = YamlConfig.getBoolean( "bans.mysql" );
-		ipBans = YamlConfig.getBoolean( "bans.ipbans" );
+		if ( YamlConfig.getBoolean( name ) ) {
+			YamlConfig.addDefault( name + ".mysql", false );
+			YamlConfig.addDefault( name + ".ipbans", false );
+			
+			useMysql = YamlConfig.getBoolean( name + ".mysql" );
+			ipBans = YamlConfig.getBoolean( name + ".ipbans" );
+			
+			return true;
+		}
 		
-		return YamlConfig.getBoolean( "bans.enable" );
+		return false;
 	}
 	
 	/*========================================================================================================*/
@@ -58,8 +72,23 @@ public class BanExtension extends Extension {
 			return;
 		}
 		
-		YamlBans = plugin.getConfigManager( ).loadConfig( "bans" );
-		if ( ipBans ) YamlIpBans = plugin.getConfigManager( ).loadConfig( "ipbans" );
+		try {
+			YamlBans = configManager.loadConfig( "bans.yml" );
+		} catch ( FileNotFoundException e ) {
+			YamlBans = configManager.createConfig( );
+		} catch ( IOException | InvalidConfigurationException e ) {
+			plugin.logger.info( "[Creator] -> Somthing when't wrong when loading 'bans.yml'" );
+		}
+		
+		if ( ipBans ) {
+			try {
+				YamlIpBans = configManager.loadConfig( "ipbans.yml" );
+			} catch ( FileNotFoundException e ) {
+				YamlIpBans = configManager.createConfig( );
+			} catch ( IOException | InvalidConfigurationException e ) {
+				plugin.logger.info( "[Creator] -> Somthing when't wrong when loading 'ipbans.yml'" );
+			}
+		}
 	}
 	
 	/*========================================================================================================*/
@@ -101,7 +130,8 @@ public class BanExtension extends Extension {
 			 * Create ip bans table in the DB.
 			 */
 			if ( ipBans ) {
-				for ( @SuppressWarnings( "unused" ) String name : YamlIpBans.getKeys( false ) ) {
+				for ( @SuppressWarnings( "unused" )
+				String name : YamlIpBans.getKeys( false ) ) {
 				}
 			}
 			
@@ -115,7 +145,7 @@ public class BanExtension extends Extension {
 		}
 	}
 	
-	private void saveDB( Ban ban, boolean ipban) {
+	private void saveDB( Ban ban, boolean ipban ) {
 		try {
 			MysqlManager mysql = plugin.getMysqlManager( );
 			PreparedStatement query;
@@ -150,21 +180,21 @@ public class BanExtension extends Extension {
 			e.printStackTrace( );
 		}
 	}
-
+	
 	private Ban getBan( String name, boolean b ) {
 		return null;
 	}
-
+	
 	private Ban getBan( String name ) {
 		return null;
 	}
-
+	
 	/*========================================================================================================*/
 	
 	public void addBan( String ip, String name, String banner, long unban, String reason, boolean ipban ) {
 		if ( useMysql ) {
 			saveDB( new Ban( name, ip, banner, reason, System.currentTimeMillis( ) / 1000, unban ), ipban );
-		} else if ( name != null ) { 
+		} else if ( name != null ) {
 			
 		}
 	}
@@ -229,15 +259,5 @@ public class BanExtension extends Extension {
 	}
 	
 	/*========================================================================================================*/
-	
-	private YamlConfiguration	YamlBans;
-	private YamlConfiguration	YamlIpBans;
-	
-	private ConfigManager		configManager;
-	
-	private boolean				ipBans;
-	private boolean				useMysql;
-	
-	public final Pattern		pattern	= Pattern.compile( "([0-9]+)([yjdhmsw])" );
 	
 }
