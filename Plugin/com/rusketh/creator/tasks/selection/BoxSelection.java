@@ -59,7 +59,7 @@ public class BoxSelection extends Selection {
 	
 	public int getVolume( ) {
 		Vector size = getSize();
-		return (int) (size.getBlockX( ) * size.getBlockY( ) * size.getBlockZ( ));
+		return (int) (size.getX( ) * size.getY( ) * size.getZ( ));
 	}
 	
 	/*========================================================================================================*/
@@ -108,31 +108,33 @@ public class BoxSelection extends Selection {
 	}
 	
 	public Block nextBlock( ) {
-		Vector max = getMax();
 		Vector min = getMin();
+		Vector max = getMax();
 		
 		Block block = nextBlock;
 		
-		if ( indexX > max.getBlockX() ) {
-			indexX = min.getBlockX( );
+		if ( indexX <= max.getBlockX() ) {
+			indexX++;
+		} else {
+			indexX = min.getBlockX();
 			
-			if ( indexY > max.getBlockY( ) ) {
-				indexY = min.getBlockY( );
+			if ( indexZ <= max.getBlockZ() ) {
+				indexZ++;
+			} else {
+				indexZ = min.getBlockZ();
 				
-				if ( indexZ > max.getBlockZ( ) ) {
+				if ( indexY <= max.getBlockY() ) {
+					indexY++;
+				} else {
 					nextBlock = null;
 					return block;
-				} else {
-					indexZ++;
 				}
-				
-			} else {
-				indexY++;
 			}
-			
-		} else {
-			indexX++;
 		}
+		
+		System.out.print("Sel - X: " + indexX + "/" + max.getBlockX());
+		System.out.print("Sel - Z: " + indexZ + "/" + max.getBlockZ());
+		System.out.print("Sel - Y: " + indexY + "/" + max.getBlockY());
 		
 		nextBlock = getWorld().getBlockAt(indexX, indexY, indexZ);
 		return block;

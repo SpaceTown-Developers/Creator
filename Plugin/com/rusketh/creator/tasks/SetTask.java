@@ -1,7 +1,6 @@
 package com.rusketh.creator.tasks;
 
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.rusketh.creator.blocks.RandomBlockArray;
@@ -19,9 +18,7 @@ public class SetTask extends Task {
 	
 	public boolean runTask() {
 		for (int i = 0; (i < getRate() && selection.hasNextBlock()); i++) {
-			Block block = selection.nextBlock();
-			getSession().getCreator().logger.info("Changed block at - ?".replace("?", block.getLocation().toVector().toString()));
-			queBlock(block, blocks.next() );
+			queBlock(selection.nextBlock(), blocks.next() );
 		}
 		return !selection.hasNextBlock();
 	}
@@ -45,7 +42,7 @@ public class SetTask extends Task {
 	
 	public boolean finish() {
 		Player player = getSession().getPlayer();
-		if ( player != null ) player.sendMessage( new CreatorString("%gSuccessfully changed '%b").append(getCount()).append("'%g blocks.").toString() );
+		if ( player != null ) player.sendMessage( new CreatorString("%gSuccessfully changed '%b").append(getCount() + "/" + rawCounter).append("'%g blocks.").toString() );
 			
 		return true;
 	}

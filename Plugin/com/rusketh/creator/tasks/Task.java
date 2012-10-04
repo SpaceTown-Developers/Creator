@@ -110,25 +110,25 @@ public abstract class Task {
 	public boolean run( ) {
 		if ( bag != null ) bag.loadInventory( );
 		
-		if ( !processing ) {
-			processing = runTask( );
+		if ( !doneFirst ) {
+			doneFirst = runTask( );
+		
+		} else if ( queued && !doneAfter ) {
+			doneAfter = doQueue( queueAfter );
 			
-		} else if ( process == 0  && queued ) {
-			if ( doQueue( queueAfter ) ) process++;
-		} else if ( process == 1 && queued ) {
-			if ( doQueue( queueLast ) ) process++;
-		} else if ( process == 2 && queued ) {
-			if ( doQueue( queueFinal ) ) process++;
+		} else if ( queued && !doneLast ) {
+			doneLast = doQueue( queueLast );
 			
-		} else if ( finish( ) ) {
-			if ( bag != null ) bag.pushChanges( );
+		} else if ( queued && !doneFinal ) {
+			doneFinal = doQueue( queueFinal );
 			
-			return true;
+		} else if ( !doneFinish ) {
+			doneFinish = finish( );	
 		}
 		
 		if ( bag != null ) bag.pushChanges( );
 		
-		return false;
+		return doneFinish;
 	}
 	
 	/*========================================================================================================*/
@@ -146,15 +146,19 @@ public abstract class Task {
 	/*========================================================================================================*/
 	
 	private boolean doQueue( TaskQue queue ) {
+		System.out.print("Running Block Que " + queue.getPos() + " /" + queue.size());
+		if ( !queue.valid( ) ) return true;
+		
 		for ( int i = 1; i <= rate; i++ ) {
-			if ( queue.valid( ) ) changeBlock( queue.getBlock( ), queue.getTypeId( ), queue.getData( ) );
+			changeBlock( queue.getBlock( ), queue.getTypeId( ), queue.getData( ) );
+				System.out.print("Changing Qued Block: " + queue.getBlock( ).getLocation().toVector().toString());
 			if ( !queue.next( ) ) return true;
 		}
 		
 		return false;
 	}
 	
-	private boolean finish( ) {
+	public boolean finish( ) {
 		return true;
 	}
 	
@@ -165,8 +169,14 @@ public abstract class Task {
 	}
 	
 	public boolean changeBlock( Block block, int type, byte data ) {
+		int maxBlocks = session.getMaxBlocks( );
+		if ( rawCounter++ > maxBlocks && maxBlocks != -1 ) throw new MaxBlocksChangedException( maxBlocks );
+		
 		int y = block.getY( );
-		if ( y < 0 || y > world.getMaxHeight( ) ) return false;
+		if ( y < 0 || y > world.getMaxHeight( ) ) {
+			System.out.print("Block Y invalid - " + y);
+			return false;
+		}
 		
 		Chunk chunk = world.getChunkAt( block );
 		if ( !world.isChunkLoaded( chunk ) ) {
@@ -174,10 +184,14 @@ public abstract class Task {
 			newChunks.add( chunk );
 		}
 		
-		if ( price > 0 && !session.chargePrice(price) ) return false;
+		if ( price > 0 && !session.chargePrice(price) ) {
+			System.out.print("Faied price check");
+			return false;
+		}
 		
-		if ( mask != null ) {
-			if ( !mask.check( block ) ) return false;
+		if ( mask != null && !mask.check( block ) ) {
+			System.out.print("Failed mask check");
+			return false;
 		}
 		
 		if ( CreatorBlock.get( block.getTypeId( ) ).isContainerCreatorBlock( ) ) {
@@ -193,8 +207,6 @@ public abstract class Task {
 		}
 		
 		if ( bag == null ) {
-			bag.storeBlockDrops( block );
-			
 			if ( !bag.takeItem( new CreatorItemStack(type, data) ) ) {
 				if ( missing.contains( type, data ) ) {
 					missing.put(type, data, missing.get( type, data ) + 1);
@@ -202,16 +214,24 @@ public abstract class Task {
 					missing.put(type, data, 1);
 				}
 				
+				System.out.print("Failed block bag check");
 				return false;
 			}
+			
+			bag.storeBlockDrops( block );
 		}
 		
-		block.setTypeId( type );
-		block.setData( data );
+		if ( block.setTypeIdAndData(type, data, false) ) {
+			newBlocks.add( new StoredBlock( block ) );
+			counter++;
+			
+			System.out.print("Block Changed " + block.getLocation().toVector().toString());
 		
-		newBlocks.add( new StoredBlock( block ) );
+			return true;
+		}
 		
-		return true;
+		System.out.print("Block Change FAILED " + block.getLocation().toVector().toString());
+		return false;
 	}
 	
 	/*========================================================================================================*/
@@ -237,8 +257,6 @@ public abstract class Task {
 	}
 	
 	public boolean queBlock( Block block, int type, byte data ) throws MaxBlocksChangedException {
-		int maxBlocks = session.getMaxBlocks( );
-		if ( counter++ > maxBlocks && maxBlocks != -1 ) throw new MaxBlocksChangedException( maxBlocks );
 		oldBlocks.add( new StoredBlock( block ) );
 		
 		if ( queued ) {
@@ -274,11 +292,15 @@ public abstract class Task {
 	private Mask						mask;
 	
 	protected int						counter			= 0;
+	protected int						rawCounter		= 0;
 	protected int						price			= 0;
 	
 	private boolean						queued			= true;
-	private boolean						processing		= false;
-	private byte						process			= 0;
+	private boolean						doneFirst		= false;
+	private boolean						doneAfter		= false;
+	private boolean						doneLast		= false;
+	private boolean						doneFinal		= false;
+	private boolean						doneFinish		= false;
 	
 	private ArrayList< Chunk >			newChunks		= new ArrayList< Chunk >( );
 	private BlockArray<Integer>			missing			= new BlockArray<Integer>();

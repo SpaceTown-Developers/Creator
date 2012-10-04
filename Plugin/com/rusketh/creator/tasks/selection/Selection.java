@@ -32,10 +32,12 @@ public abstract class Selection implements Cloneable {
 	
 	public void setMin( Vector min ) {
 		this.min = min;
+		System.out.print("Min Set: " + min.toString());
 	}
 	
 	public void setMax( Vector max ) {
 		this.max = max;
+		System.out.print("Max Set: " + max.toString());
 	}
 	
 	/*========================================================================================================*/
@@ -57,7 +59,8 @@ public abstract class Selection implements Cloneable {
 	public abstract int getVolume( );
 	
 	public Vector getSize( ) {
-		return new Vector( max.getX() - min.getX() + 1, max.getY() - min.getY() + 1, max.getZ() - min.getZ() + 1 );
+		//return new Vector( max.getX() - min.getX() + 1, max.getY() - min.getY() + 1, max.getZ() - min.getZ() + 1 );
+		return max.subtract(min);
 	}
 	
 	/*========================================================================================================*/

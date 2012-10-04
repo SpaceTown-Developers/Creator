@@ -20,6 +20,7 @@ package com.rusketh.creator.Extensions;
 
 import java.util.HashSet;
 
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,9 +47,11 @@ public class SelectionExtension extends Extension {
 	@EventHandler
 	public void wandEvent(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		if ( !wandUsers.contains(player.getName()) || event.getItem() == null || event.getItem().getTypeId() != plugin.WandID ) return;
+		Block block = event.getClickedBlock();
+				
+		if ( !wandUsers.contains(player.getName()) || block == null || event.getItem() == null || event.getItem().getTypeId() != plugin.WandID ) return;
 		
-		if ( plugin.getTaskManager().getSession(player).getSelection().wandEvent(player, event.getClickedBlock(), event.getAction()) ) event.setCancelled(true);	
+		if ( plugin.getTaskManager().getSession(player).getSelection().wandEvent(player, block, event.getAction()) ) event.setCancelled(true);	
 	}
 	
 	/*========================================================================================================*/

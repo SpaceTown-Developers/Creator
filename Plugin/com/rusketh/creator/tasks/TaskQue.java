@@ -25,23 +25,27 @@ import org.bukkit.block.Block;
 public class TaskQue {
 	
 	public void add(Block block, int type) {
-		this.block.add( block );
-		this.type.add( type );
-		this.data.add( (byte) 0 );
+		blocks.add( block );
+		types.add( type );
+		datas.add( (byte) 0 );
+		
+		System.out.print("Added Block to Queue " + blocks.size());
 	}
 	
 	public void add(Block block, int type, byte data) {
-		this.block.add( block );
-		this.type.add( type );
-		this.data.add( (byte) data );
+		blocks.add( block );
+		types.add( type );
+		datas.add( (byte) data );
+		
+		System.out.print("Added Block to Queue " + blocks.size());
 	}
 	
 	/*========================================================================================================*/
 	
 	public void clear() {
-		block.clear();
-		type.clear();
-		data.clear();
+		blocks.clear();
+		types.clear();
+		datas.clear();
 		
 		pos = 0;
 	}
@@ -49,21 +53,21 @@ public class TaskQue {
 	/*========================================================================================================*/
 	
 	public Block getBlock( ) {
-		return block.get( pos );
+		return blocks.get( pos );
 	}
 	
 	public int getTypeId( ) {
-		return type.get( pos );
+		return types.get( pos );
 	}
 	
 	public byte getData( ) {
-		return data.get( pos );
+		return datas.get( pos );
 	}
 	
 	/*========================================================================================================*/
 	
 	public int size() {
-		return block.size( );
+		return blocks.size( );
 	}
 	
 	public int getPos() {
@@ -77,15 +81,16 @@ public class TaskQue {
 	/*========================================================================================================*/
 	
 	public boolean valid() {
-		return block.contains( pos );
+		return blocks.contains( pos );
 	}
 	
 	public boolean hasNext() {
-		return (pos < (block.size() - 1));
+		return blocks.contains( pos + 1 );
 	}
 	
 	public boolean next() {
-		return (pos++ < (block.size() - 1));
+		pos++;
+		return hasNext();
 	}
 	
 	public void prev() {
@@ -99,14 +104,14 @@ public class TaskQue {
 	}
 	
 	public void last() {
-		pos = block.size() - 1;
+		pos = blocks.size() - 1;
 	}
 	
 	/*========================================================================================================*/
 	
-	private ArrayList< Block >		block	= new ArrayList< Block >( );
-	private ArrayList< Integer >	type	= new ArrayList< Integer >( );
-	private ArrayList< Byte >		data	= new ArrayList< Byte >( );
+	private ArrayList< Block >		blocks	= new ArrayList< Block >( );
+	private ArrayList< Integer >	types	= new ArrayList< Integer >( );
+	private ArrayList< Byte >		datas	= new ArrayList< Byte >( );
 	
 	private int pos = 0;
 }
