@@ -206,7 +206,7 @@ public abstract class Task {
 			block.setTypeId( BlockID.AIR );
 		}
 		
-		if ( bag == null ) {
+		if ( bag != null ) {
 			if ( !bag.takeItem( new CreatorItemStack(type, data) ) ) {
 				if ( missing.contains( type, data ) ) {
 					missing.put(type, data, missing.get( type, data ) + 1);
