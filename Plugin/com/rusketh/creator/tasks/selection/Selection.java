@@ -72,7 +72,18 @@ public abstract class Selection implements Cloneable {
 	
 	public abstract Block nextBlock( );
 	
-	public abstract ArrayList< Block > nextBlocks( int count );
+	public abstract boolean hasNextBlock();
+	
+	public ArrayList< Block > nextBlocks( int count ) {
+		ArrayList< Block > blocks = new ArrayList< Block >();
+		
+		for (int i = 0; (i < count && hasNextBlock()); i++) {
+			Block block = nextBlock( );
+			blocks.add( block );
+		}
+		
+		return blocks;
+	}
 	
 	/*========================================================================================================*/
 	
@@ -93,7 +104,7 @@ public abstract class Selection implements Cloneable {
 	
 	/*========================================================================================================*/
 	
-	public abstract void wandEvent(Player player, Block block, Action action);
+	public abstract boolean wandEvent(Player player, Block block, Action action);
 	
 	/*========================================================================================================*/
 	

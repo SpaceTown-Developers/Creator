@@ -48,7 +48,7 @@ public class SelectionExtension extends Extension {
 		Player player = event.getPlayer();
 		if ( !wandUsers.contains(player.getName()) || event.getItem() == null || event.getItem().getTypeId() != plugin.WandID ) return;
 		
-		plugin.getTaskManager().getSession(player).getSelection().wandEvent(player, event.getClickedBlock(), event.getAction());	
+		if ( plugin.getTaskManager().getSession(player).getSelection().wandEvent(player, event.getClickedBlock(), event.getAction()) ) event.setCancelled(true);	
 	}
 	
 	/*========================================================================================================*/

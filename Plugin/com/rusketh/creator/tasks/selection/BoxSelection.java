@@ -18,8 +18,6 @@
 
 package com.rusketh.creator.tasks.selection;
 
-import java.util.ArrayList;
-
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -105,19 +103,25 @@ public class BoxSelection extends Selection {
 		indexX = min.getBlockX();
 		indexY = min.getBlockY();
 		indexZ = min.getBlockZ();
+		
+		nextBlock = getWorld().getBlockAt(indexX, indexY, indexZ);
 	}
 	
 	public Block nextBlock( ) {
 		Vector max = getMax();
+		Vector min = getMin();
+		
+		Block block = nextBlock;
 		
 		if ( indexX > max.getBlockX() ) {
-			indexX = 0;
+			indexX = min.getBlockY( );
 			
 			if ( indexY > max.getBlockY( ) ) {
-				indexY = 0;
+				indexY = min.getBlockY( );
 				
 				if ( indexZ > max.getBlockZ( ) ) {
-					return null;
+					nextBlock = null;
+					return block;
 				} else {
 					indexZ++;
 				}
@@ -130,21 +134,12 @@ public class BoxSelection extends Selection {
 			indexX++;
 		}
 		
-		return getWorld().getBlockAt(indexX, indexY, indexZ);
+		nextBlock = getWorld().getBlockAt(indexX, indexY, indexZ);
+		return block;
 	}
 	
-	public ArrayList< Block > nextBlocks( int count ) {
-		ArrayList< Block > blocks = new ArrayList< Block >();
-		
-		for (int i = 0; i < count; i++) {
-			Block block = nextBlock( );
-			
-			if ( block == null ) break;
-			
-			blocks.add( block );
-		}
-		
-		return blocks;
+	public boolean hasNextBlock() {
+		return (nextBlock != null);
 	}
 	
 	/*========================================================================================================*/
@@ -210,7 +205,7 @@ public class BoxSelection extends Selection {
 	
 	/*========================================================================================================*/
 	
-	public void wandEvent(Player player, Block block, Action action) {
+	public boolean wandEvent(Player player, Block block, Action action) {
 		Vector pos = block.getLocation().toVector();
 		
 		if ( action == Action.LEFT_CLICK_BLOCK ) {
@@ -218,17 +213,24 @@ public class BoxSelection extends Selection {
 			
 			setPos1(pos);
 			player.sendMessage( new CreatorString("%gPosition 1 set (%b", pos.toString(), "%g).").toString() );
+			
+			return true;
 		
 		}else if ( action == Action.RIGHT_CLICK_BLOCK ) {
 			if ( !block.getWorld().equals(getWorld()) ) reset();
 			
 			setPos2(pos);
 			player.sendMessage( new CreatorString("%gPosition 2 set (%b", pos.toString(), "%g).").toString() );
+			
+			return true;
 		}
+		
+		return false;
 	}
 	
 	/*========================================================================================================*/
 	
 	private int indexX, indexY, indexZ = -1;
 	private Vector pos1, pos2;
+	private Block nextBlock;
 }

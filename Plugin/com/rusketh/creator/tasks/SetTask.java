@@ -18,12 +18,12 @@ public class SetTask extends Task {
 	/*========================================================================================================*/
 	
 	public boolean runTask() {
-		Block block = selection.nextBlock();
-		if (block == null ) return true;
-		
-		getSession().getCreator().logger.info("Changed block at - ?".replace("?", block.getLocation().toVector().toString()));
-		queBlock(block, blocks.next() );
-		return false;
+		for (int i = 0; (i < getRate() && selection.hasNextBlock()); i++) {
+			Block block = selection.nextBlock();
+			getSession().getCreator().logger.info("Changed block at - ?".replace("?", block.getLocation().toVector().toString()));
+			queBlock(block, blocks.next() );
+		}
+		return !selection.hasNextBlock();
 	}
 	
 	/*========================================================================================================*/
