@@ -118,6 +118,7 @@ public class TaskSession {
 		
 		if ( player != null && player.hasPermission( "creator.useInventory" ) ) newTask.setBag( new TaskBag( player ) );
 		
+		paused = false;
 		task = newTask;
 				
 		return true;
