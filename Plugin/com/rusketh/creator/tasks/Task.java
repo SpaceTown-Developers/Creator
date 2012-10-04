@@ -113,15 +113,12 @@ public abstract class Task {
 		if ( !processing ) {
 			processing = runTask( );
 			
-		} else if ( queued && process < 3 ) {
-			
-			if ( process == 0 ) {
-				if ( doQueue( queueAfter ) ) process++;
-			} else if ( process == 1 ) {
-				if ( doQueue( queueLast ) ) process++;
-			} else if ( process == 2 ) {
-				if ( doQueue( queueFinal ) ) process++;
-			}
+		} else if ( process == 0  && queued ) {
+			if ( doQueue( queueAfter ) ) process++;
+		} else if ( process == 1 && queued ) {
+			if ( doQueue( queueLast ) ) process++;
+		} else if ( process == 2 && queued ) {
+			if ( doQueue( queueFinal ) ) process++;
 			
 		} else if ( finish( ) ) {
 			if ( bag != null ) bag.pushChanges( );

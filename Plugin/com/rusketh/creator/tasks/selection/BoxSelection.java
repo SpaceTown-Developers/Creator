@@ -114,7 +114,7 @@ public class BoxSelection extends Selection {
 		Block block = nextBlock;
 		
 		if ( indexX > max.getBlockX() ) {
-			indexX = min.getBlockY( );
+			indexX = min.getBlockX( );
 			
 			if ( indexY > max.getBlockY( ) ) {
 				indexY = min.getBlockY( );

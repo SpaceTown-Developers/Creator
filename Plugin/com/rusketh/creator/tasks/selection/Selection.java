@@ -57,7 +57,7 @@ public abstract class Selection implements Cloneable {
 	public abstract int getVolume( );
 	
 	public Vector getSize( ) {
-		return max.subtract( min );
+		return new Vector( max.getX() - min.getX() + 1, max.getY() - min.getY() + 1, max.getZ() - min.getZ() + 1 );
 	}
 	
 	/*========================================================================================================*/
