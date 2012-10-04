@@ -42,7 +42,9 @@ import com.rusketh.util.CreatorString;
 
 public class ItemExtension extends Extension {
 	
-	protected String name = "core.item";
+	public String name() {
+		return "core.item";
+	}
 	
 	/*========================================================================================================*/
 	

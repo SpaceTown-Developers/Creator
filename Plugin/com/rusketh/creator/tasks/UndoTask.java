@@ -18,7 +18,10 @@
 
 package com.rusketh.creator.tasks;
 
+import org.bukkit.entity.Player;
+
 import com.rusketh.creator.blocks.StoredBlock;
+import com.rusketh.util.CreatorString;
 
 
 public class UndoTask extends Task {
@@ -52,12 +55,16 @@ public class UndoTask extends Task {
 	/*========================================================================================================*/
 	
 	public boolean finish() {
-		TaskSession session = getSession();
-		//TODO: Pop undo queue.
-		
-		session.getPlayer( ).sendMessage( new StringBuilder("Undo Complete (").append( counter ).append( " Blocks cchanged" ).toString( ) );
+		Player player = getSession().getPlayer();
+		if ( player != null ) player.sendMessage( new CreatorString("%gSuccessfully undone '%b").append(getCount()).append("'%g changes.").toString() );
+			
 		return true;
-		
+	}
+	
+	/*========================================================================================================*/
+	
+	public int undoCount() {
+		return task.getUndoArray( ).size();
 	}
 	
 	/*========================================================================================================*/

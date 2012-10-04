@@ -46,6 +46,12 @@ public class TaskSession {
 	
 	/*========================================================================================================*/
 	
+	public CreatorPlugin getCreator() {
+		return plugin;
+	}
+	
+	/*========================================================================================================*/
+	
 	public void setPlayer( Player player ) {
 		this.player = player;
 	}
@@ -66,9 +72,13 @@ public class TaskSession {
 	
 	/*========================================================================================================*/
 	
-	/** WARNING: Make sure the current task has finished safly first. */
+	/** WARNING: Make sure the current task has finished safely first. */
 	public void setTask(Task task) {
 		this.task = task;
+	}
+	
+	public Task getTask() {
+		return task;
 	}
 	
 	public boolean taskRunning() {
@@ -104,10 +114,12 @@ public class TaskSession {
 	public boolean startTask( Task newTask, boolean useMask ) {
 		if ( task != null ) return false;
 		
-		if ( useMask && mask != null ) task.setMask( mask );
+		if ( useMask && mask != null ) newTask.setMask( mask.clone() );
 		
-		if ( player.hasPermission( "creator.useInventory" ) ) task.setBag( new TaskBag( player ) );
+		if ( player != null && player.hasPermission( "creator.useInventory" ) ) newTask.setBag( new TaskBag( player ) );
 		
+		task = newTask;
+				
 		return true;
 	}
 	
@@ -118,21 +130,26 @@ public class TaskSession {
 		task.stopTask( );
 		addUndo(task);
 		task = null;
+		paused = false;
 	}
 	
 	/*========================================================================================================*/
 	
 	public void runTask() {
-		if ( task != null ) try {
-			if ( task.run( ) ) stopTask();
-			
-		} catch ( MaxBlocksChangedException e ) {
-			player.sendMessage( new CreatorString("%rOperation aborted - Maxamum blocks changed. (%R").append( task.counter ).append(" blocks changed%r)").toString() );
-			stopTask( );
-			
-		} catch ( Exception e ) {
-			player.sendMessage( new CreatorString("%rOperation aborted - Somthing whent wrong. (%R").append( task.counter ).append(" blocks changed%r)").toString());
-			stopTask( );
+		if ( task != null && !paused ) {
+			try {
+				if ( task.run( ) ) stopTask();
+				
+			} catch ( MaxBlocksChangedException e ) {
+				player.sendMessage( new CreatorString("%rOperation aborted - Maxamum blocks changed. (%R").append( task.counter ).append(" blocks changed%r)").toString() );
+				stopTask( );
+				
+			} catch ( Exception e ) {
+				player.sendMessage( new CreatorString("%rOperation aborted - Somthing whent wrong. (%R").append( task.counter ).append(" blocks changed%r)").toString());
+				stopTask( );
+				
+				plugin.debug(e);
+			}
 		}
 	}
 	
@@ -144,29 +161,40 @@ public class TaskSession {
 		} else if ( task instanceof RedoTask ) {
 			undoPos++;
 		} else {
-			undoPos++;
-			undoQue.set( undoPos, task );
-			for (int i = undoPos + 1; i < undoQue.size( ); i++) undoQue.set( i, null );
-		}
-		
-		
-		if (undoQue.size( ) > 10) {
-			undoQue.remove( 0 );
-			undoPos--; //Think this should work.
+			if (undoQue.size( ) >= 10) undoQue.remove( 0 );
+			
+			if ( undoQue.size() - 1 < undoPos ) {
+				undoQue.add(task);
+			} else {
+				undoQue.set( undoPos, task );
+			}
+			
+			for (int i = undoPos; i < undoQue.size( ); i++) undoQue.set( i, null );
 		}
 	}
 	
 	public boolean undo() {
-		if (undoPos == 0) throw new CmdException("%rNothing to undo.");
-		return startTask(undoQue.get( undoPos ), false);
+		if ( !undoQue.contains(undoPos) ) throw new CmdException("%rNothing to undo.");
+		return startTask(undoQue.get( undoPos - 1 ), false);
 	}
 	
 	public boolean redo() {
-		if ( task != null ) return false;
-		Task newTask = undoQue.get( undoPos + 1 );
-		
-		if (newTask == null) throw new CmdException("%rNothing to redo.");
-		return startTask(newTask, false);
+		if ( !undoQue.contains(undoPos) ) throw new CmdException("%rNothing to redo.");
+		return startTask(undoQue.get( undoPos ), false);
+	}
+	
+	/*========================================================================================================*/
+	
+	public boolean isTaskPaused() {
+		return paused;
+	}
+	
+	public void pauseTask() {
+		paused = true;
+	}
+	
+	public void resumeTask() {
+		paused = false;
 	}
 	
 	/*========================================================================================================*/
@@ -187,6 +215,8 @@ public class TaskSession {
 	private Selection			selection;
 	private Mask				mask;
 	private Task				task;
+	
+	private boolean				paused = false;
 	
 	private int					undoPos = 0;
 	private ArrayList< Task >	undoQue = new ArrayList< Task >();

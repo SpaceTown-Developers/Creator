@@ -61,37 +61,37 @@ public class CreatorPlugin extends JavaPlugin {
 	 */
 	
 	public void onEnable( ) {
-		logger = getServer( ).getLogger( );
-		sender = getServer( ).getConsoleSender( );
-		getLogger( ).info( "Loading" );
-		
-		configFile = new File( getDataFolder( ), "config.yml" );
-		if ( !configFile.exists( ) ) {
-			try {
-				configFile.getParentFile( ).mkdirs( );
-				configFile.createNewFile( );
-			} catch ( IOException e ) {
-				getLogger( ).severe( "Unable to create new configuration!" );
+			logger = getServer( ).getLogger( );
+			sender = getServer( ).getConsoleSender( );
+			getLogger( ).info( "Loading" );
+			
+			configFile = new File( getDataFolder( ), "config.yml" );
+			if ( !configFile.exists( ) ) {
+				try {
+					configFile.getParentFile( ).mkdirs( );
+					configFile.createNewFile( );
+				} catch ( IOException e ) {
+					getLogger( ).severe( "Unable to create new configuration!" );
+				}
 			}
-		}
-		
-		reloadConfig( );
-		
-		if ( !Enabled ) {
-			getLogger( ).info( "Disabled by config." );
-			return;
-		}
-		
-		setupEconomy( );
-
-		configManager = new ConfigManager( this );
-		mysqlManager = new MysqlManager( this );
-		taskManager = new TaskManager( this );
-		commandManager = new CommandManager( this );
-		extensionManager = new ExtensionManager( this );
-		moduleManager = new ModuleManager( this );
-		
-		getLogger( ).info( "Loaded" );
+			
+			reloadConfig( );
+			
+			if ( !Enabled ) {
+				getLogger( ).info( "Disabled by config." );
+				return;
+			}
+			
+			setupEconomy( );
+	
+			configManager = new ConfigManager( this );
+			mysqlManager = new MysqlManager( this );
+			taskManager = new TaskManager( this );
+			commandManager = new CommandManager( this );
+			extensionManager = new ExtensionManager( this );
+			moduleManager = new ModuleManager( this );
+			
+			getLogger( ).info( "Loaded" );
 	}
 	
 	/*========================================================================================================*/
@@ -105,10 +105,10 @@ public class CreatorPlugin extends JavaPlugin {
 	public void onDisable( ) {
 		if ( !Enabled ) return;
 		
-		moduleManager.shutDown();
-		extensionManager.shutDown();
-		taskManager.closeSessions( );
-		mysqlManager.disconnect( );
+			moduleManager.shutDown();
+			extensionManager.shutDown();
+			taskManager.closeSessions( );
+			mysqlManager.disconnect( );
 	}
 	
 	/*========================================================================================================*/
@@ -208,6 +208,8 @@ public class CreatorPlugin extends JavaPlugin {
 			cmdPrefix = YamlConfig.getString( "commands.custom.prefix" ).toLowerCase( );
 			Debug = YamlConfig.getBoolean( "debug" );
 			
+			if ( Debug ) logger.info("[Creator] Debuggin enabled.");
+			
 		} catch ( Exception e ) {
 			getLogger( ).severe( "Unable to load configuration!" );
 			Enabled = false;
@@ -282,7 +284,7 @@ public class CreatorPlugin extends JavaPlugin {
 	
 	/**
 	 * Gets the Command Manager.
-	 * The command manager registers and handels all the commands.
+	 * The command manager registers and handles all the commands.
 	 * 
 	 * @return {@link CommandManager}
 	 * @author Rusketh
@@ -369,9 +371,9 @@ public class CreatorPlugin extends JavaPlugin {
 	 */
 	
 	public void debug( Throwable e ) {
-		if ( !Debug ) return;
-		logger.info("[Creator] Debug: ?".replace("?", e.getMessage()) );
-		e.getStackTrace();
+		if ( !Debug | e == null ) return;
+		logger.info("[Creator] Debug: ?".replace("?", e.toString()));
+		e.printStackTrace();
 	}
 	
 	/*========================================================================================================*/

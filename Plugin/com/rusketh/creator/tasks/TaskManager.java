@@ -22,11 +22,13 @@ import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.rusketh.creator.CreatorPlugin;
 
-public class TaskManager implements Runnable {
+public class TaskManager implements Listener, Runnable {
 	
 	public TaskManager( CreatorPlugin plugin ) {
 		this.plugin = plugin;
@@ -34,6 +36,7 @@ public class TaskManager implements Runnable {
 		sessions = new HashMap< String, TaskSession >( );
 		reloadSessions( );
 		
+		plugin.getServer( ).getPluginManager( ).registerEvents( this, plugin );
 		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, 2L, 20L);
 	}
 	
@@ -73,7 +76,16 @@ public class TaskManager implements Runnable {
 			sessions.put( player.getName( ), new TaskSession( plugin, player ) );
 		} else {
 			oldSession.setPlayer(player);
+			if ( oldSession.isTaskPaused() ) player.sendMessage("You have paused editor task (use resume).");
 		}
+	}
+	
+	/*========================================================================================================*/
+	
+	@EventHandler
+	public void playerQuit(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		sessions.get( player.getName( ) ).pauseTask();
 	}
 	
 	/*========================================================================================================*/

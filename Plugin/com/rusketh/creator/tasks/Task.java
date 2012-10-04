@@ -151,7 +151,7 @@ public abstract class Task {
 	private boolean doQueue( TaskQue queue ) {
 		for ( int i = 1; i <= rate; i++ ) {
 			if ( queue.valid( ) ) changeBlock( queue.getBlock( ), queue.getTypeId( ), queue.getData( ) );
-			if ( !queue.hasNext( ) ) return true;
+			if ( !queue.next( ) ) return true;
 		}
 		
 		return false;

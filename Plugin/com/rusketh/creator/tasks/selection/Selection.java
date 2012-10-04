@@ -68,17 +68,11 @@ public abstract class Selection implements Cloneable {
 	
 	/*========================================================================================================*/
 	
-	public abstract Vector getFirst( );
+	public abstract void first( );
 	
-	public abstract Vector getNext( );
+	public abstract Block nextBlock( );
 	
-	public abstract ArrayList< Vector > getNext( int count );
-	
-	public Block nextBlock() {
-		Vector n = getNext();
-		if ( n == null ) return null;
-		return getWorld().getBlockAt(n.getBlockX(), n.getBlockX(), n.getBlockX());
-	}
+	public abstract ArrayList< Block > nextBlocks( int count );
 	
 	/*========================================================================================================*/
 	

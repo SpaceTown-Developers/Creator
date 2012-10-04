@@ -77,15 +77,15 @@ public class TaskQue {
 	/*========================================================================================================*/
 	
 	public boolean valid() {
-		return (block.get( pos ) != null);
+		return block.contains( pos );
 	}
 	
 	public boolean hasNext() {
 		return (pos < (block.size() - 1));
 	}
 	
-	public void next() {
-		pos++;
+	public boolean next() {
+		return (pos++ < (block.size() - 1));
 	}
 	
 	public void prev() {

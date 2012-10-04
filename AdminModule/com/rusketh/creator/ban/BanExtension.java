@@ -21,17 +21,9 @@ import com.rusketh.creator.Extensions.Extension;
 
 public class BanExtension extends Extension {
 	
-	protected String			name	= "admin.ban";
-	
-	private YamlConfiguration	YamlBans;
-	private YamlConfiguration	YamlIpBans;
-	
-	private ConfigManager		configManager;
-	
-	private boolean				ipBans;
-	private boolean				useMysql;
-	
-	public final Pattern		pattern	= Pattern.compile( "([0-9]+)([yjdhmsw])" );
+	public String name() {
+		return "admin.ban";
+	}
 	
 	/*========================================================================================================*/
 	
@@ -259,5 +251,15 @@ public class BanExtension extends Extension {
 	}
 	
 	/*========================================================================================================*/
+	
+	private YamlConfiguration	YamlBans;
+	private YamlConfiguration	YamlIpBans;
+	
+	private ConfigManager		configManager;
+	
+	private boolean				ipBans;
+	private boolean				useMysql;
+	
+	public final Pattern		pattern	= Pattern.compile( "([0-9]+)([yjdhmsw])" );
 	
 }

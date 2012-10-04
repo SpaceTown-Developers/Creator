@@ -167,6 +167,7 @@ public class CommandInput {
 	 */
 	
 	public String arg( int i ) {
+		if ( i >= phasedArgs.size() ) return null;
 		return phasedArgs.get( i );
 	}
 	
@@ -179,7 +180,7 @@ public class CommandInput {
 	 */
 	
 	public int argInt( int i ) {
-		String value = phasedArgs.get( i );
+		String value = arg( i );
 		if ( value == null ) return 0;
 		
 		try {
@@ -199,7 +200,7 @@ public class CommandInput {
 	 */
 	
 	public boolean argBool( int i , boolean def ) {
-		String value = phasedArgs.get( i );
+		String value = arg( i );
 		if ( value == null )
 			return def;
 		else if ( value.equalsIgnoreCase( "false" ) || value.equalsIgnoreCase( "f" ) ) {
@@ -220,7 +221,7 @@ public class CommandInput {
 	 */
 	
 	public boolean argBool( int i ) {
-		String value = phasedArgs.get( i );
+		String value = arg( i );
 		
 		if ( value == null || value.equalsIgnoreCase( "false" ) || value.equalsIgnoreCase( "f" ) ) {
 			return false;

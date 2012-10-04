@@ -25,4 +25,5 @@ public abstract class Mask {
 	
 	public abstract boolean check(Block block);
 	
+	public abstract Mask clone();
 }

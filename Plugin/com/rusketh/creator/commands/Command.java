@@ -149,13 +149,13 @@ public class Command {
 		try {
 			return (Boolean) this.method.invoke( this.baseClass, sender, input );
 			
-		} catch ( Exception e ) {
+		} catch ( Throwable e ) {
 			Throwable cause = e.getCause();
 			
 			if ( cause != null ) {
 				
-				if ( cause.getClass( ).equals( CmdException.class ) || cause.getClass( ).equals( CommandException.class ) ) {
-					sender.sendMessage(e.getMessage( ));
+				if ( cause.getClass( ).equals( CmdException.class ) || cause.getClass( ).equals( CommandException.class )) {
+					if ( e.getMessage( ) != null ) sender.sendMessage(e.getMessage( ));
 					return true;
 				}
 				plugin.logger.info( "Creator failed to invoke command ?".replace( "?", this.name ) );

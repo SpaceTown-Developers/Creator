@@ -28,7 +28,9 @@ import com.rusketh.creator.exceptions.CmdException;
 
 public class CreatorExtension extends Extension {
 	
-	protected String name = "core.creator";
+	public String name() {
+		return "core.creator";
+	}
 	
 	/*========================================================================================================*/
 	

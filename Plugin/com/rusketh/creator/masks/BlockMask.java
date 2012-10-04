@@ -36,5 +36,13 @@ public class BlockMask extends Mask {
 	
 	/*========================================================================================================*/
 	
+	public BlockMask clone() {
+		BlockMask mask = new BlockMask( );
+		mask.blocks = blocks.clone();
+		return mask;
+	}
+	
+	/*========================================================================================================*/
+	
 	private BlockArray< Boolean >	blocks	= new BlockArray< Boolean >( );
 }

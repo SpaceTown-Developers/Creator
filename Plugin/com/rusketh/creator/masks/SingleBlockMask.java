@@ -19,6 +19,12 @@ public class SingleBlockMask extends Mask {
 	
 	/*========================================================================================================*/
 	
+	public SingleBlockMask clone() {
+		return new SingleBlockMask(type, data);
+	}
+	
+	/*========================================================================================================*/
+	
 	private int type;
 	private byte data;
 	

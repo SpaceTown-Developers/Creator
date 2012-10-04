@@ -62,6 +62,15 @@ public class BlockArray< A > {
 	
 	/*========================================================================================================*/
 	
+	@SuppressWarnings("unchecked")
+	public BlockArray< A > clone() {
+		BlockArray< A > array = new BlockArray< A >();
+		array.blocks = (HashMap<Integer, HashMap<Byte, A>>) blocks.clone();
+		return array;
+	}
+	
+	/*========================================================================================================*/
+	
 	protected HashMap<Integer, HashMap< Byte, A >>	blocks	= new HashMap<Integer, HashMap< Byte, A >>( );
 	
 }

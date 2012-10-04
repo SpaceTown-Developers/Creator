@@ -21,7 +21,6 @@ package com.rusketh.creator.Extensions;
 import java.util.HashMap;
 
 import com.rusketh.creator.CreatorPlugin;
-import com.rusketh.creator.ban.BanExtension;
 
 public class ExtensionManager {
 	
@@ -35,8 +34,13 @@ public class ExtensionManager {
 	/*========================================================================================================*/
 	
 	public void registerExtension( Extension extension ) {
-		if (extension == null || extension.name.isEmpty() ) return;
-		registerExtension(extension.name, extension);
+		if (extension == null || extension.name() == null ) return;
+		try {
+			registerExtension(extension.name() , extension);
+		} catch ( Exception e ) {
+			plugin.logger.info( "[Creator] Error registering extension '?'.".replace("?", extension.name()) );
+			plugin.debug(e);
+		}
 	}
 	
 	public void registerExtension( String name, Extension extension ) {
@@ -58,7 +62,6 @@ public class ExtensionManager {
 	
 	private void registerExtensions( ) {
 		registerExtension( new CreatorExtension( ) );
-		registerExtension( new BanExtension( ) );
 		registerExtension( new ItemExtension( ) );
 		registerExtension( new SelectionExtension( ) );
 		registerExtension( new EditExtension( ) );

@@ -61,7 +61,7 @@ public class BoxSelection extends Selection {
 	
 	public int getVolume( ) {
 		Vector size = getSize();
-		return size.getBlockX( ) * size.getBlockY( ) * size.getBlockZ( );
+		return (int) (size.getBlockX( ) * size.getBlockY( ) * size.getBlockZ( ));
 	}
 	
 	/*========================================================================================================*/
@@ -99,19 +99,18 @@ public class BoxSelection extends Selection {
 	
 	/*========================================================================================================*/
 	
-	public Vector getFirst( ) {
-		indexX = 0;
-		indexY = 0;
-		indexZ = 0;
+	public void first( ) {
+		Vector min = getMin();
 		
-		return getNext( );
+		indexX = min.getBlockX();
+		indexY = min.getBlockY();
+		indexZ = min.getBlockZ();
 	}
 	
-	public Vector getNext( ) {
-		Vector min = getMin();
+	public Block nextBlock( ) {
 		Vector max = getMax();
 		
-		if ( indexX > max.getBlockX( ) ) {
+		if ( indexX > max.getBlockX() ) {
 			indexX = 0;
 			
 			if ( indexY > max.getBlockY( ) ) {
@@ -131,21 +130,21 @@ public class BoxSelection extends Selection {
 			indexX++;
 		}
 		
-		return min.add( new Vector(indexX, indexY, indexZ) );
+		return getWorld().getBlockAt(indexX, indexY, indexZ);
 	}
 	
-	public ArrayList< Vector > getNext( int count ) {
-		ArrayList< Vector > vectors = new ArrayList< Vector >();
+	public ArrayList< Block > nextBlocks( int count ) {
+		ArrayList< Block > blocks = new ArrayList< Block >();
 		
 		for (int i = 0; i < count; i++) {
-			Vector vec = getNext( );
+			Block block = nextBlock( );
 			
-			if ( vec == null ) break;
+			if ( block == null ) break;
 			
-			vectors.add( vec );
+			blocks.add( block );
 		}
 		
-		return vectors;
+		return blocks;
 	}
 	
 	/*========================================================================================================*/
@@ -154,9 +153,9 @@ public class BoxSelection extends Selection {
 		Vector min = getMin();
 		Vector max = getMax();
 		
-		double x = pos.getX();
-		double y = pos.getY();
-		double z = pos.getZ();
+		double x = pos.getBlockX();
+		double y = pos.getBlockY();
+		double z = pos.getBlockZ();
 		
 		return (x >= min.getBlockX() && x <= max.getBlockX()) && (y >= min.getBlockY() && y <= max.getBlockY()) && (z >= min.getBlockZ() && z <= max.getBlockZ());
 	}
@@ -185,20 +184,22 @@ public class BoxSelection extends Selection {
 	}
 	
 	private void reCaculate() {
+		if ( !isValid() ) return;
+		
 		Vector min = pos1.clone( );
 		Vector max = pos2.clone( );
 		
-		if ( pos1.getX( ) < pos2.getX( ) ) {
+		if ( pos1.getX( ) > pos2.getX( ) ) {
 			min.setX( pos2.getX( ) );
 			max.setX( pos1.getX( ) );
 		}
 		
-		if ( pos1.getY( ) < pos2.getY( ) ) {
+		if ( pos1.getY( ) > pos2.getY( ) ) {
 			min.setY( pos2.getY( ) );
 			max.setY( pos1.getY( ) );
 		}
 		
-		if ( pos1.getZ( ) < pos2.getZ( ) ) {
+		if ( pos1.getZ( ) > pos2.getZ( ) ) {
 			min.setZ( pos2.getZ( ) );
 			max.setZ( pos1.getZ( ) );
 		}
@@ -221,13 +222,13 @@ public class BoxSelection extends Selection {
 		}else if ( action == Action.RIGHT_CLICK_BLOCK ) {
 			if ( !block.getWorld().equals(getWorld()) ) reset();
 			
-			setPos1(pos);
+			setPos2(pos);
 			player.sendMessage( new CreatorString("%gPosition 2 set (%b", pos.toString(), "%g).").toString() );
 		}
 	}
 	
 	/*========================================================================================================*/
 	
-	private int indexX, indexY, indexZ = 0;
+	private int indexX, indexY, indexZ = -1;
 	private Vector pos1, pos2;
 }

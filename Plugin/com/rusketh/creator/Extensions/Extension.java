@@ -31,6 +31,8 @@ import com.rusketh.creator.module.CreatorModule;
 
 public abstract class Extension extends CreatorModule implements Listener {
 	
+	public abstract String name();
+	
 	protected boolean setUp( CreatorPlugin plugin ) {
 		this.plugin = plugin;
 		
@@ -75,6 +77,5 @@ public abstract class Extension extends CreatorModule implements Listener {
 	/*========================================================================================================*/
 	
 	protected CreatorPlugin	plugin;
-	protected boolean		enabled;
-	protected String 		name;
+	protected boolean		enabled = false;
 }

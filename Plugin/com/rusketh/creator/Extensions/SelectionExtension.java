@@ -37,14 +37,16 @@ import com.rusketh.util.Direction;
 
 public class SelectionExtension extends Extension {
 	
-	protected String name = "core.selection";
+	public String name() {
+		return "core.selection";
+	}
 	
 	/*========================================================================================================*/
 	
 	@EventHandler
 	public void wandEvent(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		if ( !wandUsers.contains(player.getName()) || event.getItem().getTypeId() != plugin.WandID ) return;
+		if ( !wandUsers.contains(player.getName()) || event.getItem() == null || event.getItem().getTypeId() != plugin.WandID ) return;
 		
 		plugin.getTaskManager().getSession(player).getSelection().wandEvent(player, event.getClickedBlock(), event.getAction());	
 	}
@@ -61,9 +63,9 @@ public class SelectionExtension extends Extension {
 			if ( player == null ) throw new CmdException( "%rPlayer was not found." );
 		}
 		
-		if ( input.argBool( 0 ) ) {
+		if ( input.argBool( 0, !wandUsers.contains(player.getName()) ) ) {
 			wandUsers.add(player.getName());
-			player.sendMessage("Wand mode activated (?).".replace("?", CreatorItem.get(plugin.WandID).name()) );
+			player.sendMessage("Wand mode activated (?).".replace("?", CreatorItem.get(plugin.WandID).getName()) );
 		} else {
 			wandUsers.remove(player.getName());
 			player.sendMessage("Wand mode deactivated.");
