@@ -36,23 +36,23 @@ public class BoxSelection extends Selection {
 	/*========================================================================================================*/
 	
 	public void setPos1( Vector pos1 ) {
-		this.pos1 = pos1;
+		this.pos1 = pos1.clone();
 		reCaculate( );
 	}
 	
 	public Vector getPos1() {
-		return pos1;
+		return pos1.clone();
 	}
 	
 	/*========================================================================================================*/
 	
 	public void setPos2( Vector pos2 ) {
-		this.pos2 = pos2;
+		this.pos2 = pos2.clone();
 		reCaculate( );
 	}
 	
 	public Vector getPos2() {
-		return pos2;
+		return pos2.clone();
 	}
 	
 	/*========================================================================================================*/
@@ -113,29 +113,23 @@ public class BoxSelection extends Selection {
 		
 		Block block = nextBlock;
 		
-		if ( indexX <= max.getBlockX() ) {
-			indexX++;
-		} else {
+		indexX++;
+		if (indexX > max.getBlockX()) {
 			indexX = min.getBlockX();
 			
-			if ( indexZ <= max.getBlockZ() ) {
-				indexZ++;
-			} else {
+			indexZ++;
+			if (indexZ > max.getBlockZ()) {
 				indexZ = min.getBlockZ();
 				
-				if ( indexY <= max.getBlockY() ) {
-					indexY++;
-				} else {
+				indexY++;
+				if (indexY > max.getBlockY()) {
 					nextBlock = null;
 					return block;
 				}
 			}
 		}
 		
-		System.out.print("Sel - X: " + indexX + "/" + max.getBlockX());
-		System.out.print("Sel - Z: " + indexZ + "/" + max.getBlockZ());
-		System.out.print("Sel - Y: " + indexY + "/" + max.getBlockY());
-		
+		count++; //Debug
 		nextBlock = getWorld().getBlockAt(indexX, indexY, indexZ);
 		return block;
 	}
@@ -183,8 +177,8 @@ public class BoxSelection extends Selection {
 	private void reCaculate() {
 		if ( !isValid() ) return;
 		
-		Vector min = pos1.clone( );
-		Vector max = pos2.clone( );
+		Vector min = getPos1();
+		Vector max = getPos2();
 		
 		if ( pos1.getX( ) > pos2.getX( ) ) {
 			min.setX( pos2.getX( ) );
@@ -235,4 +229,6 @@ public class BoxSelection extends Selection {
 	private int indexX, indexY, indexZ = -1;
 	private Vector pos1, pos2;
 	private Block nextBlock;
+	
+	private int count;
 }
