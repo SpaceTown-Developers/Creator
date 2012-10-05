@@ -48,8 +48,9 @@ public class MaskBuilder {
 	/*========================================================================================================*/
 	
 	public Mask nextMask() {
-		
 		Mask mask;
+		
+		if ( pos >= buffer.length() ) throw new CmdException("%rInvalid mask - mask exspected.");
 		
 		switch( buffer.charAt( pos ) ) {
 			case '(':
@@ -81,6 +82,8 @@ public class MaskBuilder {
 				mask = nextBlockMask();
 		}
 		
+		if ( pos >= buffer.length() ) return mask;
+		
 		//Now find the operators.
 		switch( buffer.charAt( pos ) ) {
 			case '&':
@@ -88,7 +91,7 @@ public class MaskBuilder {
 				mask = new AndMask( mask, nextMask() );
 				break;
 				
-			case '!':
+			case '|':
 				pos++;
 				mask = new OrMask( mask, nextMask() );
 				break;

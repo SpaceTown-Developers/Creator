@@ -93,6 +93,7 @@ public class TaskSession {
 	
 	public void setBlockRate( int blockRate ) {
 		this.blockRate = blockRate;
+		if ( task != null ) task.setRate(blockRate);
 	}
 	
 	public int getMaxBlocks( ) {
@@ -158,30 +159,35 @@ public class TaskSession {
 	
 	public void addUndo(Task task) {
 		if ( task instanceof UndoTask ) {
-			undoPos--;
+			redoQue.add(undoQue.remove(undoQue.size() - 1));
+			
 		} else if ( task instanceof RedoTask ) {
-			undoPos++;
+			undoQue.add(redoQue.remove(0));
+			
 		} else {
-			if (undoQue.size( ) >= 10) undoQue.remove( 0 );
-			
-			if ( undoQue.size() - 1 < undoPos ) {
-				undoQue.add(task);
-			} else {
-				undoQue.set( undoPos, task );
-			}
-			
-			for (int i = undoPos; i < undoQue.size( ); i++) undoQue.set( i, null );
+			undoQue.add(task);
+			redoQue.clear();
 		}
 	}
 	
-	public boolean undo() {
-		if ( !undoQue.contains(undoPos) ) throw new CmdException("%rNothing to undo.");
-		return startTask(undoQue.get( undoPos - 1 ), false);
+	public UndoTask undo() {
+		if ( taskRunning() ) return null;
+		if ( undoQue.isEmpty() ) throw new CmdException("%rNothing to undo.");
+		
+		UndoTask task = new UndoTask( undoQue.get( undoQue.size() - 1 ) );
+		startTask(task, true);
+		
+		return task;
 	}
 	
-	public boolean redo() {
-		if ( !undoQue.contains(undoPos) ) throw new CmdException("%rNothing to redo.");
-		return startTask(undoQue.get( undoPos ), false);
+	public RedoTask redo() {
+		if ( taskRunning() ) return null;
+		if ( redoQue.isEmpty() ) throw new CmdException("%rNothing to redo.");
+		
+		RedoTask task = new RedoTask( redoQue.get( 0 ) );
+		startTask(task, true);
+		
+		return task;
 	}
 	
 	/*========================================================================================================*/
@@ -219,7 +225,7 @@ public class TaskSession {
 	
 	private boolean				paused = false;
 	
-	private int					undoPos = 0;
 	private ArrayList< Task >	undoQue = new ArrayList< Task >();
+	private ArrayList< Task >	redoQue = new ArrayList< Task >();
 	
 }

@@ -44,7 +44,7 @@ public enum Direction {
 	}
 
 	public Vector vector() {
-		return dir;
+		return dir.clone();
 	}
 	
 	public boolean isOrthogonal() {

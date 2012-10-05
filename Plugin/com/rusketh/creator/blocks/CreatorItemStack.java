@@ -70,10 +70,9 @@ public class CreatorItemStack extends ItemStack {
 	
 	/*========================================================================================================*/
 	
-	public CreatorItemStack clone( ) {
-		CreatorItemStack itemStack = (CreatorItemStack) clone( );
-		return itemStack;
-	}
+	public CreatorItemStack clone() {
+        return new CreatorItemStack( super.clone() );
+    }
 	
 	/*========================================================================================================*/
 	

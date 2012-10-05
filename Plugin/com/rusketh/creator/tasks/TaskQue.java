@@ -28,16 +28,12 @@ public class TaskQue {
 		blocks.add( block );
 		types.add( type );
 		datas.add( (byte) 0 );
-		
-		System.out.print("Added Block to Queue " + blocks.size());
 	}
 	
 	public void add(Block block, int type, byte data) {
 		blocks.add( block );
 		types.add( type );
 		datas.add( (byte) data );
-		
-		System.out.print("Added Block to Queue " + blocks.size());
 	}
 	
 	/*========================================================================================================*/
@@ -81,11 +77,11 @@ public class TaskQue {
 	/*========================================================================================================*/
 	
 	public boolean valid() {
-		return blocks.contains( pos );
+		return pos < blocks.size();
 	}
 	
 	public boolean hasNext() {
-		return blocks.contains( pos + 1 );
+		return (pos + 1) < blocks.size();
 	}
 	
 	public boolean next() {

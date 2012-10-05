@@ -25,6 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
 
 import com.rusketh.creator.blocks.CreatorItem;
 import com.rusketh.creator.commands.CommandInput;
@@ -129,20 +130,28 @@ public class SelectionExtension extends Extension {
 	
 	/*========================================================================================================*/
 	
-	@CreateCommand( names = { "selection", "sel" }, example = "selection <clear>", desc = "Sets your region type.", least = 1, most = 1, console = false, perms = { "creator.selection" } )
+	@CreateCommand( names = { "selection", "sel" }, example = "selection <clear>", desc = "Sets your region type.", least = 1, most = 2, console = false, perms = { "creator.selection" } )
 	public boolean selectionCommand( CommandSender sender, CommandInput input ) {
 		Player player = (Player) sender;
 		TaskSession session = plugin.getTaskManager().getSession(player);
+		Selection selection = session.getSelection();
 		
 		switch( input.arg(0) ) {
 			case "clear":
-				Selection selection = session.getSelection();
 				if ( selection.isValid() ) selection.reset();
-				player.sendMessage("%gYour selection has been cleared.");
+				player.sendMessage(new CreatorString("%gYour selection has been cleared.").toString() );
+				return true;
+		
+			case "size":
+				if ( !selection.isValid() ) throw new CmdException("%rMake a valid selection first.");
+				Vector size = selection.getSize();
+				player.sendMessage(new CreatorString("%gYour selection is '%b").append( size.getBlockX() ).append("*").append( size.getBlockY() ).append("*").append( size.getBlockZ() ).append("%g' blocks in size (%b").append( selection.getVolume() ).append(" total%g).").toString() );
+				return true;
+		
 			
 			case "cube": case "cuboid": case "box":
 				session.setSelection(new BoxSelection( player.getWorld( ) ) );
-				player.sendMessage("%gCuboid selection mode selected.");
+				player.sendMessage(new CreatorString("%gWand selection set to %bcuboid%g.").toString() );
 				
 			//TODO: More selection types.
 		}

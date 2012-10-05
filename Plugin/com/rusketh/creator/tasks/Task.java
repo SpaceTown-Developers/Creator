@@ -51,12 +51,16 @@ public abstract class Task {
 		return session;
 	}
 	
+	public World getWorld( ) {
+		return world;
+	}
+	
 	public int getRate( ) {
 		return rate;
 	}
 	
-	public World getWorld( ) {
-		return world;
+	public void setRate( int rate ) {
+		this.rate = rate;
 	}
 	
 	/*========================================================================================================*/
@@ -146,12 +150,10 @@ public abstract class Task {
 	/*========================================================================================================*/
 	
 	private boolean doQueue( TaskQue queue ) {
-		System.out.print("Running Block Que " + queue.getPos() + " /" + queue.size());
 		if ( !queue.valid( ) ) return true;
 		
 		for ( int i = 1; i <= rate; i++ ) {
 			changeBlock( queue.getBlock( ), queue.getTypeId( ), queue.getData( ) );
-				System.out.print("Changing Qued Block: " + queue.getBlock( ).getLocation().toVector().toString());
 			if ( !queue.next( ) ) return true;
 		}
 		
@@ -174,7 +176,6 @@ public abstract class Task {
 		
 		int y = block.getY( );
 		if ( y < 0 || y > world.getMaxHeight( ) ) {
-			System.out.print("Block Y invalid - " + y);
 			return false;
 		}
 		
@@ -185,12 +186,10 @@ public abstract class Task {
 		}
 		
 		if ( price > 0 && !session.chargePrice(price) ) {
-			System.out.print("Faied price check");
 			return false;
 		}
 		
 		if ( mask != null && !mask.check( block ) ) {
-			System.out.print("Failed mask check");
 			return false;
 		}
 		
@@ -214,7 +213,6 @@ public abstract class Task {
 					missing.put(type, data, 1);
 				}
 				
-				System.out.print("Failed block bag check");
 				return false;
 			}
 			
@@ -225,12 +223,9 @@ public abstract class Task {
 			newBlocks.add( new StoredBlock( block ) );
 			counter++;
 			
-			System.out.print("Block Changed " + block.getLocation().toVector().toString());
-		
 			return true;
 		}
 		
-		System.out.print("Block Change FAILED " + block.getLocation().toVector().toString());
 		return false;
 	}
 	
@@ -252,11 +247,11 @@ public abstract class Task {
 	
 	/*========================================================================================================*/
 	
-	public boolean queBlock( Block block, ItemStack stack ) {
-		return queBlock( block, stack.getTypeId(), stack.getData().getData() );
+	public boolean queBlock( Block block, ItemStack stack, boolean fast ) {
+		return queBlock( block, stack.getTypeId(), stack.getData().getData(), fast );
 	}
 	
-	public boolean queBlock( Block block, int type, byte data ) throws MaxBlocksChangedException {
+	public boolean queBlock( Block block, int type, byte data, boolean fast ) throws MaxBlocksChangedException {
 		oldBlocks.add( new StoredBlock( block ) );
 		
 		if ( queued ) {
@@ -273,7 +268,7 @@ public abstract class Task {
 			} else if ( CreatorBlock.get( block.getTypeId( ) ).shouldPlaceLast( ) ) {
 				changeBlock( block, 0, (byte) 0 );
 				
-			} else {
+			} else if ( !fast ) {
 				queueAfter.add( block, type, data );
 				return !( type == block.getTypeId( ) && data == block.getData( ) );
 			}

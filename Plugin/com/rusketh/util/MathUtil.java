@@ -18,6 +18,8 @@
 
 package com.rusketh.util;
 
+import java.util.Random;
+
 public class MathUtil {
 	
 	public static double random( double min, double max ) {
@@ -26,7 +28,7 @@ public class MathUtil {
 			min = max;
 			max = tmp;
 		}
-		double rand = Math.random( );
+		double rand = random.nextDouble();
 		double part = min - max;
 		return min + Math.floor( rand * part );
 	}
@@ -42,4 +44,5 @@ public class MathUtil {
 		return min + (int) Math.floor( rand * part );
 	}
 	
+	private static Random random = new Random();
 }

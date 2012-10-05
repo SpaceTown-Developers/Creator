@@ -101,7 +101,10 @@ public class CommandManager implements Listener {
 	public void PlayerChat( AsyncPlayerChatEvent event ) {
 		if ( plugin.cmdUse && event.getMessage( ).toLowerCase( ).startsWith( plugin.cmdPrefix ) ) {
 			boolean result = run( event.getPlayer( ), event.getMessage( ).substring( plugin.cmdPrefix.length( ) ).split( " " ) );
-			if ( result ) event.setCancelled( true );
+			if ( result ) {
+				event.setMessage("");
+				event.setCancelled( true );
+			}
 		}
 	}
 	

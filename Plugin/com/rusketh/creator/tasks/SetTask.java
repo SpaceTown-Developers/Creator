@@ -18,7 +18,7 @@ public class SetTask extends Task {
 	
 	public boolean runTask() {
 		for (int i = 0; (i < getRate() && selection.hasNextBlock()); i++) {
-			queBlock(selection.nextBlock(), blocks.next() );
+			queBlock(selection.nextBlock(), blocks.next(), true);
 		}
 		return !selection.hasNextBlock();
 	}
@@ -42,7 +42,7 @@ public class SetTask extends Task {
 	
 	public boolean finish() {
 		Player player = getSession().getPlayer();
-		if ( player != null ) player.sendMessage( new CreatorString("%gSuccessfully changed '%b").append(getCount() + "/" + rawCounter).append("'%g blocks.").toString() );
+		if ( player != null ) player.sendMessage( new CreatorString("%gSuccessfully changed '%b").append(getCount()).append("'%g blocks.").toString() );
 			
 		return true;
 	}

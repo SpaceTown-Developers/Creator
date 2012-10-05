@@ -36,23 +36,23 @@ public class BoxSelection extends Selection {
 	/*========================================================================================================*/
 	
 	public void setPos1( Vector pos1 ) {
-		this.pos1 = pos1;
+		this.pos1 = pos1.clone();
 		reCaculate( );
 	}
 	
 	public Vector getPos1() {
-		return pos1;
+		return pos1.clone();
 	}
 	
 	/*========================================================================================================*/
 	
 	public void setPos2( Vector pos2 ) {
-		this.pos2 = pos2;
+		this.pos2 = pos2.clone();
 		reCaculate( );
 	}
 	
 	public Vector getPos2() {
-		return pos2;
+		return pos2.clone();
 	}
 	
 	/*========================================================================================================*/
@@ -67,23 +67,20 @@ public class BoxSelection extends Selection {
 	public int expand(Direction dir, int amount) {
 		int cur = getVolume( );
 		
-		Vector min = getMin();
-		Vector max = getMax();
+		pos1 = getMin();
+		pos2 = getMax();
 		
-		if ( dir.getX() < 1 ) min.setX(min.getX() + (dir.getX() * amount));
-		if ( dir.getX() > 1 ) min.setX(max.getX() + (dir.getX() * amount));
+		if ( dir.getX() < 0 ) pos1.setX(pos1.getX() + (dir.getX() * amount));
+		if ( dir.getX() > 0 ) pos2.setX(pos2.getX() + (dir.getX() * amount));
 		
-		if ( dir.getY() < 1 ) min.setX(min.getY() + (dir.getY() * amount));
-		if ( dir.getY() > 1 ) min.setX(max.getY() + (dir.getY() * amount));
+		if ( dir.getY() < 0 ) pos1.setY(pos1.getY() + (dir.getY() * amount));
+		if ( dir.getY() > 0 ) pos2.setY(pos2.getY() + (dir.getY() * amount));
 		
-		if ( dir.getZ() < 1 ) min.setX(min.getZ() + (dir.getZ() * amount));
-		if ( dir.getZ() > 1 ) min.setX(max.getZ() + (dir.getZ() * amount));
+		if ( dir.getZ() < 0 ) pos1.setZ(pos1.getZ() + (dir.getZ() * amount));
+		if ( dir.getZ() > 0 ) pos2.setZ(pos2.getZ() + (dir.getZ() * amount));
 		
-		pos1 = min;
-		pos2 = max;
-		
-		setMin(min);
-		setMax(max);
+		setMin(pos1);
+		setMax(pos2);
 		
 		return getVolume( ) - cur;
 	}
@@ -113,28 +110,21 @@ public class BoxSelection extends Selection {
 		
 		Block block = nextBlock;
 		
-		if ( indexX <= max.getBlockX() ) {
-			indexX++;
-		} else {
+		indexX++;
+		if (indexX > max.getBlockX()) {
 			indexX = min.getBlockX();
 			
-			if ( indexZ <= max.getBlockZ() ) {
-				indexZ++;
-			} else {
+			indexZ++;
+			if (indexZ > max.getBlockZ()) {
 				indexZ = min.getBlockZ();
 				
-				if ( indexY <= max.getBlockY() ) {
-					indexY++;
-				} else {
+				indexY++;
+				if (indexY > max.getBlockY()) {
 					nextBlock = null;
 					return block;
 				}
 			}
 		}
-		
-		System.out.print("Sel - X: " + indexX + "/" + max.getBlockX());
-		System.out.print("Sel - Z: " + indexZ + "/" + max.getBlockZ());
-		System.out.print("Sel - Y: " + indexY + "/" + max.getBlockY());
 		
 		nextBlock = getWorld().getBlockAt(indexX, indexY, indexZ);
 		return block;
@@ -183,8 +173,8 @@ public class BoxSelection extends Selection {
 	private void reCaculate() {
 		if ( !isValid() ) return;
 		
-		Vector min = pos1.clone( );
-		Vector max = pos2.clone( );
+		Vector min = getPos1();
+		Vector max = getPos2();
 		
 		if ( pos1.getX( ) > pos2.getX( ) ) {
 			min.setX( pos2.getX( ) );

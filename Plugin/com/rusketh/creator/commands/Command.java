@@ -152,18 +152,13 @@ public class Command {
 		} catch ( Throwable e ) {
 			Throwable cause = e.getCause();
 			
-			if ( cause != null ) {
-				
-				if ( cause.getClass( ).equals( CmdException.class ) || cause.getClass( ).equals( CommandException.class )) {
-					if ( e.getMessage( ) != null ) sender.sendMessage(e.getMessage( ));
-					return true;
-				}
-				plugin.logger.info( "Creator failed to invoke command ?".replace( "?", this.name ) );
-				plugin.debug(cause);
+			if ( (cause instanceof CmdException || cause instanceof CommandException) ) {
+				sender.sendMessage(cause.getMessage( ));
+				return true;
 				
 			} else {
 				plugin.logger.info( "Creator failed to invoke command ?".replace( "?", this.name ) );
-				plugin.debug(e);
+				if (cause != null ) plugin.debug(cause); else plugin.debug(e);
 			}
 			
 			sender.sendMessage("Oooops, somthing just failed epicly." );

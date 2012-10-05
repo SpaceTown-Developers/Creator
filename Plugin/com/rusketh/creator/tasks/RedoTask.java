@@ -45,7 +45,7 @@ public class RedoTask extends Task {
 				counter++;
 				
 			} else {
-				queBlock(block.getBlock( ), block.getTypeId( ), block.getDataByte( ));
+				queBlock(block.getBlock( ), block.getTypeId( ), block.getDataByte( ), true);
 			}
 		}
 		
