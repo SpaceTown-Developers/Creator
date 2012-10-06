@@ -85,8 +85,8 @@ public class OutlineTask extends Task {
 			if ( !doneX ) {
 				//Build Front & Back Wall
 				
-				queBlock(getWorld().getBlockAt(min.getBlockX(), indexY, indexZ), blocks.next(), true);
-				queBlock(getWorld().getBlockAt(max.getBlockX(), indexY, indexZ), blocks.next(), true);
+				queBlock(getWorld().getBlockAt(indexX, indexY, min.getBlockZ()), blocks.next(), true);
+				queBlock(getWorld().getBlockAt(indexX, indexY, max.getBlockZ()), blocks.next(), true);
 				
 				if ( indexX > max.getBlockX() ) {
 					indexX = min.getBlockX();
@@ -101,8 +101,8 @@ public class OutlineTask extends Task {
 			} else {
 				//Build Left & Right Wall
 				
-				queBlock(getWorld().getBlockAt(indexX, indexY, min.getBlockZ()), blocks.next(), true);
-				queBlock(getWorld().getBlockAt(indexX, indexY, max.getBlockZ()), blocks.next(), true);
+				queBlock(getWorld().getBlockAt(min.getBlockX(), indexY, indexZ), blocks.next(), true);
+				queBlock(getWorld().getBlockAt(max.getBlockX(), indexY, indexZ), blocks.next(), true);
 				
 				if ( indexZ > max.getBlockZ() ) {
 					indexZ = min.getBlockZ();
