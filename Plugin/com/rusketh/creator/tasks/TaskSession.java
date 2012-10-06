@@ -175,9 +175,8 @@ public class TaskSession {
 		if ( undoQue.isEmpty() ) throw new CmdException("%rNothing to undo.");
 		
 		UndoTask task = new UndoTask( undoQue.get( undoQue.size() - 1 ) );
-		startTask(task, true);
-		
-		return task;
+		if ( startTask(task, false) ) return task;
+		return null;
 	}
 	
 	public RedoTask redo() {
@@ -185,9 +184,8 @@ public class TaskSession {
 		if ( redoQue.isEmpty() ) throw new CmdException("%rNothing to redo.");
 		
 		RedoTask task = new RedoTask( redoQue.get( 0 ) );
-		startTask(task, true);
-		
-		return task;
+		if ( startTask(task, false) ) return task;
+		return null;
 	}
 	
 	/*========================================================================================================*/
@@ -207,7 +205,7 @@ public class TaskSession {
 	/*========================================================================================================*/
 	
 	public boolean chargePrice( int price ) {
-		if ( !plugin.Vault ) return true;
+		if ( !plugin.Vault || player.hasPermission("creator.nocharge") ) return true;
 		return plugin.getEconomy( ).withdrawPlayer( player.getName( ), price ).transactionSuccess( );
 	}
 	

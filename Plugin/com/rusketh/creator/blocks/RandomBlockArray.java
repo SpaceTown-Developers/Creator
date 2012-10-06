@@ -18,6 +18,7 @@
 
 package com.rusketh.creator.blocks;
 
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,14 +27,13 @@ import org.bukkit.inventory.ItemStack;
 
 import com.rusketh.creator.Extensions.ItemExtension;
 import com.rusketh.creator.exceptions.WildDataException;
-import com.rusketh.util.MathUtil;
 
 public class RandomBlockArray {
 	
 	public RandomBlockArray( String input ) {
 		for ( String string : input.split( "," ) ) {
 			
-			int chance = 1;
+			double chance = 1;
 			Matcher m = pattern.matcher( string );
 			
 			if ( m.find( ) ) {
@@ -48,11 +48,13 @@ public class RandomBlockArray {
 					add( new CreatorItemStack( e.typeId, (byte) data ), chance );
 			}
 		}
+		
+		finalize();
 	}
 	
 	/*========================================================================================================*/
 	
-	private void add( ItemStack item, int chance ) {
+	private void add( ItemStack item, double chance ) {
 		int type = item.getTypeId( );
 		byte data = item.getData( ).getData( );
 		
@@ -69,9 +71,21 @@ public class RandomBlockArray {
 	
 	/*========================================================================================================*/
 	
+	public void finalize() {
+		double total = 0;
+		
+		blocks.first( );
+		while ( blocks.hasNext( ) ) {
+			total += blocks.next( ) / max;
+			blocks.put(blocks.getTypeId(), blocks.getData(), total);
+		}
+	}
+	
+	/*========================================================================================================*/
+	
 	public ItemStack next( ) {
-		int total = 0;
-		int random = MathUtil.random( 0, max );
+		double total = 0;
+		double random = rand.nextDouble( );
 		
 		blocks.first( );
 		while ( blocks.hasNext( ) ) {
@@ -84,9 +98,9 @@ public class RandomBlockArray {
 	
 	/*========================================================================================================*/
 	
-	private int								max		= 0;
-	private IterableBlockArray< Integer >	blocks	= new IterableBlockArray< Integer >( );
-	
-	public final Pattern					pattern	= Pattern.compile( "([0-9]+)%(.+)" );
+	private double							max = 0;
+	private IterableBlockArray< Double >	blocks	= new IterableBlockArray< Double >( );
+	private final Pattern					pattern	= Pattern.compile( "([0-9]+)%(.+)" );
+	private static Random					rand	= new Random();
 	
 }

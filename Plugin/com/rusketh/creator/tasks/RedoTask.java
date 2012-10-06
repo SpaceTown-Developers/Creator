@@ -18,32 +18,34 @@
 
 package com.rusketh.creator.tasks;
 
-import org.bukkit.entity.Player;
+import java.util.ArrayList;
 
 import com.rusketh.creator.blocks.StoredBlock;
-import com.rusketh.util.CreatorString;
 
 
 public class RedoTask extends Task {
 	
+	public String taskName() {
+		return "Redo Task";
+	}
+	
+	/*========================================================================================================*/
+	
 	public RedoTask(Task task) {
 		super( task.getSession( ), task.getWorld( ), task.getRate( ) );
-		this.task = task;
+		queue = task.getUndoArray();
+		setBlockPrice(-task.getBlockPrice());
 	}
 	
 	/*========================================================================================================*/
 	
 	public boolean runTask( ) {
 		for (int i = 1; i < getRate(); i++) {
-			StoredBlock block = task.getRedoArray( ).get( pos );
+			if ( pos >= queue.size() ) return true;
+			StoredBlock block = queue.get( pos++ );
 			
-			if (block == null) {
-				return true;
-				
-			} else if ( block.isSpecial( ) ) {
-				block.pushState( block.getBlock( ) );
-				counter++;
-				
+			if ( block.isSpecial( ) ) {
+				if ( block.pushState(block.getBlock()) )counter++;
 			} else {
 				queBlock(block.getBlock( ), block.getTypeId( ), block.getDataByte( ), true);
 			}
@@ -54,22 +56,12 @@ public class RedoTask extends Task {
 	
 	/*========================================================================================================*/
 	
-	public boolean finish() {
-		Player player = getSession().getPlayer();
-		if ( player != null ) player.sendMessage( new CreatorString("%gSuccessfully redone '%b").append(getCount()).append("'%g changes.").toString() );
-			
-		return true;
-	}
-	
-	/*========================================================================================================*/
-	
 	public int redoCount() {
-		return task.getUndoArray( ).size();
+		return queue.size();
 	}
 	
 	/*========================================================================================================*/
 	
-	private Task task;
-	
+	private ArrayList<StoredBlock> queue;
 	private int pos = 0;
 }

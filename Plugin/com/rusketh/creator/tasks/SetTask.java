@@ -9,6 +9,12 @@ import com.rusketh.util.CreatorString;
 
 public class SetTask extends Task {
 	
+	public String taskName() {
+		return "Set Task";
+	}
+	
+	/*========================================================================================================*/
+	
 	public SetTask( TaskSession session, World world, int rate ) {
 		super(session, world, rate);
 		setSelection(session.getSelection().clone());
@@ -42,8 +48,13 @@ public class SetTask extends Task {
 	
 	public boolean finish() {
 		Player player = getSession().getPlayer();
-		if ( player != null ) player.sendMessage( new CreatorString("%gSuccessfully changed '%b").append(getCount()).append("'%g blocks.").toString() );
-			
+		if ( player != null ) player.sendMessage( new CreatorString("%ySet Task Completed:\n%gBlocks changed: %b").append(getCount()).append("\n%gTime Taken: %b",toTime(getTimeConsumed())).toString() );
+		return true;
+	}
+	
+	public boolean report() {
+		Player player = getSession().getPlayer();
+		if ( player != null ) player.sendMessage( new CreatorString("%ySet Task Status:\n%gBlocks changed: %b").append(getCount()).append("\n%gCurrent Time: %b",toTime(getTimeConsumed())).toString() );
 		return true;
 	}
 	

@@ -24,8 +24,8 @@ public class StoredBlock {
 	
 	/*========================================================================================================*/
 	
-	public void pushState(Block block) {
-		block.setTypeIdAndData(state.getTypeId(), state.getRawData(), false);
+	public boolean pushState(Block block) {
+		boolean result = block.setTypeIdAndData(state.getTypeId(), state.getRawData(), false);
 		
 		if ( state instanceof Chest ) {
 			Chest from = (Chest) state;
@@ -83,6 +83,8 @@ public class StoredBlock {
 		} else {
 			special = false;
 		}
+		
+		return result;
 	}
 	
 	/*========================================================================================================*/

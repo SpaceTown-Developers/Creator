@@ -37,7 +37,7 @@ public class TaskManager implements Listener, Runnable {
 		reloadSessions( );
 		
 		plugin.getServer( ).getPluginManager( ).registerEvents( this, plugin );
-		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, 20L, 20L);
+		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 20L, 20L);
 	}
 	
 	/*========================================================================================================*/

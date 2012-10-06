@@ -26,6 +26,7 @@ import org.bukkit.block.BrewingStand;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,6 +37,7 @@ import com.rusketh.creator.blocks.CreatorItemStack;
 import com.rusketh.creator.blocks.StoredBlock;
 import com.rusketh.creator.exceptions.MaxBlocksChangedException;
 import com.rusketh.creator.masks.Mask;
+import com.rusketh.util.CreatorString;
 
 public abstract class Task {
 	
@@ -54,6 +56,14 @@ public abstract class Task {
 	public World getWorld( ) {
 		return world;
 	}
+	
+	public int getTimeConsumed( ) {
+		return timeConsumed;
+	}
+	
+	abstract String taskName();
+	
+	/*========================================================================================================*/
 	
 	public int getRate( ) {
 		return rate;
@@ -93,6 +103,10 @@ public abstract class Task {
 		this.price = price;
 	}
 	
+	public int getBlockPrice() {
+		return price;
+	}
+	
 	/*========================================================================================================*/
 	
 	public int getCount( ) {
@@ -130,6 +144,9 @@ public abstract class Task {
 			doneFinish = finish( );	
 		}
 		
+		timeConsumed++;
+		if (timeConsumed % 60 == 0 ) statusMsg("Status");
+		
 		if ( bag != null ) bag.pushChanges( );
 		
 		return doneFinish;
@@ -160,8 +177,49 @@ public abstract class Task {
 		return false;
 	}
 	
+	/*========================================================================================================*/
+	
+	public void splashMsg(int vol) {
+		Player player = getSession().getPlayer();
+		if ( player == null ) return;
+		
+		CreatorString report = new CreatorString("%yStarting ", taskName(), ":\n%gEst Blocks: %b").append( vol ).append("\n%gEst Time: %b", toTime( vol / rate ));
+		if ( price > 0 ) report.append("\n%gEst Cost: %b").append(price * vol);
+		report.append("%gStatus: %b.", session.isTaskPaused() ? "Running" : "Paused");
+		
+		player.sendMessage(report.toString());
+	}
+	
+	public void statusMsg( String type ) {
+		Player player = getSession().getPlayer();
+		if ( player == null ) return;
+		
+		CreatorString report = new CreatorString("%y", taskName(), " ", type, ":\n%gBlocks changed: %b").append( counter ).append("\n%gTime Taken: %b", toTime( timeConsumed ));
+		if ( price != 0 ) report.append("\n%gCost: %b", price > 0 ?  "-" : "+").append(price * counter).append(session.getCreator().getEconomy().currencyNamePlural());
+		report.append("\n%gStatus: %b.", session.isTaskPaused() ?  "Paused" : "Running");
+		
+		player.sendMessage(report.toString());
+	}
+	
 	public boolean finish( ) {
+		statusMsg("Complete");
 		return true;
+	}
+	
+	/*========================================================================================================*/
+	
+	public String toTime(int seconds) {
+		int hours = seconds / 3600;
+		int secs = seconds - hours * 3600;
+		int mins = secs / 60;
+		secs = secs - mins * 60;
+	    
+		if ( seconds > 3600 )
+			return String.format("%dh %dm %ds", hours, mins, seconds);
+		else if ( seconds > 60 )
+			return String.format("%dm %ds", mins, seconds);
+		else
+			return String.format("%ds", seconds);
 	}
 	
 	/*========================================================================================================*/
@@ -286,6 +344,7 @@ public abstract class Task {
 	private TaskBag						bag;
 	private Mask						mask;
 	
+	private int							timeConsumed	= 0;
 	protected int						counter			= 0;
 	protected int						rawCounter		= 0;
 	protected int						price			= 0;

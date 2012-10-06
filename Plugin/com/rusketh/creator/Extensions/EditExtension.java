@@ -11,6 +11,7 @@ import com.rusketh.creator.masks.Mask;
 import com.rusketh.creator.masks.MaskBuilder;
 import com.rusketh.creator.tasks.RedoTask;
 import com.rusketh.creator.tasks.SetTask;
+import com.rusketh.creator.tasks.Task;
 import com.rusketh.creator.tasks.TaskSession;
 import com.rusketh.creator.tasks.UndoTask;
 import com.rusketh.util.CreatorString;
@@ -21,7 +22,7 @@ public class EditExtension extends Extension {
 		return "core.Edit";
 	}
 	
-	/*========================================================================================================*/
+/*========================================================================================================*/
 	
 	@CreateCommand( names = { "mask" }, example = "mask <Mask>", desc = "Set the mask of the creator editor.", least = 0, most = 1, console = false, perms = { "creator.editor.mask" } )
 	public boolean maskCommand( CommandSender sender, CommandInput input ) {
@@ -36,6 +37,22 @@ public class EditExtension extends Extension {
 			
 			player.sendMessage("Editor mask set.");
 		}
+		
+		return true;
+	}
+
+	/*========================================================================================================*/
+	
+	@CreateCommand( names = { "status" }, example = "status", desc = "Get the status of your current task.", least = 0, most = 1, console = false, perms = { "creator.editor.mask" } )
+	public boolean statusCommand( CommandSender sender, CommandInput input ) {
+		Player player = (Player) sender;
+		TaskSession session = plugin.getTaskManager().getSession(player);
+		
+		Task task = session.getTask();
+		if ( task == null ) throw new CmdException( "%rYou currently do not have an active task." );
+		
+		task.statusMsg("Status");
+		
 		return true;
 	}
 
@@ -91,7 +108,7 @@ public class EditExtension extends Extension {
 		return true;
 	}
 	
-/*========================================================================================================*/
+	/*========================================================================================================*/
 	
 	@CreateCommand( names = { "resume" }, example = "resume", desc = "Resume your current edit task.", least = 0, most = 0, console = false, perms = { "creator.editor" } )
 	public boolean resumeCommand( CommandSender sender, CommandInput input ) {
@@ -105,20 +122,17 @@ public class EditExtension extends Extension {
 		return true;
 	}
 	
-/*========================================================================================================*/
+	/*========================================================================================================*/
 	
 	@CreateCommand( names = { "undo" }, example = "undo", desc = "Undo your last edit task.", least = 0, most = 0, console = false, perms = { "creator.editor" } )
 	public boolean undoCommand( CommandSender sender, CommandInput input ) {
-Player player = (Player) sender;
+		Player player = (Player) sender;
 		
 		TaskSession session = plugin.getTaskManager().getSession(player);
 		UndoTask task = session.undo();
 		if ( task == null ) throw new CmdException("%rPlease wait till your current editor task is finished before using redo.");
 		
-		int vol = task.undoCount();
-		player.sendMessage( new CreatorString("%gUndoing '%b").append( vol ).append("%g' changed blocks.").toString() );
-		player.sendMessage( new CreatorString("%bEstimatated build time '%b").append(vol / session.getBlockRate()).append("%b' seconds.").toString() );
-		
+		task.splashMsg(task.undoCount());
 		return true;
 	}
 	
@@ -132,16 +146,18 @@ Player player = (Player) sender;
 		RedoTask task = session.redo();
 		if ( task == null ) throw new CmdException("%rPlease wait till your current editor task is finished before using redo.");
 		
-		int vol = task.redoCount();
-		player.sendMessage( new CreatorString("%gRedoing '%b").append( vol ).append("%g' changes.").toString() );
-		player.sendMessage( new CreatorString("%bEstimatated build time '%b").append(vol / session.getBlockRate()).append("%b' seconds.").toString() );
-		
+		task.splashMsg(task.redoCount());
 		return true;
 	}
 	
 	/*========================================================================================================*/
 		
-	@CreateCommand( names = { "set" }, example = "set <blocks>", desc = "Set every block inside your selection.", least = 1, most = 1, console = false, perms = { "creator.editor.set" } )
+	@CreateCommand( names = { "set" },
+			example = "set <blocks>",
+			desc = "Set every block inside your selection.",
+			least = 1, most = 1, console = false,
+			perms = { "creator.editor.set" },
+			usePrice = 0, blockPrice = 10)
 	public boolean setCommand( CommandSender sender, CommandInput input ) {
 		Player player = (Player) sender;
 		TaskSession session = plugin.getTaskManager().getSession(player);
@@ -149,12 +165,12 @@ Player player = (Player) sender;
 		
 		SetTask task = new SetTask( session, player.getWorld(), session.getBlockRate() );
 		task.setBlocks( new RandomBlockArray( input.arg(0) ) );
+		task.setBlockPrice(input.getComamnd().blockPrice);
+		
 		if ( !session.startTask(task, true) ) throw new CmdException("%rPlease wait till your current editor task is finished.");
 		
-		int vol = task.getSelection().getVolume();
-		player.sendMessage( new CreatorString("%gSetting '%b").append( vol ).append("%g' blocks.").toString() );
-		player.sendMessage( new CreatorString("%bEstimatated build time '%b").append(vol / session.getBlockRate()).append("%b' seconds.").toString() );
-		
+		task.splashMsg(task.getSelection().getVolume());
 		return true;
 	}
+	
 }
