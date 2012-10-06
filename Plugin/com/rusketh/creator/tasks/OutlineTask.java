@@ -65,6 +65,7 @@ public class OutlineTask extends Task {
 		
 		if ( wallsOnly || doneTop ) {
 			if ( !doneX ) {
+				//Build Front & Back Wall
 				
 				queBlock(getWorld().getBlockAt(min.getBlockX(), indexY, indexZ), blocks.next(), true);
 				queBlock(getWorld().getBlockAt(max.getBlockX(), indexY, indexZ), blocks.next(), true);
@@ -80,6 +81,7 @@ public class OutlineTask extends Task {
 				} else indexX++;
 				
 			} else {
+				//Build Left & Right Wall
 				
 				queBlock(getWorld().getBlockAt(indexX, indexY, min.getBlockZ()), blocks.next(), true);
 				queBlock(getWorld().getBlockAt(indexX, indexY, max.getBlockZ()), blocks.next(), true);
@@ -98,7 +100,8 @@ public class OutlineTask extends Task {
 			
 		} else {
 			
-			if ( !doneBottom ) {
+			if ( !doneBottom ) { 
+				//Build Floor.
 			
 				queBlock(getWorld().getBlockAt(indexX, min.getBlockY(), indexZ), blocks.next(), true);
 				
@@ -113,6 +116,7 @@ public class OutlineTask extends Task {
 				} else indexX++;
 			
 			} else {
+				//Build Roof
 				
 				queBlock(getWorld().getBlockAt(indexX, max.getBlockY(), indexZ), blocks.next(), true);
 				
