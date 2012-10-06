@@ -216,11 +216,11 @@ public abstract class Task {
 		secs = secs - mins * 60;
 	    
 		if ( seconds > 3600 )
-			return String.format("%dh %dm %ds", hours, mins, seconds);
+			return String.format("%dh %dm %ds", hours, mins, secs);
 		else if ( seconds > 60 )
-			return String.format("%dm %ds", mins, seconds);
+			return String.format("%dm %ds", mins, secs);
 		else
-			return String.format("%ds", seconds);
+			return String.format("%ds", secs);
 	}
 	
 	/*========================================================================================================*/

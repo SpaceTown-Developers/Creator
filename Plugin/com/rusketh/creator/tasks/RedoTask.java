@@ -33,7 +33,7 @@ public class RedoTask extends Task {
 	
 	public RedoTask(Task task) {
 		super( task.getSession( ), task.getWorld( ), task.getRate( ) );
-		queue = task.getUndoArray();
+		queue = task.getRedoArray();
 		setBlockPrice(-task.getBlockPrice());
 	}
 	
