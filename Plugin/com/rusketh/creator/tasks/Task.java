@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.rusketh.creator.CreatorPlugin;
 import com.rusketh.creator.blocks.BlockArray;
 import com.rusketh.creator.blocks.BlockID;
 import com.rusketh.creator.blocks.CreatorBlock;
@@ -182,21 +183,21 @@ public abstract class Task {
 	public void splashMsg(int vol) {
 		Player player = getSession().getPlayer();
 		if ( player == null ) return;
-		
+		CreatorPlugin creator = session.getCreator();
+				
 		CreatorString report = new CreatorString("%yStarting ", taskName(), ":\n%gEst Blocks: %b").append( vol ).append("\n%gEst Time: %b", toTime( vol / rate ));
-		if ( price > 0 ) report.append("\n%gEst Cost: %b").append(price * vol);
-		report.append("%gStatus: %b.", session.isTaskPaused() ? "Running" : "Paused");
-		
+		if ( creator.Vault && price != 0 ) report.append("\n%gEst Cost: %b", price > 0 ?  "-" : "+").append(price * counter).append(creator.getEconomy().currencyNamePlural());
 		player.sendMessage(report.toString());
 	}
 	
 	public void statusMsg( String type ) {
 		Player player = getSession().getPlayer();
 		if ( player == null ) return;
+		CreatorPlugin creator = session.getCreator();
 		
 		CreatorString report = new CreatorString("%y", taskName(), " ", type, ":\n%gBlocks changed: %b").append( counter ).append("\n%gTime Taken: %b", toTime( timeConsumed ));
-		if ( price != 0 ) report.append("\n%gCost: %b", price > 0 ?  "-" : "+").append(price * counter).append(session.getCreator().getEconomy().currencyNamePlural());
-		report.append("\n%gStatus: %b.", session.isTaskPaused() ?  "Paused" : "Running");
+		if ( creator.Vault && price != 0 ) report.append("\n%gCost: %b", price > 0 ?  "-" : "+").append(price * counter).append(creator.getEconomy().currencyNamePlural());
+		if ( !type.equals("Complete") ) report.append("\n%gStatus: %b.", session.isTaskPaused() ?  "Paused" : "Running");
 		
 		player.sendMessage(report.toString());
 	}

@@ -2,6 +2,7 @@ package com.rusketh.creator.Extensions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.rusketh.creator.blocks.RandomBlockArray;
 import com.rusketh.creator.commands.CommandInput;
@@ -9,6 +10,7 @@ import com.rusketh.creator.commands.CreateCommand;
 import com.rusketh.creator.exceptions.CmdException;
 import com.rusketh.creator.masks.Mask;
 import com.rusketh.creator.masks.MaskBuilder;
+import com.rusketh.creator.tasks.OutlineTask;
 import com.rusketh.creator.tasks.RedoTask;
 import com.rusketh.creator.tasks.SetTask;
 import com.rusketh.creator.tasks.Task;
@@ -170,6 +172,58 @@ public class EditExtension extends Extension {
 		if ( !session.startTask(task, true) ) throw new CmdException("%rPlease wait till your current editor task is finished.");
 		
 		task.splashMsg(task.getSelection().getVolume());
+		return true;
+	}
+	
+	/*========================================================================================================*/
+		
+	@CreateCommand( names = { "walls" },
+			example = "walls <blocks>",
+			desc = "Set the walls around your selection.",
+			least = 1, most = 1, console = false,
+			perms = { "creator.editor.walls" },
+			usePrice = 0, blockPrice = 10)
+	public boolean wallsCommand( CommandSender sender, CommandInput input ) {
+		Player player = (Player) sender;
+		TaskSession session = plugin.getTaskManager().getSession(player);
+		if ( !session.getSelection().isValid() ) throw new CmdException("%rPlease make a valid selection first.");
+		
+		OutlineTask task = new OutlineTask( session, player.getWorld(), session.getBlockRate() );
+		task.setBlocks( new RandomBlockArray( input.arg(0) ) );
+		task.setBlockPrice(input.getComamnd().blockPrice);
+		task.setWallsOnly();
+		
+		if ( !session.startTask(task, true) ) throw new CmdException("%rPlease wait till your current editor task is finished.");
+		
+		Vector size = task.getSelection().getSize();
+		task.splashMsg((size.getBlockX() + size.getBlockZ()) * size.getBlockY());
+		return true;
+	}
+	
+	/*========================================================================================================*/
+	
+	@CreateCommand( names = { "outline" },
+			example = "outline <blocks>",
+			desc = "Set the outline around your selection.",
+			least = 1, most = 1, console = false,
+			perms = { "creator.editor.outline" },
+			usePrice = 0, blockPrice = 10)
+	public boolean outlineCommand( CommandSender sender, CommandInput input ) {
+		Player player = (Player) sender;
+		TaskSession session = plugin.getTaskManager().getSession(player);
+		if ( !session.getSelection().isValid() ) throw new CmdException("%rPlease make a valid selection first.");
+		
+		OutlineTask task = new OutlineTask( session, player.getWorld(), session.getBlockRate() );
+		task.setBlocks( new RandomBlockArray( input.arg(0) ) );
+		task.setBlockPrice(input.getComamnd().blockPrice);
+		
+		if ( !session.startTask(task, true) ) throw new CmdException("%rPlease wait till your current editor task is finished.");
+		
+		Vector size = task.getSelection().getSize();
+		int x = size.getBlockX();
+		int z = size.getBlockZ();
+		
+		task.splashMsg( ((x - 1 + z - 1) * size.getBlockY()) + ((x * z * 2))); //TODO: Better formula.
 		return true;
 	}
 	

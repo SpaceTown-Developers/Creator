@@ -209,8 +209,8 @@ public class Command {
 	
 	private int							least;
 	private int							most;
-	public int							usePrice;
-	public int							blockPrice;
+	public int							usePrice = 0;
+	public int							blockPrice = 0;
 	
 	private boolean						player;
 	private boolean						console;
