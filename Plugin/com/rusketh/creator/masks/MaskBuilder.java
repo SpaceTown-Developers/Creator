@@ -65,18 +65,18 @@ public class MaskBuilder {
 				mask = new NotMask( nextMask() );
 				break;
 				
-			case '>':
+			case '<':
 				pos++;
 				mask = new UnderMask( nextMask() );
 				break;
 			
-			case '<':
+			case '>':
 				pos++;
 				mask = new AboveMask( nextMask() );
 				break;
 			
 			case '&': case '|': //These can't be used here.
-				throw new CmdException("%rInvalid mask - unexpected '%c").append( buffer.charAt( pos ) ).append( "%r' at char %c").append( pos ).append("%r.");
+				throw new CmdException("%rInvalid mask - unexpected '%c&|%r' at char %c").append( pos ).append("%r.");
 				
 			default:
 				mask = nextBlockMask();
