@@ -34,6 +34,7 @@ public class UndoTask extends Task {
 	public UndoTask(Task task) {
 		super( task.getSession( ), task.getWorld( ), task.getRate( ) );
 		queue = task.getUndoArray();
+		pos = queue.size() - 1;
 		setBlockPrice(-task.getBlockPrice());
 	}
 	
@@ -41,11 +42,11 @@ public class UndoTask extends Task {
 	
 	public boolean runTask( ) {
 		for (int i = 1; i < getRate(); i++) {
-			if ( pos >= queue.size() ) return true;
-			StoredBlock block = queue.get( pos++ );
+			if ( pos < 0 ) return true;
+			StoredBlock block = queue.get( pos-- );
 			
 			if ( block.isSpecial( ) ) {
-				if ( block.pushState(block.getBlock()) )counter++;
+				if ( block.pushState(block.getBlock()) ) counter++;
 			} else {
 				queBlock(block.getBlock( ), block.getTypeId( ), block.getDataByte( ), true);
 			}

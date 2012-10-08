@@ -81,72 +81,49 @@ public class OutlineTask extends Task {
 		Vector min = selection.getMin();
 		Vector max = selection.getMax();
 		
-		if ( wallsOnly || doneTop ) {
-			if ( !doneX ) {
-				//Build Front & Back Wall
+		if ( !doneX ) {
+			queBlock(getWorld().getBlockAt(indexX, indexY, min.getBlockZ()), blocks.next(), true);
+			queBlock(getWorld().getBlockAt(indexX, indexY, max.getBlockZ()), blocks.next(), true);
+			
+			indexX++;
+			if ( indexX > max.getBlockX() ) {
+				indexX = min.getBlockX();
 				
-				queBlock(getWorld().getBlockAt(indexX, indexY, min.getBlockZ()), blocks.next(), true);
-				queBlock(getWorld().getBlockAt(indexX, indexY, max.getBlockZ()), blocks.next(), true);
-				
-				if ( indexX > max.getBlockX() ) {
-					indexX = min.getBlockX();
-					
-					if ( indexY > max.getBlockY() ) {
-						indexY = min.getBlockY();
-						doneX = true;
-						
-					} else indexY++;
-				} else indexX++;
-				
-			} else {
-				//Build Left & Right Wall
-				
-				queBlock(getWorld().getBlockAt(min.getBlockX(), indexY, indexZ), blocks.next(), true);
-				queBlock(getWorld().getBlockAt(max.getBlockX(), indexY, indexZ), blocks.next(), true);
-				
-				if ( indexZ > max.getBlockZ() ) {
-					indexZ = min.getBlockZ();
-					
-					if ( indexY > max.getBlockY() ) {
-						indexY = min.getBlockY();
-						return true;
-						
-					} else indexY++;
-				} else indexZ++;
-
+				indexY++;
+				if ( indexY > max.getBlockY() ) {
+					indexY = min.getBlockY();
+					doneX = true;
+				}
 			}
+		} else if ( !doneY )  {
+			queBlock(getWorld().getBlockAt(min.getBlockX(), indexY, indexZ), blocks.next(), true);
+			queBlock(getWorld().getBlockAt(max.getBlockX(), indexY, indexZ), blocks.next(), true);
 			
+			indexZ++;
+			if ( indexZ > max.getBlockZ() ) {
+				indexZ = min.getBlockZ();
+				
+				indexY++;
+				if ( indexY > max.getBlockY() ) {
+					if ( wallsOnly ) return true;
+					indexZ = min.getBlockZ();
+					indexY = min.getBlockY();
+					doneY = true;
+				}
+			}
 		} else {
+			queBlock(getWorld().getBlockAt(indexX, min.getBlockY(), indexZ), blocks.next(), true);
+			queBlock(getWorld().getBlockAt(indexX, max.getBlockY(), indexZ), blocks.next(), true);
 			
-			if ( !doneBottom ) { 
-				//Build Floor.
-			
-				queBlock(getWorld().getBlockAt(indexX, min.getBlockY(), indexZ), blocks.next(), true);
+			indexX++;
+			if ( indexX > max.getBlockX()) {
+				indexX = min.getBlockX();
 				
-				if ( indexX > max.getBlockX() ) {
-					indexX = min.getBlockX();
-					
-					if ( indexZ > max.getBlockZ() ) {
-						indexZ = min.getBlockZ();
-						doneBottom = true;
-						
-					} else indexZ++;
-				} else indexX++;
-			
-			} else {
-				//Build Roof
-				
-				queBlock(getWorld().getBlockAt(indexX, max.getBlockY(), indexZ), blocks.next(), true);
-				
-				if ( indexX > max.getBlockX() ) {
-					indexX = min.getBlockX();
-					
-					if ( indexZ > max.getBlockZ() ) {
-						indexZ = min.getBlockZ();
-						doneTop = true;
-						
-					} else indexZ++;
-				} else indexX++;
+				indexZ++;
+				if ( indexZ > max.getBlockZ()) {
+					indexZ = min.getBlockZ();
+					return true;
+				}
 			}
 		}
 		
@@ -160,8 +137,7 @@ public class OutlineTask extends Task {
 	private RandomBlockArray blocks;
 	
 	private boolean doneX = false;
-	private boolean doneBottom = false;
-	private boolean doneTop = false;
+	private boolean doneY = false;
 	
 	private boolean wallsOnly = false;
 	private int indexX, indexY, indexZ;
